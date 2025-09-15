@@ -1,0 +1,13 @@
+{
+  "task": "brainstorm then create a planning for next task",
+  "save_to": "create _ai/task_01.md",
+  "resources": {},
+  "target": {
+    "goal": "",
+    "note": []
+  },
+  "steps": {
+    "1": "",
+    "2": ""
+  }
+}

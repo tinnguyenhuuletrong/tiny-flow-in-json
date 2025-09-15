@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "main": "src/index",
-  "scripts": {},
+  "scripts": {
+    "test": "bun test"
+  },
   "dependencies": {},
   "devDependencies": {}
 }
