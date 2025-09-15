@@ -1,13 +1,20 @@
 {
   "task": "brainstorm then create a planning for next task",
   "save_to": "create _ai/task_01.md",
-  "resources": {},
+  "resources": {
+    "requirement.md": "_ai/doc/requirement.md"
+  },
   "target": {
-    "goal": "",
-    "note": []
+    "goal": "do the _ai/doc/requirement.md  - 4. Core Concepts & Data Structure",
+    "note": [
+      "implement into packages/core",
+      "collect all typedef and saved into type.ts",
+      "add test for parseFromJson and saveToJson"
+    ]
   },
   "steps": {
-    "1": "",
-    "2": ""
+    "1": "read resources",
+    "2": "create a task_01 with 1 iter and planning",
+    "3": "waiting for human review and confirm before start to code"
   }
 }
