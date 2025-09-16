@@ -13,6 +13,14 @@ Default to using Bun instead of Node.js.
 - Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
 - Bun automatically loads .env, so don't use dotenv.
 
+## Monorepo
+
+- `packages/**` -> sub packages
+  - each sub package contain package.json to maitain dependencies.
+  - cd to this folder and `bun add <package_name>`
+- `bun install` should call from root folder
+- to run script on specific package please use `bun run --cwd <package_relative_path> <script_name>` example `bun run --cwd packages/web dev`
+
 ## APIs
 
 - `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
