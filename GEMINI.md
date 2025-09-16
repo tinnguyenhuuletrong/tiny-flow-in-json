@@ -52,6 +52,8 @@ bun run examples/play.ts
 
 ### Project Structure
 
+> See `_ai/doc/use-bun.md` to know how to work with bun, bun monorepo
+
 - The project is a monorepo. All packages are located in the `/packages` directory.
 - The main library is `@tiny-json-workflow/core`.
 - The `_ai` directory contains project requirements and workflow guidelines for AI agent collaboration.
