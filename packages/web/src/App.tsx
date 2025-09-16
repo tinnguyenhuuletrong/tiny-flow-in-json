@@ -1,23 +1,18 @@
-import { useState } from "react";
-import { Button } from "./components/ui/button";
+import { Header } from './app/components/layout/Header';
+import { Toolbar } from './app/components/layout/Toolbar';
+import { LeftPanel } from './app/components/layout/LeftPanel';
+import { MainView } from './app/components/layout/MainView';
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
-        Sample
-      </h1>
-      <div className="flex min-h-svh flex-col items-center justify-center">
-        <Button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </Button>
-        <p className="leading-7 [&:not(:first-child)]:mt-6">
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+    <div className="flex flex-col h-screen">
+      <Header />
+      <Toolbar />
+      <div className="flex flex-1 overflow-hidden">
+        <LeftPanel />
+        <MainView />
       </div>
-    </>
+    </div>
   );
 }
 

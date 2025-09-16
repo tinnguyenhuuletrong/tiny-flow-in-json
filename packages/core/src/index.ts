@@ -21,3 +21,5 @@ export function saveToJson(flow: Flow): string {
   FlowSchema.parse(flow);
   return JSON.stringify(flow, null, 2);
 }
+
+export { type Flow };
