@@ -1,0 +1,93 @@
+{
+  "id": "user-profile-update-v3",
+  "name": "User Profile Update with Parallel Tasks",
+  "version": "3.0.0",
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "string"
+      },
+      "updatedFields": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "searchIndexStatus": {
+        "type": "string"
+      },
+      "emailNotificationStatus": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "userId",
+      "updatedFields"
+    ]
+  },
+  "steps": [
+    {
+      "id": "begin-update",
+      "name": "Begin Profile Update",
+      "type": "begin"
+    },
+    {
+      "id": "fork-tasks",
+      "name": "Initiate Parallel Tasks",
+      "type": "task"
+    },
+    {
+      "id": "update-search-index",
+      "name": "Update Search Index",
+      "type": "task"
+    },
+    {
+      "id": "send-email-notification",
+      "name": "Send 'Profile Updated' Email",
+      "type": "task"
+    },
+    {
+      "id": "join-tasks",
+      "name": "Synchronize and Finalize",
+      "type": "task"
+    },
+    {
+      "id": "end-update",
+      "name": "End Profile Update",
+      "type": "end"
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "begin-update",
+      "targetStepId": "fork-tasks"
+    },
+    {
+      "id": "c2-path-A",
+      "sourceStepId": "fork-tasks",
+      "targetStepId": "update-search-index"
+    },
+    {
+      "id": "c3-path-B",
+      "sourceStepId": "fork-tasks",
+      "targetStepId": "send-email-notification"
+    },
+    {
+      "id": "c4-join-A",
+      "sourceStepId": "update-search-index",
+      "targetStepId": "join-tasks"
+    },
+    {
+      "id": "c5-join-B",
+      "sourceStepId": "send-email-notification",
+      "targetStepId": "join-tasks"
+    },
+    {
+      "id": "c6",
+      "sourceStepId": "join-tasks",
+      "targetStepId": "end-update"
+    }
+  ]
+}

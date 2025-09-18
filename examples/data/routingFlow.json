@@ -1,0 +1,147 @@
+{
+  "id": "support-ticket-router-v2",
+  "name": "Customer Support Ticket Routing Flow",
+  "version": "2.0.0",
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "ticket": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "urgent"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "technical",
+              "billing",
+              "general"
+            ]
+          },
+          "isVip": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "id",
+          "priority",
+          "category"
+        ]
+      },
+      "assignedAgentId": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "ticket"
+    ]
+  },
+  "steps": [
+    {
+      "id": "start-routing",
+      "name": "Begin Ticket Routing",
+      "type": "begin"
+    },
+    {
+      "id": "evaluate-ticket",
+      "name": "Evaluate Ticket Priority & Category",
+      "type": "decision"
+    },
+    {
+      "id": "escalate-urgent",
+      "name": "Escalate to L2 Tech Support",
+      "type": "task"
+    },
+    {
+      "id": "route-to-billing",
+      "name": "Route to Billing Team",
+      "type": "task"
+    },
+    {
+      "id": "assign-general",
+      "name": "Assign to General Support Queue",
+      "type": "task"
+    },
+    {
+      "id": "add-vip-tag",
+      "name": "Tag as VIP Customer",
+      "type": "task"
+    },
+    {
+      "id": "send-confirmation",
+      "name": "Send Confirmation to Customer",
+      "type": "task"
+    },
+    {
+      "id": "end-routing",
+      "name": "End Routing Process",
+      "type": "end"
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "start-routing",
+      "targetStepId": "evaluate-ticket"
+    },
+    {
+      "id": "c2-urgent",
+      "sourceStepId": "evaluate-ticket",
+      "targetStepId": "escalate-urgent",
+      "condition": "state.ticket.priority == 'urgent' && state.ticket.category == 'technical'"
+    },
+    {
+      "id": "c3-billing",
+      "sourceStepId": "evaluate-ticket",
+      "targetStepId": "route-to-billing",
+      "condition": "state.ticket.category == 'billing'"
+    },
+    {
+      "id": "c4-default",
+      "sourceStepId": "evaluate-ticket",
+      "targetStepId": "assign-general"
+    },
+    {
+      "id": "c5-vip",
+      "sourceStepId": "evaluate-ticket",
+      "targetStepId": "add-vip-tag",
+      "condition": "state.ticket.isVip == true"
+    },
+    {
+      "id": "c6",
+      "sourceStepId": "escalate-urgent",
+      "targetStepId": "send-confirmation"
+    },
+    {
+      "id": "c7",
+      "sourceStepId": "route-to-billing",
+      "targetStepId": "send-confirmation"
+    },
+    {
+      "id": "c8",
+      "sourceStepId": "assign-general",
+      "targetStepId": "send-confirmation"
+    },
+    {
+      "id": "c9",
+      "sourceStepId": "add-vip-tag",
+      "targetStepId": "end-routing"
+    },
+    {
+      "id": "c10",
+      "sourceStepId": "send-confirmation",
+      "targetStepId": "end-routing"
+    }
+  ]
+}
