@@ -4,23 +4,19 @@ import ReactFlow, {
   Background,
   type Edge,
   type Node,
+  type NodeDragHandler,
+  useReactFlow,
+  useNodesState,
+  useEdgesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
 import { useFlowStore } from "@/app/store/flowStore";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { BeginNode } from "../custom-nodes/BeginNode";
 import { EndNode } from "../custom-nodes/EndNode";
 import { DecisionNode } from "../custom-nodes/DecisionNode";
 import { TaskNode } from "../custom-nodes/TaskNode";
-import { getLayoutedElements } from "@/lib/layout";
-
-const nodeTypes = {
-  begin: BeginNode,
-  end: EndNode,
-  decision: DecisionNode,
-  task: TaskNode,
-};
 
 const defaultEdgeOptions = {
   animated: true,
@@ -28,45 +24,77 @@ const defaultEdgeOptions = {
 };
 
 export function FlowView() {
-  const { flow } = useFlowStore();
+  const { flow, updateNodePosition, layoutCounter } = useFlowStore();
+  const { fitView } = useReactFlow();
 
-  const { nodes, edges } = useMemo(() => {
-    const initialNodes: Node[] = flow.steps.map((step) => {
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  const nodeTypes = useMemo(
+    () => ({
+      begin: BeginNode,
+      end: EndNode,
+      decision: DecisionNode,
+      task: TaskNode,
+    }),
+    []
+  );
+
+  useEffect(() => {
+    if (flow.steps.length === 0) return;
+    const newNodes: Node[] = flow.steps.map((step) => {
       const sourceConnections = flow.connections.filter(
         (c) => c.sourceStepId === step.id
       );
+      const stepWithSourceHandles = {
+        ...step,
+        metadata: {
+          ...step.metadata,
+          sourceHandles: sourceConnections.map((c) => c.id),
+        },
+      };
       return {
         id: step.id,
         type: step.type,
-        data: {
-          label: step.name,
-          sourceHandles: sourceConnections.map((c) => c.id),
-        },
-        position: { x: 0, y: 0 }, // position is set by dagre
+        data: stepWithSourceHandles,
+        position: { x: step.metadata?.x || 0, y: step.metadata?.y || 0 },
       };
     });
+    setNodes(newNodes);
 
-    const initialEdges: Edge[] = flow.connections.map((connection) => ({
+    const newEdges: Edge[] = flow.connections.map((connection) => ({
       id: connection.id,
       source: connection.sourceStepId,
       target: connection.targetStepId,
       label: connection.condition,
       sourceHandle: connection.id,
-      labelStyle: { fill: "#f00", fontWeight: 700 },
-      labelBgPadding: [8, 4],
+      labelStyle: { fill: "#777", fontWeight: 500 },
+      labelBgPadding: [6, 4],
       labelBgBorderRadius: 4,
-      labelBgStyle: { fill: "#fff", color: "#fff", fillOpacity: 0.7 },
+      labelBgStyle: { fill: "#fff", fillOpacity: 0.6 },
     }));
+    setEdges(newEdges);
+  }, [flow, setNodes, setEdges]);
 
-    return getLayoutedElements(initialNodes, initialEdges);
-  }, [flow]);
+  const onNodeDragStop: NodeDragHandler = (_, node) => {
+    updateNodePosition(node.id, node.position);
+  };
+
+  useEffect(() => {
+    if (layoutCounter > 0) {
+      setTimeout(() => fitView({ duration: 200 }), 0);
+    }
+  }, [layoutCounter, fitView]);
 
   return (
     <ReactFlow
       nodes={nodes}
       edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
       nodeTypes={nodeTypes}
       defaultEdgeOptions={defaultEdgeOptions}
+      onNodeDragStop={onNodeDragStop}
       fitView
     >
       <MiniMap />

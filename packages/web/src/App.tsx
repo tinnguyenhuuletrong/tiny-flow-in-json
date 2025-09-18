@@ -1,7 +1,7 @@
-import { Header } from './app/components/layout/Header';
-import { Toolbar } from './app/components/layout/Toolbar';
-import { LeftPanel } from './app/components/layout/LeftPanel';
-import { MainView } from './app/components/layout/MainView';
+import { Header } from "./app/components/layout/Header";
+import { Toolbar } from "./app/components/layout/Toolbar";
+import { LeftPanel } from "./app/components/layout/LeftPanel";
+import { MainView } from "./app/components/layout/MainView";
 
 function App() {
   return (

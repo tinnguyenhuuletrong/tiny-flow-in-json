@@ -1,48 +1,49 @@
-import dagre from "dagre";
-import { type Edge, type Node, Position } from "reactflow";
+import ELK from "elkjs/lib/elk.bundled.js";
+import { type Edge, type Node } from "reactflow";
 
-export const getLayoutedElements = (
-  nodes: Node[],
-  edges: Edge[],
-  direction = "LR"
-) => {
-  const dagreGraph = new dagre.graphlib.Graph();
-  dagreGraph.setDefaultEdgeLabel(() => ({}));
+const elk = new ELK();
 
-  const nodeWidth = 250;
-  const nodeHeight = 150;
+const nodeWidth = 250;
+const nodeHeight = 150;
 
-  const isHorizontal = direction === "LR";
-  dagreGraph.setGraph({ rankdir: direction, nodesep: 150, ranksep: 150 });
+export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
+  const graph = {
+    id: "root",
+    layoutOptions: {
+      "elk.algorithm": "layered",
+      "elk.direction": "RIGHT",
+      "elk.spacing.nodeNode": "150",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "150",
+    },
+    children: nodes.map((node) => ({
+      ...node,
+      id: node.id,
+      width: nodeWidth,
+      height: nodeHeight,
+    })),
+    edges: edges.map((edge) => ({
+      id: edge.id,
+      sources: [edge.source],
+      targets: [edge.target],
+    })),
+  };
 
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-  });
+  const layoutedGraph = await elk.layout(graph);
 
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
+  const layoutedNodes = nodes.map((node) => {
+    const nodeWithPosition = layoutedGraph.children?.find(
+      (child) => child.id === node.id
+    );
 
-  dagre.layout(dagreGraph);
-
-  nodes.forEach((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
-    node.targetPosition = isHorizontal ? Position.Left : Position.Top;
-    node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
-
-    // We are shifting the dagre node position (anchor=center center) to the top left
-    // so it matches the React Flow node anchor point (top left).
-    node.position = {
-      x: nodeWithPosition.x - nodeWidth / 2,
-      y: nodeWithPosition.y - nodeHeight / 2,
-    };
+    if (nodeWithPosition) {
+      node.position = {
+        x: nodeWithPosition.x || 0,
+        y: nodeWithPosition.y || 0,
+      };
+    }
 
     return node;
   });
 
-  edges.forEach((edge) => {
-    edge.type = "smoothstep";
-  });
-
-  return { nodes, edges };
+  return { nodes: layoutedNodes, edges };
 };

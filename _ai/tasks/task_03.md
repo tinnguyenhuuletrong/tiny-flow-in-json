@@ -8,10 +8,9 @@ This task focuses on polishing the flow view to match the design specifications.
 - **Goal**: Replace `dagre` with `elkjs` to achieve a better horizontal layout.
 - **Actions**:
   - Add `elkjs` as a new dependency.
-  - Update the `getLayoutedElements` function in `packages/web/src/lib/layout.ts` to use `elkjs`.
-  - The new implementation should take nodes and edges as input and return them with positions calculated by `elkjs`.
-  - Configure `elkjs` for a horizontal layout ("LR").
-  - The layout logic should still accommodate dynamic node sizes.
+  - Move logic into store function `doAutoLayout` which override node metadata position
+  - Function call after load data from json
+  - Create a button to trigger `doAutoLayout`
 
 ## 2. Update Node Styles
 

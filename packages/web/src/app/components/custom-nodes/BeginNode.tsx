@@ -1,9 +1,8 @@
-import { Handle, Position } from 'reactflow';
+import { Handle, Position } from "reactflow";
 
-export function BeginNode({ data }: { data: { label: string } }) {
+export function BeginNode() {
   return (
-    <div className="w-32 h-32 bg-green-500 rounded-full flex items-center justify-center text-white font-bold p-2 text-center">
-      {data.label}
+    <div className="w-8 h-8 bg-white rounded-full border-2 border-black">
       <Handle type="source" position={Position.Right} />
     </div>
   );

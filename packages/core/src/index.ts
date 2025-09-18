@@ -1,4 +1,4 @@
-import { type Flow, FlowSchema } from "./types";
+import { type Flow, FlowSchema, type Step } from "./types";
 
 /**
  * Parses a JSON string into a validated Flow object.
@@ -22,4 +22,4 @@ export function saveToJson(flow: Flow): string {
   return JSON.stringify(flow, null, 2);
 }
 
-export { type Flow };
+export { type Flow, type Step };
