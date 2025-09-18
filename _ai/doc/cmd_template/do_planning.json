@@ -2,27 +2,31 @@
   "task": "brainstorm then create a planning for next task",
   "save_to": "create _ai/task_02.md",
   "resources": {
-    "requirement.md": "_ai/doc/requirement.md"
+    "requirement.md": "_ai/doc/requirement.md",
+    "current.img": "_ai/doc/ref/hlayout.png",
+    "reactflow-horizontal-layout": "https://reactflow.dev/examples/layout/horizontal",
+    "hlayout": "_ai/doc/ref/hlayout.png"
   },
   "mcp": {
     "context7": "for fetching  Fetches up-to-date documentation for a library"
   },
   "target": {
-    "goal": "install packages and project folder structure, ui layout _ai/doc/requirement.md  - 5.2. Web Playground (UI). placeholder data at first",
+    "goal": "polish the flow view",
     "note": [
-      "implement into packages/web",
-      "init a single page app layout below",
-      "------",
-      "Header, ToolBar",
-      "Switch view between Flow chart backed by ReactFlow | JSON editor",
-      "Panel on Left for Steps, global state inspector",
-      "------"
+      "current layout is not good. refactor to use horizontal layout",
+      "begin node -> ...res of node -> end",
+      "begin node small white cicle",
+      "end node small black cicle",
+      "task node shape h-rectangle",
+      "decision node v-rectangle where the pin distribute eventally on right with good spacing",
+      "the condition label display clearly and readable",
+      "support drag, drop, position saved into node metadata"
     ]
   },
   "steps": {
     "1": "read resources, use context7 when need",
-    "2": "try to generate ascii version of ui layout for easy discuss first",
-    "3": "create a task_02 need install lib, create a project folder structure and placeholder data, app state try to rely on react context useReducer",
+    "2": "read current source code",
+    "3": "create a task_03 to achieve goal",
     "4": "waiting for human review and confirm before start to code"
   }
 }
