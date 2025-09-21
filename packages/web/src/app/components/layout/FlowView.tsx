@@ -12,7 +12,7 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 
 import { useFlowStore } from "@/app/store/flowStore";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { BeginNode } from "../custom-nodes/BeginNode";
 import { EndNode } from "../custom-nodes/EndNode";
 import { DecisionNode } from "../custom-nodes/DecisionNode";
@@ -24,8 +24,12 @@ const defaultEdgeOptions = {
 };
 
 export function FlowView() {
-  const { flow, updateNodePosition, layoutCounter } = useFlowStore();
-  const { fitView } = useReactFlow();
+  const { flow, updateNodePosition, updateFlowViewport } = useFlowStore();
+  const initViewPort = useFlowStore(
+    (state) => state.getFlowMetadata()?.reactflowViewport
+  );
+
+  const { getViewport } = useReactFlow();
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -42,6 +46,7 @@ export function FlowView() {
 
   useEffect(() => {
     if (flow.steps.length === 0) return;
+
     const newNodes: Node[] = flow.steps.map((step) => {
       const sourceConnections = flow.connections.filter(
         (c) => c.sourceStepId === step.id
@@ -53,6 +58,7 @@ export function FlowView() {
           sourceHandles: sourceConnections.map((c) => c.id),
         },
       };
+
       return {
         id: step.id,
         type: step.type,
@@ -79,12 +85,10 @@ export function FlowView() {
   const onNodeDragStop: NodeDragHandler = (_, node) => {
     updateNodePosition(node.id, node.position);
   };
-
-  useEffect(() => {
-    if (layoutCounter > 0) {
-      setTimeout(() => fitView({ duration: 200 }), 0);
-    }
-  }, [layoutCounter, fitView]);
+  const onFitView = useCallback(() => {
+    const vp = getViewport();
+    updateFlowViewport(vp);
+  }, [getViewport, updateFlowViewport]);
 
   return (
     <ReactFlow
@@ -95,10 +99,9 @@ export function FlowView() {
       nodeTypes={nodeTypes}
       defaultEdgeOptions={defaultEdgeOptions}
       onNodeDragStop={onNodeDragStop}
-      fitView
+      defaultViewport={initViewPort}
     >
-      <MiniMap />
-      <Controls />
+      <Controls onFitView={onFitView} />
       <Background />
     </ReactFlow>
   );

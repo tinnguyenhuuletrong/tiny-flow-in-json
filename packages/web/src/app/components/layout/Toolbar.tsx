@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { useFlowStore } from "@/app/store/flowStore";
-import { type Flow } from "@tiny-json-workflow/core";
+import { parseFromJson, type Flow } from "@tiny-json-workflow/core";
 
 export function Toolbar() {
-  const { doAutoLayout, flow, importFlow } = useFlowStore();
+  const { doAutoLayout, flow, setFlow } = useFlowStore();
 
   const handleExport = () => {
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
@@ -25,8 +25,8 @@ export function Toolbar() {
         const reader = new FileReader();
         reader.onload = (e) => {
           try {
-            const importedFlow = JSON.parse(e.target?.result as string) as Flow;
-            importFlow(importedFlow);
+            const importedFlow = parseFromJson(e.target?.result as string);
+            setFlow(importedFlow);
           } catch (error) {
             console.error("Error parsing JSON file:", error);
             alert("Invalid JSON file.");

@@ -7,13 +7,26 @@ export const placeholderFlow: Flow = {
   globalStateSchema: {
     type: "object",
     properties: {
-      userId: { type: "string" },
-      profileIsComplete: { type: "boolean", default: false },
+      userId: {
+        type: "string",
+      },
+      profileIsComplete: {
+        type: "boolean",
+        default: false,
+      },
     },
     required: ["userId"],
   },
   steps: [
-    { id: "start-flow", name: "Begin Onboarding", type: "begin" },
+    {
+      id: "start-flow",
+      name: "Begin Onboarding",
+      type: "begin",
+      metadata: {
+        x: 12,
+        y: 37,
+      },
+    },
     {
       id: "send-welcome",
       name: "Send Welcome Email",
@@ -21,18 +34,45 @@ export const placeholderFlow: Flow = {
       paramsSchema: {
         type: "object",
         properties: {
-          template: { type: "string", default: "welcome-email-v2" },
+          template: {
+            type: "string",
+            default: "welcome-email-v2",
+          },
         },
       },
-      metadata: { owner: "engagement-team" },
+      metadata: {
+        owner: "engagement-team",
+        x: 412,
+        y: 37,
+      },
     },
     {
       id: "check-profile",
       name: "Is Profile Complete?",
       type: "decision",
+      metadata: {
+        x: 812,
+        y: 37,
+      },
     },
-    { id: "send-reminder", name: "Send Profile Reminder", type: "task" },
-    { id: "end-flow", name: "End Onboarding", type: "end" },
+    {
+      id: "send-reminder",
+      name: "Send Profile Reminder",
+      type: "task",
+      metadata: {
+        x: 1202.766789125643,
+        y: 139.94592211609114,
+      },
+    },
+    {
+      id: "end-flow",
+      name: "End Onboarding",
+      type: "end",
+      metadata: {
+        x: 1612,
+        y: 37,
+      },
+    },
   ],
   connections: [
     {
@@ -57,6 +97,17 @@ export const placeholderFlow: Flow = {
       targetStepId: "send-reminder",
       condition: "state.profileIsComplete == false",
     },
-    { id: "c5", sourceStepId: "send-reminder", targetStepId: "end-flow" },
+    {
+      id: "c5",
+      sourceStepId: "send-reminder",
+      targetStepId: "end-flow",
+    },
   ],
+  metadata: {
+    reactflowViewport: {
+      x: 52.76604278074876,
+      y: 342.5353721033868,
+      zoom: 0.758132798573975,
+    },
+  },
 };

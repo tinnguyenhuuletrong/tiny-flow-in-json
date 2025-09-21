@@ -54,6 +54,7 @@ export const FlowSchema = z.object({
   globalStateSchema: JsonSchema,
   steps: z.array(StepSchema),
   connections: z.array(ConnectionSchema),
+  metadata: z.record(z.any()).optional(),
 });
 
 export type Flow = z.infer<typeof FlowSchema>;

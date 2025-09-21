@@ -2,15 +2,26 @@ import { create } from "zustand";
 import type { Flow, Step } from "@tiny-json-workflow/core";
 import { placeholderFlow } from "../../data/placeholder";
 import { getLayoutedElements } from "../../lib/layout";
-import { type Node, type Edge, type XYPosition } from "reactflow";
+import {
+  type Node,
+  type Edge,
+  type XYPosition,
+  type Viewport,
+} from "reactflow";
+
+type FlowMetadataState =
+  | Partial<{
+      reactflowViewport: Viewport;
+    }>
+  | undefined;
 
 type FlowState = {
   flow: Flow;
-  layoutCounter: number;
   setFlow: (flow: Flow) => Promise<void>;
-  importFlow: (flow: Flow) => void;
+  getFlowMetadata: () => FlowMetadataState;
   doAutoLayout: () => Promise<void>;
   updateNodePosition: (nodeId: string, position: XYPosition) => void;
+  updateFlowViewport: (value: Viewport) => void;
 };
 
 const layoutFlow = async (flow: Flow): Promise<Flow> => {
@@ -56,26 +67,17 @@ const layoutFlow = async (flow: Flow): Promise<Flow> => {
 
 export const useFlowStore = create<FlowState>((set, get) => ({
   flow: placeholderFlow,
-  layoutCounter: 0,
+  getFlowMetadata: () => get().flow.metadata as FlowMetadataState,
   setFlow: async (flow) => {
-    const layoutedFlow = await layoutFlow(flow);
-    set((state) => ({
-      flow: layoutedFlow,
-      layoutCounter: state.layoutCounter + 1,
-    }));
-  },
-  importFlow: (flow) => {
-    set((state) => ({
-      flow,
-      layoutCounter: state.layoutCounter + 1,
+    set((_state) => ({
+      flow: flow,
     }));
   },
   doAutoLayout: async () => {
     const { flow } = get();
-    const layoutedFlow = await layoutFlow(get().flow);
-    set((state) => ({
+    const layoutedFlow = await layoutFlow(flow);
+    set((_state) => ({
       flow: layoutedFlow,
-      layoutCounter: state.layoutCounter + 1,
     }));
   },
   updateNodePosition: (nodeId, position) => {
@@ -94,5 +96,15 @@ export const useFlowStore = create<FlowState>((set, get) => ({
       },
     }));
   },
-}));
+  updateFlowViewport: (value: Viewport) => {
+    const metadata = get().flow?.metadata ?? {};
+    metadata.reactflowViewport = value;
 
+    set((state) => ({
+      flow: {
+        ...state.flow,
+        metadata,
+      },
+    }));
+  },
+}));
