@@ -1,32 +1,25 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_02.md",
+  "save_to": "create _ai/task_04.md",
   "resources": {
-    "requirement.md": "_ai/doc/requirement.md",
-    "current.img": "_ai/doc/ref/hlayout.png",
-    "reactflow-horizontal-layout": "https://reactflow.dev/examples/layout/horizontal",
-    "hlayout": "_ai/doc/ref/hlayout.png"
+    "requirement.md": "_ai/doc/requirement.md"
   },
   "mcp": {
     "context7": "for fetching  Fetches up-to-date documentation for a library"
   },
   "target": {
-    "goal": "polish the flow view",
+    "goal": "polish the code view",
     "note": [
-      "current layout is not good. refactor to use horizontal layout",
-      "begin node -> ...res of node -> end",
-      "begin node small white cicle",
-      "end node small black cicle",
-      "task node shape h-rectangle",
-      "decision node v-rectangle where the pin distribute eventally on right with good spacing",
-      "the condition label display clearly and readable",
-      "support drag, drop, position saved into node metadata"
+      "build json schema from zod",
+      "inject json schema to monaco editor for better code auto complete",
+      "add schema validation before save and applied to store",
+      "in case failed -> display error ( try to explore can we display error natively in monaco editor. if not it is ok to display outside )"
     ]
   },
   "steps": {
     "1": "read resources, use context7 when need",
     "2": "read current source code",
-    "3": "create a task_03 to achieve goal",
+    "3": "create a task_04 to achieve goal",
     "4": "waiting for human review and confirm before start to code"
   }
 }
