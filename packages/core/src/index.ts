@@ -1,3 +1,4 @@
+import zodToJsonSchema from "zod-to-json-schema";
 import { type Flow, FlowSchema, type Step } from "./types";
 
 /**
@@ -21,5 +22,10 @@ export function saveToJson(flow: Flow): string {
   FlowSchema.parse(flow);
   return JSON.stringify(flow, null, 2);
 }
+
+export const JSON_SCHEMA = zodToJsonSchema(FlowSchema, {
+  name: "FlowJSONSchema",
+  $refStrategy: "none", // Avoids $ref generation for simplicity in this context
+});
 
 export { type Flow, type Step };

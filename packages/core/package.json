@@ -8,7 +8,9 @@
     "test": "bun test"
   },
   "dependencies": {
-    "zod": "^3"
+    "@n8n/json-schema-to-zod": "^1.1.0",
+    "zod": "^3",
+    "zod-to-json-schema": "^3.24.6"
   },
   "devDependencies": {}
 }

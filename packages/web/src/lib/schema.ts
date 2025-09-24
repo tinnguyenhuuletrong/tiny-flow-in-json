@@ -1,7 +1,3 @@
-import { zodToJsonSchema } from "zod-to-json-schema";
-import { FlowSchema } from "@tiny-json-workflow/core/src/types";
+import { JSON_SCHEMA } from "@tiny-json-workflow/core";
 
-export const flowJsonSchema = zodToJsonSchema(FlowSchema, {
-  name: "FlowJSONSchema",
-  $refStrategy: "none", // Avoids $ref generation for simplicity in this context
-});
+export const flowJsonSchema = JSON_SCHEMA;

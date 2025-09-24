@@ -7,13 +7,13 @@ This task focuses on enriching the FlowJSON data model, implementing a comprehen
 1.  **Extend FlowJSON Data Model:**
 
     - The in-memory representation of a `Flow` will use Zod schemas for `globalStateSchema` and `paramsSchema`.
-    - Add a `state` attribute to the root `Flow` object to hold global workflow data.
-    - Add a `params` attribute to each `Step` object to hold step-specific parameters.
+    - Add a optional `state` attribute to the root `Flow` object to hold global workflow data.
+    - Add a optional `params` attribute to each `Step` object to hold step-specific parameters.
 
 2.  **Update Serialization/Deserialization:**
 
     - `parseFromJson`: When loading a JSON string, convert the JSON Schema objects for `globalStateSchema` and `paramsSchema` into live Zod schemas using `@n8n/json-schema-to-zod`.
-    - `saveToJson`: When saving to a JSON string, convert the Zod schemas for `globalStateSchema` and `paramsSchema` back into JSON Schema objects using Zod's native `.toJSONSchema()` method.
+    - `saveToJson`: When saving to a JSON string, convert the Zod schemas for `globalStateSchema` and `paramsSchema` back into JSON Schema objects using package `zod-to-json-schema`.
 
 3.  **Implement Validation Function:**
     - Create a `validate(flow: Flow): FlowError[]` function that uses the live Zod schemas to validate the `state` and `params` objects.
@@ -25,6 +25,7 @@ This task focuses on enriching the FlowJSON data model, implementing a comprehen
 
 1.  In `packages/core/package.json`, add:
     - `@n8n/json-schema-to-zod`
+    - `zod-to-json-schema`
 
 ### Part 2: Update Data Structures (`types.ts`)
 
@@ -52,7 +53,8 @@ This task focuses on enriching the FlowJSON data model, implementing a comprehen
 ### Part 4: Implement Validation Logic (`index.ts`)
 
 1.  **Create `FlowError` Type:**
-    - `type FlowError = { code: string; message: string; };`
+    - `type FlowError = { code: enum(string); message: string; };`
+    - `enum(string)` enum of error code name as string
 2.  **Create `validate(flow: ParsedFlow): FlowError[]` Function:**
     - **Connection Validation:** Verify `sourceStepId` and `targetStepId` exist in `flow.steps`.
     - **State/Parameter Validation:**

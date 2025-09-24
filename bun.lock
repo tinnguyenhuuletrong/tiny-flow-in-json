@@ -14,7 +14,9 @@
       "name": "@tiny-json-workflow/core",
       "version": "0.1.0",
       "dependencies": {
+        "@n8n/json-schema-to-zod": "^1.1.0",
         "zod": "^3",
+        "zod-to-json-schema": "^3.24.6",
       },
     },
     "packages/web": {
@@ -36,7 +38,6 @@
         "reactflow": "^11.11.4",
         "tailwind-merge": "^3.3.1",
         "tailwindcss": "^4.1.13",
-        "zod-to-json-schema": "^3.24.6",
         "zustand": "^4.5.4",
       },
       "devDependencies": {
@@ -187,6 +188,8 @@
     "@monaco-editor/loader": ["@monaco-editor/loader@1.5.0", "", { "dependencies": { "state-local": "^1.0.6" } }, "sha512-hKoGSM+7aAc7eRTRjpqAZucPmoNOC4UUbknb/VNoTkEIkCPhqV8LfbsgM1webRM7S/z21eHEx9Fkwx8Z/C/+Xw=="],
 
     "@monaco-editor/react": ["@monaco-editor/react@4.7.0", "", { "dependencies": { "@monaco-editor/loader": "^1.5.0" }, "peerDependencies": { "monaco-editor": ">= 0.25.0 < 1", "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-cyzXQCtO47ydzxpQtCGSQGOC8Gk3ZUeBXFAxD+CWXYFo5OqZyZUonFl0DwUlTyAfRHntBfw2p3w4s9R6oe1eCA=="],
+
+    "@n8n/json-schema-to-zod": ["@n8n/json-schema-to-zod@1.1.0", "", { "peerDependencies": { "zod": "^3.0.0" } }, "sha512-HfL3jq5NSb0Mng56QCfUnzD09F4wxWR543jYJZ+XBQpb0f9B102r6K3qEtdXVTs1mwHVnxz5KBaesqipFYPjww=="],
 
     "@nodelib/fs.scandir": ["@nodelib/fs.scandir@2.1.5", "", { "dependencies": { "@nodelib/fs.stat": "2.0.5", "run-parallel": "^1.1.9" } }, "sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g=="],
 
