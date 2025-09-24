@@ -1,25 +1,33 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_04.md",
+  "save_to": "create _ai/task_05.md",
   "resources": {
     "requirement.md": "_ai/doc/requirement.md"
   },
   "mcp": {
     "context7": "for fetching  Fetches up-to-date documentation for a library"
   },
-  "target": {
-    "goal": "polish the code view",
-    "note": [
-      "build json schema from zod",
-      "inject json schema to monaco editor for better code auto complete",
-      "add schema validation before save and applied to store",
-      "in case failed -> display error ( try to explore can we display error natively in monaco editor. if not it is ok to display outside )"
-    ]
-  },
+  "target": [
+    {
+      "goal": "add attb `root.state` where contain an object satifies globalStateSchema"
+    },
+    {
+      "goal": "add attb `step.params` where contain an object satifies step.paramsSchema"
+    },
+    {
+      "goal": "update packages/core add validation function. return a list of errors code + humanize explained",
+      "rules": {
+        "1": "connections.targetStepId and connections.sourceStepId contain a valid step id",
+        "2": "root.state satifies JSON schema in globalStateSchema",
+        "3": "step.params satifies JSON schema in step.paramsSchema"
+      }
+    }
+  ],
   "steps": {
     "1": "read resources, use context7 when need",
     "2": "read current source code",
-    "3": "create a task_04 to achieve goal",
-    "4": "waiting for human review and confirm before start to code"
+    "3": "create a task_05 to achieve goal",
+    "4": "add tests",
+    "5": "waiting for human review and confirm before start to code"
   }
 }
