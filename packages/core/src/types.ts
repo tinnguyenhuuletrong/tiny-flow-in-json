@@ -31,6 +31,7 @@ export const StepSchema = z.object({
   name: z.string(),
   type: z.enum(["begin", "end", "task", "decision"]),
   paramsSchema: JsonSchema.optional(),
+  params: z.record(z.any()).optional(), // Added params
   metadata: z.record(z.any()).optional(),
 });
 
@@ -52,9 +53,20 @@ export const FlowSchema = z.object({
   name: z.string(),
   version: z.string(),
   globalStateSchema: JsonSchema,
+  state: z.record(z.any()).optional(), // Added state
   steps: z.array(StepSchema),
   connections: z.array(ConnectionSchema),
   metadata: z.record(z.any()).optional(),
 });
 
 export type Flow = z.infer<typeof FlowSchema>;
+
+// In-memory types after parsing and transformation
+export type ParsedStep = Omit<Step, "paramsSchema"> & {
+  paramsZodSchema?: z.ZodSchema<any>;
+};
+
+export type ParsedFlow = Omit<Flow, "globalStateSchema" | "steps"> & {
+  globalStateZodSchema: z.ZodSchema<any>;
+  steps: ParsedStep[];
+};

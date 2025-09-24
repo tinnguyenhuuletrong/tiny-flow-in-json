@@ -1,6 +1,6 @@
 import { expect, test, describe } from "bun:test";
 import { parseFromJson, saveToJson } from "../src";
-import type { Flow } from "../src/types";
+import type { ParsedFlow } from "../src/types";
 
 describe("FlowJSON Parsing and Serialization", () => {
   const simpleOnboardingFlow = `{
@@ -150,17 +150,22 @@ describe("FlowJSON Parsing and Serialization", () => {
   });
 
   test("should serialize a flow object to a JSON string", () => {
-    const flowObject: Flow = parseFromJson(simpleOnboardingFlow);
+    const flowObject = parseFromJson(simpleOnboardingFlow);
     const jsonString = saveToJson(flowObject);
     expect(jsonString).toBeString();
     const parsed = JSON.parse(jsonString);
     expect(parsed.id).toBe("onboarding-flow-v1");
   });
 
-  test("should maintain data integrity after a round trip (save -> parse)", () => {
-    const originalFlow: Flow = parseFromJson(routingFlow);
-    const jsonString = saveToJson(originalFlow);
-    const newFlow = parseFromJson(jsonString);
-    expect(newFlow).toEqual(originalFlow);
+  test("should maintain data integrity after a round trip (parse -> save -> parse)", () => {
+    const originalParsedFlow: ParsedFlow = parseFromJson(routingFlow);
+    const jsonString = saveToJson(originalParsedFlow);
+    const reParsedFlow: ParsedFlow = parseFromJson(jsonString);
+
+    // Deep equality check for the entire flow, including Zod schemas
+    // For simplicity, we'll compare the JSON schema representation after a round trip
+    const originalRawFlow = JSON.parse(saveToJson(originalParsedFlow));
+    const reParsedRawFlow = JSON.parse(saveToJson(reParsedFlow));
+    expect(reParsedRawFlow).toEqual(originalRawFlow);
   });
 });
