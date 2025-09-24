@@ -29,7 +29,7 @@ export type JsonSchema = z.infer<typeof JsonSchema>;
 export const StepSchema = z.object({
   id: z.string(),
   name: z.string(),
-  type: z.string(),
+  type: z.enum(["begin", "end", "task", "decision"]),
   paramsSchema: JsonSchema.optional(),
   metadata: z.record(z.any()).optional(),
 });

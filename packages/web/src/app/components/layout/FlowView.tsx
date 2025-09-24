@@ -1,5 +1,4 @@
 import ReactFlow, {
-  MiniMap,
   Controls,
   Background,
   type Edge,

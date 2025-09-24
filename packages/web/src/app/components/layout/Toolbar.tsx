@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useFlowStore } from "@/app/store/flowStore";
-import { parseFromJson, type Flow } from "@tiny-json-workflow/core";
+import { parseFromJson } from "@tiny-json-workflow/core";
 
 export function Toolbar() {
   const { doAutoLayout, flow, setFlow } = useFlowStore();
@@ -49,7 +49,6 @@ export function Toolbar() {
       <Button variant="outline" onClick={doAutoLayout}>
         Auto Layout
       </Button>
-      <Button>Save</Button>
     </div>
   );
 }
