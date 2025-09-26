@@ -16,7 +16,7 @@ export const JsonSchema: z.ZodType<any> = z.lazy(() =>
           "null",
         ])
         .optional(),
-      properties: z.record(JsonSchema).optional(),
+      properties: z.record(z.string(), JsonSchema).optional(),
       items: JsonSchema.optional(),
       required: z.array(z.string()).optional(),
     })
@@ -31,8 +31,8 @@ export const StepSchema = z.object({
   name: z.string(),
   type: z.enum(["begin", "end", "task", "decision"]),
   paramsSchema: JsonSchema.optional(),
-  params: z.record(z.any()).optional(), // Added params
-  metadata: z.record(z.any()).optional(),
+  params: z.record(z.string(), z.any()).optional(), // Added params
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 export type Step = z.infer<typeof StepSchema>;
@@ -53,20 +53,20 @@ export const FlowSchema = z.object({
   name: z.string(),
   version: z.string(),
   globalStateSchema: JsonSchema,
-  state: z.record(z.any()).optional(), // Added state
+  state: z.record(z.string(), z.any()).optional(), // Added state
   steps: z.array(StepSchema),
   connections: z.array(ConnectionSchema),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 export type Flow = z.infer<typeof FlowSchema>;
 
 // In-memory types after parsing and transformation
 export type ParsedStep = Omit<Step, "paramsSchema"> & {
-  paramsZodSchema?: z.ZodSchema<any>;
+  paramsZodSchema?: z.ZodTypeAny;
 };
 
 export type ParsedFlow = Omit<Flow, "globalStateSchema" | "steps"> & {
-  globalStateZodSchema: z.ZodSchema<any>;
+  globalStateZodSchema: z.ZodTypeAny;
   steps: ParsedStep[];
 };

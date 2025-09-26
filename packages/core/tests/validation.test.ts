@@ -105,7 +105,7 @@ describe("FlowJSON Validation", () => {
     const errors = validate(flow);
     expect(errors.length).toBe(1);
     expect(errors[0]?.code).toBe("GLOBAL_STATE_VALIDATION_ERROR");
-    expect(errors[0]?.message).toContain("Expected number, received string");
+    expect(errors[0]?.message).toContain("expected number, received string");
   });
 
   test("should detect invalid step parameters", () => {
@@ -131,6 +131,6 @@ describe("FlowJSON Validation", () => {
     const errors = validate(flow);
     expect(errors.length).toBe(1);
     expect(errors[0]?.code).toBe("STEP_PARAMS_VALIDATION_ERROR");
-    expect(errors[0]?.message).toContain("Expected string, received number");
+    expect(errors[0]?.message).toContain("expected string, received number");
   });
 });

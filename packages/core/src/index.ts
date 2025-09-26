@@ -1,5 +1,3 @@
-import { jsonSchemaToZod } from "@n8n/json-schema-to-zod"; // Added import
-import zodToJsonSchema from "zod-to-json-schema";
 import {
   type Flow,
   FlowSchema,
@@ -7,6 +5,8 @@ import {
   type ParsedFlow,
   type ParsedStep,
 } from "./types"; // Updated import
+import { jsonSchemaToZod } from "./jsonSchemaHelper";
+import { prettifyError, toJSONSchema } from "zod";
 
 /**
  * Parses a JSON string into a validated Flow object, converting JSON schemas to Zod schemas.
@@ -47,7 +47,7 @@ export function parseFromJson(jsonString: string): ParsedFlow {
  */
 export function saveToJson(flow: ParsedFlow): string {
   // Convert globalStateSchema from Zod Schema back to JSON Schema
-  const rawGlobalStateSchema = zodToJsonSchema(flow.globalStateZodSchema);
+  const rawGlobalStateSchema = toJSONSchema(flow.globalStateZodSchema);
   const { globalStateZodSchema, ...others } = flow;
 
   // Convert paramsSchema for each step from Zod Schema back to JSON Schema
@@ -55,7 +55,7 @@ export function saveToJson(flow: ParsedFlow): string {
     const { paramsZodSchema, ...others } = step;
     const rawStep: Step = { ...others };
     if (step.paramsZodSchema) {
-      rawStep.paramsSchema = zodToJsonSchema(step.paramsZodSchema);
+      rawStep.paramsSchema = toJSONSchema(step.paramsZodSchema);
     }
     return rawStep;
   });
@@ -71,9 +71,7 @@ export function saveToJson(flow: ParsedFlow): string {
   return JSON.stringify(rawFlow, null, 2);
 }
 
-export const JSON_SCHEMA = zodToJsonSchema(FlowSchema, {
-  name: "FlowJSONSchema",
-});
+export const JSON_SCHEMA: any = toJSONSchema(FlowSchema);
 
 export type FlowError = {
   code:
@@ -117,7 +115,9 @@ export function validate(flow: ParsedFlow): FlowError[] {
     if (!globalStateValidation.success) {
       errors.push({
         code: "GLOBAL_STATE_VALIDATION_ERROR",
-        message: `Global state validation error: ${globalStateValidation.error.message}`,
+        message: `Global state validation error: ${prettifyError(
+          globalStateValidation.error
+        )}`,
       });
     }
   }
@@ -129,7 +129,11 @@ export function validate(flow: ParsedFlow): FlowError[] {
       if (!stepParamsValidation.success) {
         errors.push({
           code: "STEP_PARAMS_VALIDATION_ERROR",
-          message: `Step '${step.id}' parameters validation error: ${stepParamsValidation.error.message}`,
+          message: `Step '${
+            step.id
+          }' parameters validation error: ${prettifyError(
+            stepParamsValidation.error
+          )}`,
         });
       }
     }

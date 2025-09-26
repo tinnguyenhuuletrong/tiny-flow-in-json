@@ -10,7 +10,7 @@ import {
 import Editor from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { fromZodError } from "zod-validation-error/v3";
+import { fromZodError } from "zod-validation-error";
 
 export function JsonEditorView() {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
