@@ -1,33 +1,25 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_05.md",
+  "save_to": "create _ai/task_06.md",
   "resources": {
-    "requirement.md": "_ai/doc/requirement.md"
+    "requirement.md": "_ai/doc/requirement.md",
+    "doc_autoform.md": "_ai/doc/ref/doc_autoform.md"
   },
   "mcp": {
     "context7": "for fetching  Fetches up-to-date documentation for a library"
   },
   "target": [
     {
-      "goal": "add attb `root.state` where contain an object satifies globalStateSchema"
+      "goal": "update packages/web JSON view use validate before save and show humanize error"
     },
     {
-      "goal": "add attb `step.params` where contain an object satifies step.paramsSchema"
-    },
-    {
-      "goal": "update packages/core add validation function. return a list of errors code + humanize explained",
-      "rules": {
-        "1": "connections.targetStepId and connections.sourceStepId contain a valid step id",
-        "2": "root.state satifies JSON schema in globalStateSchema",
-        "3": "step.params satifies JSON schema in step.paramsSchema"
-      }
+      "goal": "left panel - use @autoform/zod to display the globalStateZodSchema and save to flow.state when schema satified. in case validation failed. show humanize error"
     }
   ],
   "steps": {
     "1": "read resources, use context7 when need",
     "2": "read current source code",
-    "3": "create a task_05 to achieve goal",
-    "4": "add tests",
-    "5": "waiting for human review and confirm before start to code"
+    "3": "create a task_06 to achieve goal",
+    "4": "waiting for human review and confirm before start to code"
   }
 }
