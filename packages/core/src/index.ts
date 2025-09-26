@@ -97,13 +97,13 @@ export function validate(flow: ParsedFlow): FlowError[] {
     if (!stepIds.has(connection.sourceStepId)) {
       errors.push({
         code: "CONNECTION_ERROR",
-        message: `Connection error: Source step with ID '${connection.sourceStepId}' not found.`,
+        message: `Connection error on id=${connection.id}: Source step with ID '${connection.sourceStepId}' not found.`,
       });
     }
     if (!stepIds.has(connection.targetStepId)) {
       errors.push({
         code: "CONNECTION_ERROR",
-        message: `Connection error: Target step with ID '${connection.targetStepId}' not found.`,
+        message: `Connection error on id=${connection.id}: Target step with ID '${connection.targetStepId}' not found.`,
       });
     }
   }
@@ -138,4 +138,4 @@ export function validate(flow: ParsedFlow): FlowError[] {
   return errors;
 }
 
-export { type Flow, type Step, type ParsedFlow, type ParsedStep };
+export { FlowSchema, type Flow, type Step, type ParsedFlow, type ParsedStep };

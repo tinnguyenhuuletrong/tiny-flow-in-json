@@ -1,6 +1,9 @@
 test:
 	bun run --workspaces test
 
+check:
+	bun run --workspaces check
+
 web-dev:
 	bun run --cwd packages/web dev
 

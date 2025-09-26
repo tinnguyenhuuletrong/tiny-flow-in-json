@@ -1,10 +1,16 @@
 import { useRef, useState } from "react";
 import { useFlowStore } from "@/app/store/flowStore";
 import { flowJsonSchema } from "@/lib/schema";
-import { FlowSchema } from "@tiny-json-workflow/core/src/types";
+import {
+  FlowSchema,
+  parseFromJson,
+  validate,
+  saveToJson,
+} from "@tiny-json-workflow/core";
 import Editor from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { fromZodError } from "zod-validation-error/v3";
 
 export function JsonEditorView() {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
@@ -13,28 +19,36 @@ export function JsonEditorView() {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   const handleEditorChange = (value: string | undefined) => {
-    if (value) {
-      try {
-        const parsed = JSON.parse(value);
-        const validationResult = FlowSchema.safeParse(parsed);
-        if (validationResult.success) {
-          setFlow(validationResult.data);
-          setValidationErrors([]); // Clear errors on successful validation
-        } else {
-          const errors = validationResult.error.errors.map(
-            (err) => `${err.path.join(".")}: ${err.message}`
-          );
-          setValidationErrors(errors);
-          // console.error("Invalid FlowJSON schema:", validationResult.error);
-        }
-      } catch (error: any) {
-        setValidationErrors([`Invalid JSON format: ${error.message}`]);
-        // console.error("Invalid JSON format:", error);
+    if (!value) {
+      setValidationErrors([]);
+      return;
+    }
+
+    try {
+      const parsedJson = JSON.parse(value);
+      const validationResult = FlowSchema.safeParse(parsedJson);
+
+      if (!validationResult.success) {
+        const userFriendlyError = fromZodError(validationResult.error);
+        setValidationErrors([userFriendlyError.message]);
+        return;
       }
-    } else {
-      setValidationErrors([]); // Clear errors if editor is empty
+
+      const parsedFlow = parseFromJson(value);
+      const errors = validate(parsedFlow);
+
+      if (errors.length > 0) {
+        setValidationErrors(errors.map((e) => e.message));
+        return;
+      }
+
+      setFlow(parsedFlow);
+      setValidationErrors([]);
+    } catch (error: any) {
+      setValidationErrors([`Invalid JSON format: ${error.message}`]);
     }
   };
+
   return (
     <div className="flex flex-col h-full">
       {validationErrors.length > 0 && (
@@ -57,7 +71,7 @@ export function JsonEditorView() {
       <Editor
         height="100%"
         defaultLanguage="json"
-        value={JSON.stringify(flow, null, 2)}
+        value={saveToJson(flow)}
         onChange={handleEditorChange}
         options={{
           minimap: { enabled: false },

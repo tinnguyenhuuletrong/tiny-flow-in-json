@@ -14,7 +14,9 @@ export function LeftPanel() {
         ))}
       </ul>
       <h2 className="text-lg font-semibold mt-8 mb-4">Global State</h2>
-      <pre className="p-2 bg-gray-100 rounded-md">{JSON.stringify(flow.globalStateSchema, null, 2)}</pre>
+      <div className="p-2 bg-gray-100 rounded-md">
+        Global state form will be here.
+      </div>
     </div>
   );
 }

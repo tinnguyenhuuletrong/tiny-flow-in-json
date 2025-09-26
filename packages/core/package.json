@@ -5,7 +5,8 @@
   "type": "module",
   "main": "src/index",
   "scripts": {
-    "test": "bun test"
+    "test": "bun test",
+    "check": "tsc -b"
   },
   "dependencies": {
     "@n8n/json-schema-to-zod": "^1.1.0",

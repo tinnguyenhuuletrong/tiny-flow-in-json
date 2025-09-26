@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "test": "echo 'todo'",
+    "check": "tsc -b",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -37,7 +38,7 @@
     "reactflow": "^11.11.4",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.13",
-    "zod": "^4.1.11",
+    "zod-validation-error": "^4.0.2",
     "zustand": "^4.5.4"
   },
   "devDependencies": {

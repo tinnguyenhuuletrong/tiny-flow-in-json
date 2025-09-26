@@ -26,6 +26,14 @@ Install all dependencies for the monorepo using Bun:
 bun install
 ```
 
+### Typescript check
+
+Run the ts check all packages in the workspace:
+
+```bash
+make check
+```
+
 ### Testing
 
 Run the test suite for all packages in the workspace:

@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { useFlowStore } from "@/app/store/flowStore";
-import { parseFromJson } from "@tiny-json-workflow/core";
+import { parseFromJson, saveToJson } from "@tiny-json-workflow/core";
 
 export function Toolbar() {
   const { doAutoLayout, flow, setFlow } = useFlowStore();
 
   const handleExport = () => {
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
-      JSON.stringify(flow, null, 2)
+      saveToJson(flow)
     )}`;
     const link = document.createElement("a");
     link.href = jsonString;

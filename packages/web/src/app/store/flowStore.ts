@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Flow, Step } from "@tiny-json-workflow/core";
+import { type ParsedFlow } from "@tiny-json-workflow/core";
 import { placeholderFlow } from "../../data/placeholder";
 import { getLayoutedElements } from "../../lib/layout";
 import {
@@ -16,15 +16,16 @@ type FlowMetadataState =
   | undefined;
 
 type FlowState = {
-  flow: Flow;
-  setFlow: (flow: Flow) => Promise<void>;
+  flow: ParsedFlow;
+  setFlow: (flow: ParsedFlow) => Promise<void>;
   getFlowMetadata: () => FlowMetadataState;
   doAutoLayout: () => Promise<void>;
   updateNodePosition: (nodeId: string, position: XYPosition) => void;
   updateFlowViewport: (value: Viewport) => void;
+  updateFlowState: (newState: Record<string, any>) => void;
 };
 
-const layoutFlow = async (flow: Flow): Promise<Flow> => {
+const layoutFlow = async (flow: ParsedFlow): Promise<ParsedFlow> => {
   if (flow.steps.length === 0) {
     return flow;
   }
@@ -62,23 +63,19 @@ const layoutFlow = async (flow: Flow): Promise<Flow> => {
     return step;
   });
 
-  return { ...flow, steps: newSteps as Step[] };
+  return { ...flow, steps: newSteps };
 };
 
 export const useFlowStore = create<FlowState>((set, get) => ({
   flow: placeholderFlow,
   getFlowMetadata: () => get().flow.metadata as FlowMetadataState,
   setFlow: async (flow) => {
-    set((_state) => ({
-      flow: flow,
-    }));
+    set({ flow: flow });
   },
   doAutoLayout: async () => {
     const { flow } = get();
     const layoutedFlow = await layoutFlow(flow);
-    set((_state) => ({
-      flow: layoutedFlow,
-    }));
+    set({ flow: layoutedFlow });
   },
   updateNodePosition: (nodeId, position) => {
     set((state) => ({
@@ -104,6 +101,14 @@ export const useFlowStore = create<FlowState>((set, get) => ({
       flow: {
         ...state.flow,
         metadata,
+      },
+    }));
+  },
+  updateFlowState: (newState) => {
+    set((state) => ({
+      flow: {
+        ...state.flow,
+        state: newState,
       },
     }));
   },
