@@ -18,6 +18,10 @@ export const placeholderFlow: ParsedFlow = parseFromJson(
       },
       required: ["userId"],
     },
+    state: {
+      userId: "001",
+      profileIsComplete: true,
+    },
     steps: [
       {
         id: "start-flow",

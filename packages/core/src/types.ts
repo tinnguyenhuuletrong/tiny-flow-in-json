@@ -63,10 +63,10 @@ export type Flow = z.infer<typeof FlowSchema>;
 
 // In-memory types after parsing and transformation
 export type ParsedStep = Omit<Step, "paramsSchema"> & {
-  paramsZodSchema?: z.ZodTypeAny;
+  paramsZodSchema?: z.ZodType;
 };
 
 export type ParsedFlow = Omit<Flow, "globalStateSchema" | "steps"> & {
-  globalStateZodSchema: z.ZodTypeAny;
+  globalStateZodSchema: z.ZodType;
   steps: ParsedStep[];
 };

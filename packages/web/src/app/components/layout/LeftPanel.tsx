@@ -1,7 +1,8 @@
-import { useFlowStore } from '@/app/store/flowStore';
+import { useFlowStore } from "@/app/store/flowStore";
+import { JsonAutoForm } from "@/app/components/shared/JsonAutoForm";
 
 export function LeftPanel() {
-  const { flow } = useFlowStore();
+  const { flow, updateFlowState } = useFlowStore();
 
   return (
     <div className="p-4 border-r w-80 h-full overflow-y-auto">
@@ -15,7 +16,13 @@ export function LeftPanel() {
       </ul>
       <h2 className="text-lg font-semibold mt-8 mb-4">Global State</h2>
       <div className="p-2 bg-gray-100 rounded-md">
-        Global state form will be here.
+        {flow.globalStateZodSchema && (
+          <JsonAutoForm
+            schema={flow.globalStateZodSchema as any}
+            data={flow.state ?? {}}
+            onDataChange={updateFlowState}
+          />
+        )}
       </div>
     </div>
   );
