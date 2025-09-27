@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useFlowStore } from "@/app/store/flowStore";
 import { flowJsonSchema } from "@/lib/schema";
+import debounce from "lodash.debounce";
 import {
   FlowSchema,
   parseFromJson,
@@ -72,7 +73,7 @@ export function JsonEditorView() {
         height="100%"
         defaultLanguage="json"
         value={saveToJson(flow)}
-        onChange={handleEditorChange}
+        onChange={debounce(handleEditorChange, 200)}
         options={{
           minimap: { enabled: false },
           quickSuggestions: true, // Auto-completion

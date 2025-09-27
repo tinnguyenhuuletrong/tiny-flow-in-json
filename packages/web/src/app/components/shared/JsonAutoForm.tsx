@@ -30,7 +30,6 @@ export function JsonAutoForm<T extends z.ZodObject<any, any>>({
 
     // force re-render autoForm
     setRevision((v) => {
-      console.log("inc revision", v + 1);
       return v + 1;
     });
   }, [data]);
