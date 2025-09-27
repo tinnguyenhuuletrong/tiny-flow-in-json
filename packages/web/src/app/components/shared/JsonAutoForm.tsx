@@ -89,8 +89,11 @@ export function JsonAutoForm<T extends z.ZodObject<any, any>>({
             schema={schemaProvider}
             defaultValues={internalData}
             onSubmit={handleSaveForm}
-            withSubmit
-          />
+          >
+            <Button type="submit" className="mt-2">
+              Save
+            </Button>
+          </AutoForm>
         )
       ) : (
         <div>
