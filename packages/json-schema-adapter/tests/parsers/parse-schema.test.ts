@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { expect, test, describe } from "bun:test";
 import { toMatchZod } from "../utils/testHelper";
-import { parseSchema } from "../../parsers/parse-schema";
+import { parseSchema } from "../../src/parsers/parse-schema";
 
 describe("parseSchema", () => {
   test("should be usable without providing refs", () => {

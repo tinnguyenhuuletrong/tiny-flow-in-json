@@ -1,7 +1,7 @@
 import { test, describe } from "bun:test";
 import { z } from "zod";
 
-import { parseAllOf } from "../../parsers/parse-all-of";
+import { parseAllOf } from "../../src/parsers/parse-all-of";
 import { toMatchZod } from "../utils/testHelper";
 
 describe("parseAllOf", () => {

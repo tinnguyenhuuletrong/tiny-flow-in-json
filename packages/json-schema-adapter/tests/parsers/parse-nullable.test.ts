@@ -2,7 +2,7 @@ import { z } from "zod";
 import { test, describe } from "bun:test";
 import { toMatchZod } from "../utils/testHelper";
 
-import { parseSchema } from "../../parsers/parse-schema";
+import { parseSchema } from "../../src/parsers/parse-schema";
 
 describe("parseNullable", () => {
   test("parseSchema should not add default twice", () => {

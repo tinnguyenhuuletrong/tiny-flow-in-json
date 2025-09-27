@@ -2,7 +2,7 @@ import { z } from "zod";
 import { test, describe } from "bun:test";
 import { toMatchZod } from "../utils/testHelper";
 
-import { parseArray } from "../../parsers/parse-array";
+import { parseArray } from "../../src/parsers/parse-array";
 
 describe("parseArray", () => {
   test("should create tuple with items array", () => {

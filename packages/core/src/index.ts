@@ -5,7 +5,7 @@ import {
   type ParsedFlow,
   type ParsedStep,
 } from "./types"; // Updated import
-import { jsonSchemaToZod } from "./jsonSchemaHelper";
+import { jsonSchemaToZod } from "@tiny-json-workflow/json-schema-adapter";
 import { prettifyError, toJSONSchema } from "zod";
 
 /**

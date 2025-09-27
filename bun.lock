@@ -17,6 +17,13 @@
         "zod": "^4",
       },
     },
+    "packages/json-schema-adapter": {
+      "name": "@tiny-json-workflow/json-schema-adapter",
+      "version": "0.1.0",
+      "dependencies": {
+        "zod": "^4",
+      },
+    },
     "packages/web": {
       "name": "@tiny-json-workflow/web",
       "version": "0.0.0",
@@ -378,6 +385,8 @@
     "@tailwindcss/vite": ["@tailwindcss/vite@4.1.13", "", { "dependencies": { "@tailwindcss/node": "4.1.13", "@tailwindcss/oxide": "4.1.13", "tailwindcss": "4.1.13" }, "peerDependencies": { "vite": "^5.2.0 || ^6 || ^7" } }, "sha512-0PmqLQ010N58SbMTJ7BVJ4I2xopiQn/5i6nlb4JmxzQf8zcS5+m2Cv6tqh+sfDwtIdjoEnOvwsGQ1hkUi8QEHQ=="],
 
     "@tiny-json-workflow/core": ["@tiny-json-workflow/core@workspace:packages/core"],
+
+    "@tiny-json-workflow/json-schema-adapter": ["@tiny-json-workflow/json-schema-adapter@workspace:packages/json-schema-adapter"],
 
     "@tiny-json-workflow/web": ["@tiny-json-workflow/web@workspace:packages/web"],
 

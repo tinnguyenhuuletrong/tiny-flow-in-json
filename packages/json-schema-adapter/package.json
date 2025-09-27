@@ -1,0 +1,15 @@
+{
+  "name": "@tiny-json-workflow/json-schema-adapter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index",
+  "scripts": {
+    "test": "bun test",
+    "check": "tsc -b"
+  },
+  "dependencies": {
+    "zod": "^4"
+  },
+  "devDependencies": {}
+}

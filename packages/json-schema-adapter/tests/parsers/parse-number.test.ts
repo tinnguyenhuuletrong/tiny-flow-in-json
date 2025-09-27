@@ -2,7 +2,7 @@ import { z } from "zod";
 import { test, describe } from "bun:test";
 import { toMatchZod } from "../utils/testHelper";
 
-import { parseNumber } from "../../parsers/parse-number";
+import { parseNumber } from "../../src/parsers/parse-number";
 
 describe("parseNumber", () => {
   test("should handle integer", () => {

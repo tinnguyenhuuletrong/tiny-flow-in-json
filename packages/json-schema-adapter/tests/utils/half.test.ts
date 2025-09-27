@@ -1,5 +1,5 @@
 import { expect, test, describe } from "bun:test";
-import { half } from "../../utils/half";
+import { half } from "../../src/utils/half";
 
 describe("half", () => {
   test("half", () => {

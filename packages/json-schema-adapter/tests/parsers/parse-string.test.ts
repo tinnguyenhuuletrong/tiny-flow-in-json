@@ -2,7 +2,7 @@ import { z } from "zod";
 import { expect, test, describe } from "bun:test";
 import { toMatchZod } from "../utils/testHelper";
 
-import { parseString } from "../../parsers/parse-string";
+import { parseString } from "../../src/parsers/parse-string";
 
 describe("parseString", () => {
   const run = (schema: z.ZodString, data: unknown) => schema.safeParse(data);

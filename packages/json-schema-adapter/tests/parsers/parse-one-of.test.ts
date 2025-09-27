@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { expect, test, describe } from "bun:test";
 import { toMatchZod } from "../utils/testHelper";
-import { parseOneOf } from "../../parsers/parse-one-of";
+import { parseOneOf } from "../../src/parsers/parse-one-of";
 
 describe("parseOneOf", () => {
   test("should create a union from two or more schemas", () => {

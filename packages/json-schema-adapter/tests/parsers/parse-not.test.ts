@@ -2,7 +2,7 @@ import { z } from "zod";
 import { test, describe } from "bun:test";
 import { toMatchZod } from "../utils/testHelper";
 
-import { parseNot } from "../../parsers/parse-not";
+import { parseNot } from "../../src/parsers/parse-not";
 
 describe("parseNot", () => {
   test("parseNot", () => {

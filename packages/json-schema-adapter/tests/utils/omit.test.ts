@@ -1,5 +1,5 @@
 import { expect, test, describe } from "bun:test";
-import { omit } from "../../utils/omit";
+import { omit } from "../../src/utils/omit";
 
 describe("omit", () => {
   test("omit", () => {

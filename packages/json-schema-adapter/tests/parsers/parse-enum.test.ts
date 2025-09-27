@@ -3,7 +3,7 @@ import { z } from "zod";
 import { test, describe } from "bun:test";
 import { toMatchZod } from "../utils/testHelper";
 
-import { parseEnum } from "../../parsers/parse-enum";
+import { parseEnum } from "../../src/parsers/parse-enum";
 
 describe("parseEnum", () => {
   test("should create never with empty enum", () => {

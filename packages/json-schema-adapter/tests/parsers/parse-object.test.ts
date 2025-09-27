@@ -5,7 +5,7 @@ import { z } from "zod";
 import { expect, test, describe } from "bun:test";
 import { toMatchZod } from "../utils/testHelper";
 
-import { parseObject } from "../../parsers/parse-object";
+import { parseObject } from "../../src/parsers/parse-object";
 
 describe("parseObject", () => {
   test("should handle with missing properties", () => {

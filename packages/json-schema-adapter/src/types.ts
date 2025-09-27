@@ -1,4 +1,4 @@
-import type { ZodTypeAny } from "zod";
+import type { ZodType } from "zod";
 
 export type Serializable =
   | { [key: string]: Serializable }
@@ -66,14 +66,11 @@ export type JsonSchemaObject = {
   nullable?: boolean;
 };
 
-export type ParserSelector = (
-  schema: JsonSchemaObject,
-  refs: Refs
-) => ZodTypeAny;
+export type ParserSelector = (schema: JsonSchemaObject, refs: Refs) => ZodType;
 export type ParserOverride = (
   schema: JsonSchemaObject,
   refs: Refs
-) => ZodTypeAny | undefined;
+) => ZodType | undefined;
 
 export type JsonSchemaToZodOptions = {
   withoutDefaults?: boolean;
@@ -84,5 +81,5 @@ export type JsonSchemaToZodOptions = {
 
 export type Refs = JsonSchemaToZodOptions & {
   path: Array<string | number>;
-  seen: Map<object | boolean, { n: number; r: ZodTypeAny | undefined }>;
+  seen: Map<object | boolean, { n: number; r: ZodType | undefined }>;
 };
