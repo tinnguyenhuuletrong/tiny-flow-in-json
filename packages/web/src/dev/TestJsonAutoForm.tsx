@@ -1,6 +1,7 @@
 import { JsonAutoForm } from "@/app/components/shared/JsonAutoForm";
 import { jsonSchemaToZod } from "@tiny-json-workflow/json-schema-adapter";
 
+// @ts-ignore
 const schema = jsonSchemaToZod({
   type: "object",
   properties: {
