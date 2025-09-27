@@ -13,7 +13,6 @@ export const placeholderFlow: ParsedFlow = parseFromJson(
         },
         profileIsComplete: {
           type: "boolean",
-          default: false,
         },
       },
       required: ["userId"],

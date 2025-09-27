@@ -7,6 +7,7 @@ export const BooleanField: React.FC<AutoFormFieldProps> = ({
   field,
   label,
   id,
+  value,
   inputProps,
 }) => (
   <div className="flex items-center space-x-2">
@@ -22,7 +23,7 @@ export const BooleanField: React.FC<AutoFormFieldProps> = ({
         };
         inputProps.onChange(event);
       }}
-      checked={inputProps.value}
+      defaultChecked={value}
     />
     <Label htmlFor={id}>
       {label}

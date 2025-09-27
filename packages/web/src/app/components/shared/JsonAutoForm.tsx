@@ -50,12 +50,21 @@ export function JsonAutoForm<T extends z.ZodObject<any, any>>({
     }
   };
 
-  const handleSave = () => {
-    console.log("aaaa");
+  const handleSaveJson = () => {
     const validation = schema.safeParse(internalData);
-    console.log("bbbb", validation);
     if (validation.success) {
       onDataChange(internalData);
+      setError(null);
+    } else {
+      setError(validation.error.message);
+    }
+  };
+
+  const handleSaveForm = (value: any) => {
+    const validation = schema.safeParse(value);
+    if (validation.success) {
+      setInternalData(value);
+      onDataChange(value);
       setError(null);
     } else {
       setError(validation.error.message);
@@ -78,8 +87,8 @@ export function JsonAutoForm<T extends z.ZodObject<any, any>>({
         schemaProvider && (
           <AutoForm
             schema={schemaProvider}
-            values={internalData}
-            onSubmit={handleSave}
+            defaultValues={internalData}
+            onSubmit={handleSaveForm}
             withSubmit
           />
         )
@@ -90,7 +99,7 @@ export function JsonAutoForm<T extends z.ZodObject<any, any>>({
             onChange={(e) => handleJsonStringChange(e.target.value)}
             rows={10}
           />
-          <Button onClick={handleSave} className="mt-2">
+          <Button onClick={handleSaveJson} className="mt-2">
             Save
           </Button>
           {error && <p className="text-red-500 mt-2">{error}</p>}
