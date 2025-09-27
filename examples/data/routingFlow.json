@@ -5,46 +5,38 @@
   "globalStateSchema": {
     "type": "object",
     "properties": {
-      "ticket": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "priority": {
-            "type": "string",
-            "enum": [
-              "low",
-              "medium",
-              "high",
-              "urgent"
-            ]
-          },
-          "category": {
-            "type": "string",
-            "enum": [
-              "technical",
-              "billing",
-              "general"
-            ]
-          },
-          "isVip": {
-            "type": "boolean",
-            "default": false
-          }
-        },
-        "required": [
-          "id",
-          "priority",
-          "category"
+      "id": {
+        "type": "string"
+      },
+      "priority": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "urgent"
         ]
+      },
+      "category": {
+        "type": "string",
+        "enum": [
+          "technical",
+          "billing",
+          "general"
+        ]
+      },
+      "isVip": {
+        "type": "boolean",
+        "default": false
       },
       "assignedAgentId": {
         "type": "string"
       }
     },
     "required": [
-      "ticket"
+      "id",
+      "priority",
+      "category"
     ]
   },
   "steps": [
