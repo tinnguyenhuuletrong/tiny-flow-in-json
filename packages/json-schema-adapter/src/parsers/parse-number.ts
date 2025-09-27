@@ -6,7 +6,7 @@ import { extendSchemaWithMessage } from "../utils/extend-schema";
 export const parseNumber = (
   jsonSchema: JsonSchemaObject & { type: "number" | "integer" }
 ) => {
-  let zodSchema = z.number();
+  let zodSchema = z.coerce.number();
 
   let isInteger = false;
   if (jsonSchema.type === "integer") {

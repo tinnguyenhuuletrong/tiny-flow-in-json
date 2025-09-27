@@ -53,7 +53,7 @@ describe("parseSchema", () => {
   test("should handle multiple type", () => {
     toMatchZod(
       parseSchema({ type: ["string", "number"] }),
-      z.union([z.string(), z.number()])
+      z.union([z.string(), z.coerce.number()])
     );
   });
 
@@ -64,9 +64,9 @@ describe("parseSchema", () => {
         then: { type: "number" },
         else: { type: "boolean" },
       }),
-      z.union([z.number(), z.boolean()]).superRefine((value, ctx) => {
+      z.union([z.coerce.number(), z.boolean()]).superRefine((value, ctx) => {
         const result = z.string().safeParse(value).success
-          ? z.number().safeParse(value)
+          ? z.coerce.number().safeParse(value)
           : z.boolean().safeParse(value);
         if (!result.success) {
           ctx.issues.push(...(result.error.issues as any));
@@ -85,7 +85,7 @@ describe("parseSchema", () => {
           { type: "number" },
         ],
       }),
-      z.union([z.string(), z.number()])
+      z.union([z.string(), z.coerce.number()])
     );
   });
 
@@ -100,7 +100,7 @@ describe("parseSchema", () => {
         ],
       }),
       z.any().superRefine((x, ctx) => {
-        const schemas = [z.string(), z.number()];
+        const schemas = [z.string(), z.coerce.number()];
         const errors = schemas.reduce<z.ZodIssue[]>(
           (errors, schema) =>
             ((result) =>

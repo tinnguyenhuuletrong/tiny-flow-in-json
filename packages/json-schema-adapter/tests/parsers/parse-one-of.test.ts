@@ -19,7 +19,7 @@ describe("parseOneOf", () => {
         { path: [], seen: new Map() }
       ),
       z.any().superRefine((x, ctx) => {
-        const schemas = [z.string(), z.number()];
+        const schemas = [z.string(), z.coerce.number()];
         const errors = schemas.reduce<z.ZodIssue[]>(
           (errors, schema) =>
             ((result) =>

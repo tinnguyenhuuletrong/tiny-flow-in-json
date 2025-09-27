@@ -110,7 +110,7 @@ describe("parseObject", () => {
         },
         { path: [], seen: new Map() }
       ),
-      z.object({ myString: z.string() }).catchall(z.number())
+      z.object({ myString: z.string() }).catchall(z.coerce.number())
     );
   });
 
@@ -150,7 +150,7 @@ describe("parseObject", () => {
 
         { path: [], seen: new Map() }
       ),
-      z.record(z.any(), z.number())
+      z.record(z.any(), z.coerce.number())
     );
   });
 
@@ -439,7 +439,10 @@ describe("parseObject", () => {
       },
     };
 
-    const expected = z.object({ a: z.string(), b: z.number().optional() });
+    const expected = z.object({
+      a: z.string(),
+      b: z.coerce.number().optional(),
+    });
     const result = parseObject(schema, { path: [], seen: new Map() });
 
     toMatchZod(result, expected);
@@ -476,7 +479,7 @@ describe("parseObject", () => {
     };
 
     const expected = z
-      .object({ a: z.string(), b: z.number().optional() })
+      .object({ a: z.string(), b: z.coerce.number().optional() })
       .catchall(z.boolean());
 
     const result = parseObject(schema, { path: [], seen: new Map() });
@@ -502,7 +505,7 @@ describe("parseObject", () => {
     };
 
     const expected = z
-      .object({ a: z.string(), b: z.number().optional() })
+      .object({ a: z.string(), b: z.coerce.number().optional() })
       .catchall(z.array(z.any()))
       .superRefine((value, ctx) => {
         for (const key in value) {
@@ -552,7 +555,7 @@ describe("parseObject", () => {
     };
 
     const expected = z
-      .object({ a: z.string(), b: z.number().optional() })
+      .object({ a: z.string(), b: z.coerce.number().optional() })
       .catchall(
         z.union([z.array(z.any()), z.array(z.any()).min(1), z.boolean()])
       )
@@ -792,7 +795,7 @@ describe("parseObject", () => {
     };
 
     const expected = z
-      .object({ a: z.string(), b: z.number().optional() })
+      .object({ a: z.string(), b: z.coerce.number().optional() })
       .catchall(z.union([z.array(z.any()), z.array(z.any()).min(1)]))
       .superRefine((value, ctx) => {
         for (const key in value) {

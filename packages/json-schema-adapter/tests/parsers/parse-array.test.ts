@@ -21,7 +21,7 @@ describe("parseArray", () => {
         },
         { path: [], seen: new Map() }
       ),
-      z.tuple([z.string(), z.number()])
+      z.tuple([z.string(), z.coerce.number()])
     );
   });
 

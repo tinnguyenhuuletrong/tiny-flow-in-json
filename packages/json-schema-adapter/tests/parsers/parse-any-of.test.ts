@@ -18,7 +18,7 @@ describe("parseAnyOf", () => {
         },
         { path: [], seen: new Map() }
       ),
-      z.union([z.string(), z.number()])
+      z.union([z.string(), z.coerce.number()])
     );
   });
 

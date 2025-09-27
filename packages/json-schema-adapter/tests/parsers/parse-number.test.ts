@@ -10,7 +10,7 @@ describe("parseNumber", () => {
       parseNumber({
         type: "integer",
       }),
-      z.number().int()
+      z.coerce.number().int()
     );
 
     toMatchZod(
@@ -18,7 +18,7 @@ describe("parseNumber", () => {
         type: "integer",
         multipleOf: 1,
       }),
-      z.number().int()
+      z.coerce.number().int()
     );
 
     toMatchZod(
@@ -26,7 +26,7 @@ describe("parseNumber", () => {
         type: "number",
         multipleOf: 1,
       }),
-      z.number().int()
+      z.coerce.number().int()
     );
   });
 
@@ -37,7 +37,7 @@ describe("parseNumber", () => {
         exclusiveMinimum: true,
         minimum: 2,
       }),
-      z.number().gt(2)
+      z.coerce.number().gt(2)
     );
   });
 
@@ -47,7 +47,7 @@ describe("parseNumber", () => {
         type: "number",
         minimum: 2,
       }),
-      z.number().gte(2)
+      z.coerce.number().gte(2)
     );
   });
 
@@ -58,7 +58,7 @@ describe("parseNumber", () => {
         exclusiveMaximum: true,
         maximum: 2,
       }),
-      z.number().lt(2)
+      z.coerce.number().lt(2)
     );
   });
 
@@ -68,7 +68,7 @@ describe("parseNumber", () => {
         type: "number",
         exclusiveMaximum: 2,
       }),
-      z.number().lt(2)
+      z.coerce.number().lt(2)
     );
   });
 
@@ -87,7 +87,12 @@ describe("parseNumber", () => {
           maximum: "nuts",
         },
       }),
-      z.number().int("ayy").multipleOf(2, "lmao").gt(0, "deez").lte(2, "nuts")
+      z.coerce
+        .number()
+        .int("ayy")
+        .multipleOf(2, "lmao")
+        .gt(0, "deez")
+        .lte(2, "nuts")
     );
   });
 });
