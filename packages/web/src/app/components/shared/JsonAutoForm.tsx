@@ -21,10 +21,18 @@ export function JsonAutoForm<T extends z.ZodObject<any, any>>({
   const [internalData, setInternalData] = useState(data);
   const [jsonString, setJsonString] = useState(JSON.stringify(data, null, 2));
   const [error, setError] = useState<string | null>(null);
+  const [revision, setRevision] = useState(0);
 
+  // reload with prop change
   useEffect(() => {
     setInternalData(data);
     setJsonString(JSON.stringify(data, null, 2));
+
+    // force re-render autoForm
+    setRevision((v) => {
+      console.log("inc revision", v + 1);
+      return v + 1;
+    });
   }, [data]);
 
   const schemaProvider = useMemo(() => {
@@ -63,7 +71,8 @@ export function JsonAutoForm<T extends z.ZodObject<any, any>>({
   const handleSaveForm = (value: any) => {
     const validation = schema.safeParse(value);
     if (validation.success) {
-      setInternalData(value);
+      setInternalData(validation.data);
+      setJsonString(JSON.stringify(validation.data, null, 2));
       onDataChange(value);
       setError(null);
     } else {
@@ -86,8 +95,10 @@ export function JsonAutoForm<T extends z.ZodObject<any, any>>({
       {viewMode === "form" ? (
         schemaProvider && (
           <AutoForm
+            key={String(revision)}
             schema={schemaProvider}
             defaultValues={internalData}
+            values={internalData}
             onSubmit={handleSaveForm}
           >
             <Button type="submit" className="mt-2">

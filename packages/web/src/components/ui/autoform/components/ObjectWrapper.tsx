@@ -8,7 +8,7 @@ export const ObjectWrapper: React.FC<ObjectWrapperProps> = ({
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">{label}</h3>
-      {children}
+      <div className="border-l-2 border-gray-400 px-3">{children}</div>
     </div>
   );
 };

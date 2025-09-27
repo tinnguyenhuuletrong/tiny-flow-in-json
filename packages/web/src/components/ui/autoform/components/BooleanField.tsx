@@ -17,7 +17,7 @@ export const BooleanField: React.FC<AutoFormFieldProps> = ({
         // react-hook-form expects an event object
         const event = {
           target: {
-            name: field.key,
+            name: id,
             value: checked,
           },
         };
