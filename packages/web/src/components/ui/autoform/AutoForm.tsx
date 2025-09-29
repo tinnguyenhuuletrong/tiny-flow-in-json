@@ -15,6 +15,8 @@ import { SelectField } from "./components/SelectField";
 import { ObjectWrapper } from "./components/ObjectWrapper";
 import { ArrayWrapper } from "./components/ArrayWrapper";
 import { ArrayElementWrapper } from "./components/ArrayElementWrapper";
+import { DateTimeField } from "./components/DateTimeField";
+import { TimeField } from "./components/TimeField";
 
 const ShadcnUIComponents: AutoFormUIComponents = {
   Form,
@@ -31,6 +33,8 @@ export const ShadcnAutoFormFieldComponents = {
   number: NumberField,
   boolean: BooleanField,
   date: DateField,
+  "date-time": DateTimeField,
+  time: TimeField,
   select: SelectField,
 } as const;
 export type FieldTypes = keyof typeof ShadcnAutoFormFieldComponents;

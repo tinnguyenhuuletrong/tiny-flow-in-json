@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import type { JsonSchemaObject } from "../types";
 import { extendSchemaWithMessage } from "../utils/extend-schema";
+import { fieldConfig } from "../utils/extend-autoForm";
 
 export const parseString = (
   jsonSchema: JsonSchemaObject & { type: "string" }
@@ -21,11 +22,21 @@ export const parseString = (
         case "uuid":
           return zs.uuid(errorMsg);
         case "date-time":
-          return zs.datetime({ offset: true, message: errorMsg });
+          return zs
+            .datetime({ offset: true, message: errorMsg, local: true })
+            .check(
+              fieldConfig({
+                fieldType: "date-time",
+              })
+            );
         case "time":
-          return zs.time(errorMsg);
+          return zs.time(errorMsg).check(fieldConfig({ fieldType: "time" }));
         case "date":
-          return zs.date(errorMsg);
+          return zs.date(errorMsg).check(
+            fieldConfig({
+              fieldType: "date",
+            })
+          );
         case "binary":
           return zs.base64(errorMsg);
         case "duration":

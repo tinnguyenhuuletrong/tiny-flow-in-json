@@ -16,7 +16,13 @@ describe("parseString", () => {
       errorMessage: { format: "hello" },
     });
 
-    toMatchZod(code, z.string().datetime({ offset: true, message: "hello" }));
+    toMatchZod(
+      code,
+      z
+        .string()
+        .datetime({ offset: true, message: "hello", local: true })
+        .check(() => {})
+    );
 
     expect(run(code, datetime)).toEqual({ success: true, data: datetime });
   });
@@ -75,7 +81,10 @@ describe("parseString", () => {
         type: "string",
         format: "time",
       }),
-      z.string().time()
+      z
+        .string()
+        .time()
+        .check(() => {})
     );
   });
 
@@ -85,7 +94,10 @@ describe("parseString", () => {
         type: "string",
         format: "date",
       }),
-      z.string().date()
+      z
+        .string()
+        .date()
+        .check(() => {})
     );
   });
 
