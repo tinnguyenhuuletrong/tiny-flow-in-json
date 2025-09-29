@@ -18,18 +18,23 @@ export function parseFromJson(jsonString: string): ParsedFlow {
   const json = JSON.parse(jsonString);
   const flow = FlowSchema.parse(json); // Validate against the raw FlowSchema
 
+  const originalJsonSchema = new Map<string, string>();
+
   const { globalStateSchema, ...others } = flow;
 
   // Transform globalStateSchema from JSON Schema to Zod Schema
   const parsedGlobalStateSchema = jsonSchemaToZod(flow.globalStateSchema);
+  originalJsonSchema.set("globalStateSchema", flow.globalStateSchema);
 
   // Transform paramsSchema for each step from JSON Schema to Zod Schema
   const parsedSteps: ParsedStep[] = flow.steps.map((step) => {
     const { paramsSchema, ...others } = step;
-    const parsedStep: ParsedStep = { ...others };
+    let paramsZodSchema;
     if (paramsSchema) {
-      parsedStep.paramsZodSchema = jsonSchemaToZod(paramsSchema);
+      paramsZodSchema = jsonSchemaToZod(paramsSchema);
+      originalJsonSchema.set(step.id, paramsSchema);
     }
+    const parsedStep: ParsedStep = { ...others, paramsZodSchema };
     return parsedStep;
   });
 
@@ -37,6 +42,10 @@ export function parseFromJson(jsonString: string): ParsedFlow {
     ...others,
     globalStateZodSchema: parsedGlobalStateSchema,
     steps: parsedSteps,
+
+    _internal: {
+      originalJsonSchema,
+    },
   };
 }
 
@@ -47,7 +56,8 @@ export function parseFromJson(jsonString: string): ParsedFlow {
  */
 export function saveToJson(flow: ParsedFlow): string {
   // Convert globalStateSchema from Zod Schema back to JSON Schema
-  const rawGlobalStateSchema = toJSONSchema(flow.globalStateZodSchema);
+  const rawGlobalStateSchema =
+    flow._internal.originalJsonSchema.get("globalStateSchema");
   const { globalStateZodSchema, ...others } = flow;
 
   // Convert paramsSchema for each step from Zod Schema back to JSON Schema
@@ -55,7 +65,7 @@ export function saveToJson(flow: ParsedFlow): string {
     const { paramsZodSchema, ...others } = step;
     const rawStep: Step = { ...others };
     if (step.paramsZodSchema) {
-      rawStep.paramsSchema = toJSONSchema(step.paramsZodSchema);
+      rawStep.paramsSchema = flow._internal.originalJsonSchema.get(step.id);
     }
     return rawStep;
   });
@@ -71,7 +81,10 @@ export function saveToJson(flow: ParsedFlow): string {
   return JSON.stringify(rawFlow, null, 2);
 }
 
-export const JSON_SCHEMA: any = toJSONSchema(FlowSchema);
+export const JSON_SCHEMA: any = toJSONSchema(FlowSchema, {
+  target: "draft-7",
+  io: "input",
+});
 
 export type FlowError = {
   code:

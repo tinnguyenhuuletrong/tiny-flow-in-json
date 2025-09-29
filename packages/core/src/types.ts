@@ -16,6 +16,7 @@ export const JsonSchema: z.ZodType<any> = z.lazy(() =>
           "null",
         ])
         .optional(),
+      format: z.string().optional(),
       properties: z.record(z.string(), JsonSchema).optional(),
       items: JsonSchema.optional(),
       required: z.array(z.string()).optional(),
@@ -63,10 +64,14 @@ export type Flow = z.infer<typeof FlowSchema>;
 
 // In-memory types after parsing and transformation
 export type ParsedStep = Omit<Step, "paramsSchema"> & {
-  paramsZodSchema?: z.ZodType;
+  readonly paramsZodSchema?: z.ZodType;
 };
 
 export type ParsedFlow = Omit<Flow, "globalStateSchema" | "steps"> & {
-  globalStateZodSchema: z.ZodType;
+  readonly globalStateZodSchema: z.ZodType;
   steps: ParsedStep[];
+
+  _internal: {
+    originalJsonSchema: Map<string, string>;
+  };
 };
