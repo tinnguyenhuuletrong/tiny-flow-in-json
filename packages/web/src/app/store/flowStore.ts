@@ -15,14 +15,21 @@ type FlowMetadataState =
     }>
   | undefined;
 
+type FlowRevision = number;
+
 type FlowState = {
   flow: ParsedFlow;
-  setFlow: (flow: ParsedFlow) => Promise<void>;
+
+  // revision inc everytime partial update made
+  // use for optimistic component internal state control
+  revision: FlowRevision;
+
+  setFlow: (flow: ParsedFlow) => FlowRevision;
   getFlowMetadata: () => FlowMetadataState;
-  doAutoLayout: () => Promise<void>;
-  updateNodePosition: (nodeId: string, position: XYPosition) => void;
-  updateFlowViewport: (value: Viewport) => void;
-  updateFlowState: (newState: Record<string, any>) => void;
+  doAutoLayout: () => Promise<FlowRevision>;
+  updateNodePosition: (nodeId: string, position: XYPosition) => FlowRevision;
+  updateFlowViewport: (value: Viewport) => FlowRevision;
+  updateFlowState: (newState: Record<string, any>) => FlowRevision;
 };
 
 const layoutFlow = async (flow: ParsedFlow): Promise<ParsedFlow> => {
@@ -68,17 +75,24 @@ const layoutFlow = async (flow: ParsedFlow): Promise<ParsedFlow> => {
 
 export const useFlowStore = create<FlowState>((set, get) => ({
   flow: placeholderFlow,
+  revision: 0,
+
   getFlowMetadata: () => get().flow.metadata as FlowMetadataState,
-  setFlow: async (flow) => {
-    set({ flow: flow });
+  setFlow: (flow) => {
+    const revision = get().revision;
+    set({ flow: flow, revision: revision + 1 });
+    return revision + 1;
   },
   doAutoLayout: async () => {
-    const { flow } = get();
+    const { flow, revision } = get();
     const layoutedFlow = await layoutFlow(flow);
-    set({ flow: layoutedFlow });
+    set({ flow: layoutedFlow, revision: revision + 1 });
+    return revision + 1;
   },
   updateNodePosition: (nodeId, position) => {
+    const { revision } = get();
     set((state) => ({
+      revision: state.revision + 1,
       flow: {
         ...state.flow,
         steps: state.flow.steps.map((step) => {
@@ -92,24 +106,31 @@ export const useFlowStore = create<FlowState>((set, get) => ({
         }),
       },
     }));
+    return revision + 1;
   },
   updateFlowViewport: (value: Viewport) => {
     const metadata = get().flow?.metadata ?? {};
+    const { revision } = get();
     metadata.reactflowViewport = value;
 
     set((state) => ({
+      revision: state.revision + 1,
       flow: {
         ...state.flow,
         metadata,
       },
     }));
+    return revision + 1;
   },
   updateFlowState: (newState) => {
+    const { revision } = get();
     set((state) => ({
+      revision: state.revision + 1,
       flow: {
         ...state.flow,
         state: newState,
       },
     }));
+    return revision + 1;
   },
 }));

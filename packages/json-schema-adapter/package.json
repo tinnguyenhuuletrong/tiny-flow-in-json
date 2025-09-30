@@ -9,7 +9,8 @@
     "check": "tsc -b"
   },
   "dependencies": {
-    "zod": "^4"
+    "zod": "^4",
+    "@autoform/zod": "^5.0.0"
   },
   "devDependencies": {}
 }

@@ -21,6 +21,7 @@
       "name": "@tiny-json-workflow/json-schema-adapter",
       "version": "0.1.0",
       "dependencies": {
+        "@autoform/zod": "^5.0.0",
         "zod": "^4",
       },
     },

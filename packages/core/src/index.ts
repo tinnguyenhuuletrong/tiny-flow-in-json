@@ -58,7 +58,7 @@ export function saveToJson(flow: ParsedFlow): string {
   // Convert globalStateSchema from Zod Schema back to JSON Schema
   const rawGlobalStateSchema =
     flow._internal.originalJsonSchema.get("globalStateSchema");
-  const { globalStateZodSchema, ...others } = flow;
+  const { globalStateZodSchema, _internal, ...others } = flow;
 
   // Convert paramsSchema for each step from Zod Schema back to JSON Schema
   const rawSteps = flow.steps.map((step) => {

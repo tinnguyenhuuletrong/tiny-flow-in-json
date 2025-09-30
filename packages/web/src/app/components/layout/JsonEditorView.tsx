@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFlowStore } from "@/app/store/flowStore";
 import { flowJsonSchema } from "@/lib/schema";
 import debounce from "lodash.debounce";
@@ -16,8 +16,18 @@ import { fromZodError } from "zod-validation-error";
 export function JsonEditorView() {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<typeof import("monaco-editor") | null>(null);
-  const { flow, setFlow } = useFlowStore();
+  const { flow, setFlow, revision } = useFlowStore();
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [currentRevision, setCurrentRevision] = useState(revision);
+
+  // watch for external update -> refresh
+  // optimistic state control for uncontrolled component
+  useEffect(() => {
+    if (currentRevision !== revision) {
+      editorRef.current?.setValue(saveToJson(flow));
+      console.log("external reloaded for", currentRevision);
+    }
+  }, [currentRevision, revision, editorRef]);
 
   const handleEditorChange = (value: string | undefined) => {
     if (!value) {
@@ -43,7 +53,10 @@ export function JsonEditorView() {
         return;
       }
 
-      setFlow(parsedFlow);
+      // update flow + also update head Revision
+      const headRevision = setFlow(parsedFlow);
+      setCurrentRevision(headRevision);
+
       setValidationErrors([]);
     } catch (error: any) {
       setValidationErrors([`Invalid JSON format: ${error.message}`]);
@@ -72,7 +85,7 @@ export function JsonEditorView() {
       <Editor
         height="100%"
         defaultLanguage="json"
-        value={saveToJson(flow)}
+        defaultValue={saveToJson(flow)}
         onChange={debounce(handleEditorChange, 200)}
         options={{
           minimap: { enabled: false },
