@@ -18,6 +18,7 @@ export const JsonSchema: z.ZodType<any> = z.lazy(() =>
         ])
         .optional(),
       format: z.string().optional(),
+      enum: z.array(z.string()).optional(),
       properties: z.record(z.string(), JsonSchema).optional(),
       items: JsonSchema.optional(),
       required: z.array(z.string()).optional(),
