@@ -4,9 +4,11 @@ import {
   type Step,
   type ParsedFlow,
   type ParsedStep,
+  KEY_ORDERS,
 } from "./types"; // Updated import
 import { jsonSchemaToZod } from "@tiny-json-workflow/json-schema-adapter";
 import { prettifyError, toJSONSchema } from "zod";
+import { orderedJsonStringify } from "./utils/helper";
 
 /**
  * Parses a JSON string into a validated Flow object, converting JSON schemas to Zod schemas.
@@ -78,7 +80,7 @@ export function saveToJson(flow: ParsedFlow): string {
 
   // Ensure the raw flow object is valid before saving.
   FlowSchema.parse(rawFlow);
-  return JSON.stringify(rawFlow, null, 2);
+  return orderedJsonStringify(rawFlow, KEY_ORDERS, 2);
 }
 
 export const JSON_SCHEMA: any = toJSONSchema(FlowSchema, {
@@ -121,9 +123,9 @@ export function validate(flow: ParsedFlow): FlowError[] {
 
   // 2. State/Parameter Validation
   // Validate global state
-  if (flow.state && flow.globalStateZodSchema) {
+  if (flow.globalState && flow.globalStateZodSchema) {
     const globalStateValidation = flow.globalStateZodSchema.safeParse(
-      flow.state
+      flow.globalState
     );
     if (!globalStateValidation.success) {
       errors.push({

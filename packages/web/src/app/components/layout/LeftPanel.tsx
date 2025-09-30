@@ -19,7 +19,7 @@ export function LeftPanel() {
         {flow.globalStateZodSchema && (
           <JsonAutoForm
             schema={flow.globalStateZodSchema as any}
-            data={flow.state ?? {}}
+            data={flow.globalState ?? {}}
             onDataChange={updateFlowState}
           />
         )}

@@ -92,7 +92,7 @@ describe("FlowJSON Validation", () => {
       },
       "required": ["count"]
     },
-    "state": { "count": "not-a-number" },
+    "globalState": { "count": "not-a-number" },
     "steps": [
       { "id": "start", "name": "Start", "type": "begin" },
       { "id": "end", "name": "End", "type": "end" }

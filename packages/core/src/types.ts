@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { asAllUniqueKeys } from "./utils/tsHelper";
 
 // A Zod schema for a basic JSON Schema object.
 // It's recursive and allows for nested properties and items.
@@ -54,13 +55,24 @@ export const FlowSchema = z.object({
   name: z.string(),
   version: z.string(),
   globalStateSchema: JsonSchema,
-  state: z.record(z.string(), z.any()).optional(), // Added state
+  globalState: z.record(z.string(), z.any()).optional(), // Added state
   steps: z.array(StepSchema),
   connections: z.array(ConnectionSchema),
   metadata: z.record(z.string(), z.any()).optional(),
 });
 
 export type Flow = z.infer<typeof FlowSchema>;
+
+export const KEY_ORDERS = asAllUniqueKeys<Flow>()([
+  "id",
+  "name",
+  "version",
+  "globalState",
+  "globalStateSchema",
+  "steps",
+  "connections",
+  "metadata",
+] as const);
 
 // In-memory types after parsing and transformation
 export type ParsedStep = Omit<Step, "paramsSchema"> & {

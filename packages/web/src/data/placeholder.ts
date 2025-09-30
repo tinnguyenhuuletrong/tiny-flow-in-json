@@ -1,4 +1,8 @@
-import { type ParsedFlow, parseFromJson } from "@tiny-json-workflow/core";
+import {
+  type Flow,
+  type ParsedFlow,
+  parseFromJson,
+} from "@tiny-json-workflow/core";
 
 export const placeholderFlow: ParsedFlow = parseFromJson(
   JSON.stringify({
@@ -17,7 +21,7 @@ export const placeholderFlow: ParsedFlow = parseFromJson(
       },
       required: ["userId"],
     },
-    state: {
+    globalState: {
       userId: "001",
       profileIsComplete: true,
     },
@@ -114,5 +118,5 @@ export const placeholderFlow: ParsedFlow = parseFromJson(
         zoom: 0.758132798573975,
       },
     },
-  })
+  } satisfies Flow)
 );

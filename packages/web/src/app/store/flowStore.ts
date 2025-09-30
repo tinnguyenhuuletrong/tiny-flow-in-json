@@ -128,7 +128,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
       revision: state.revision + 1,
       flow: {
         ...state.flow,
-        state: newState,
+        globalState: newState,
       },
     }));
     return revision + 1;
