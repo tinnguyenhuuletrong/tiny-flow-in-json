@@ -16,7 +16,7 @@ import { fromZodError } from "zod-validation-error";
 export function JsonEditorView() {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<typeof import("monaco-editor") | null>(null);
-  const { flow, setFlow, revision } = useFlowStore();
+  const { flow, setFlow, revision, selectedStepId } = useFlowStore();
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [currentRevision, setCurrentRevision] = useState(revision);
 
@@ -28,6 +28,36 @@ export function JsonEditorView() {
       console.log("external reloaded for", currentRevision);
     }
   }, [currentRevision, revision, editorRef]);
+
+  useEffect(() => {
+    if (!selectedStepId || !editorRef.current) {
+      return;
+    }
+
+    const editor = editorRef.current;
+    const model = editor.getModel();
+    if (!model) {
+      return;
+    }
+
+    // We search for the unique string "id": "step_id_..."
+    const searchString = `"id": "${selectedStepId}"`;
+    const matches = model.findMatches(
+      searchString,
+      true,
+      false,
+      true,
+      null,
+      true
+    );
+
+    if (matches.length > 0) {
+      const range = matches[0].range;
+      editor.revealRangeInCenter(range, 1 /* Immediate scroll */);
+      editor.setPosition({ lineNumber: range.startLineNumber, column: 1 });
+      editor.focus();
+    }
+  }, [selectedStepId]);
 
   const handleEditorChange = (value: string | undefined) => {
     if (!value) {
