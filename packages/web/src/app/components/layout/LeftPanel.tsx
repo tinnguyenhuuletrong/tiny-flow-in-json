@@ -53,7 +53,17 @@ export function LeftPanel() {
                       schema={flow.globalStateZodSchema as any}
                       data={flow.globalState ?? {}}
                       onDataChange={updateFlowState}
-                    />
+                    >
+                      {({ onSubmit }) => (
+                        <Button
+                          onClick={onSubmit}
+                          type="submit"
+                          className="mt-2 w-full"
+                        >
+                          Save Global State
+                        </Button>
+                      )}
+                    </JsonAutoForm>
                   ) : (
                     <p className="text-sm text-gray-500">
                       No global state schema defined.

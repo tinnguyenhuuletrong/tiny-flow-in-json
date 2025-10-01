@@ -12,7 +12,7 @@ import { JsonAutoForm } from "@/app/components/shared/JsonAutoForm";
 import { useState, useEffect } from "react";
 
 export function StepEditModal() {
-  const { flow, editingStepId, setEditingStepId, updateStepParams } =
+  const { flow, editingStepId, setEditingStepId, updateStepParams, revision } =
     useFlowStore();
   const [formData, setFormData] = useState<Record<string, any>>({});
 
@@ -24,11 +24,11 @@ export function StepEditModal() {
     } else {
       setFormData({});
     }
-  }, [editingStep]);
+  }, [editingStep, revision]);
 
-  const handleSave = () => {
+  const handleDataChange = (data: Record<string, any>) => {
     if (editingStepId) {
-      updateStepParams(editingStepId, formData);
+      updateStepParams(editingStepId, data);
       setEditingStepId(null);
     }
   };
@@ -47,24 +47,27 @@ export function StepEditModal() {
             <JsonAutoForm
               schema={editingStep.paramsZodSchema as any}
               data={formData}
-              onDataChange={setFormData}
-            />
+              onDataChange={handleDataChange}
+            >
+              {({ onSubmit }) => (
+                <DialogFooter className="mt-4">
+                  <DialogClose asChild>
+                    <Button type="button" variant="secondary">
+                      Cancel
+                    </Button>
+                  </DialogClose>
+                  <Button type="submit" onClick={onSubmit}>
+                    Save
+                  </Button>
+                </DialogFooter>
+              )}
+            </JsonAutoForm>
           ) : (
             <p className="text-sm text-gray-500">
               This step has no parameters to configure.
             </p>
           )}
         </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Cancel
-            </Button>
-          </DialogClose>
-          <Button type="button" onClick={handleSave}>
-            Save
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

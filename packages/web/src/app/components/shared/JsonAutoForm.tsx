@@ -10,12 +10,14 @@ interface JsonAutoFormProps<T extends z.ZodObject<any, any>> {
   schema: T;
   data: z.infer<T>;
   onDataChange: (data: z.infer<T>) => void;
+  children?: (props: { onSubmit: () => void }) => React.ReactNode;
 }
 
 export function JsonAutoForm<T extends z.ZodObject<any, any>>({
   schema,
   data,
   onDataChange,
+  children,
 }: JsonAutoFormProps<T>) {
   const [viewMode, setViewMode] = useState<"form" | "json">("form");
   const [internalData, setInternalData] = useState(data);
@@ -100,9 +102,7 @@ export function JsonAutoForm<T extends z.ZodObject<any, any>>({
             values={internalData}
             onSubmit={handleSaveForm}
           >
-            <Button type="submit" className="mt-2">
-              Save
-            </Button>
+            {children && children({ onSubmit: () => {} })}
           </AutoForm>
         )
       ) : (
@@ -112,9 +112,7 @@ export function JsonAutoForm<T extends z.ZodObject<any, any>>({
             onChange={(e) => handleJsonStringChange(e.target.value)}
             rows={10}
           />
-          <Button onClick={handleSaveJson} className="mt-2">
-            Save
-          </Button>
+          {children && children({ onSubmit: handleSaveJson })}
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
       )}
