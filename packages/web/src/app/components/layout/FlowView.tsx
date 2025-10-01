@@ -7,6 +7,7 @@ import ReactFlow, {
   useReactFlow,
   useNodesState,
   useEdgesState,
+  type OnNodesChange,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -23,14 +24,20 @@ const defaultEdgeOptions = {
 };
 
 export function FlowView() {
-  const { flow, updateNodePosition, updateFlowViewport } = useFlowStore();
+  const {
+    flow,
+    updateNodePosition,
+    updateFlowViewport,
+    selectedStepId,
+    setSelectedStepId,
+  } = useFlowStore();
   const initViewPort = useFlowStore(
     (state) => state.getFlowMetadata()?.reactflowViewport
   );
 
   const { getViewport } = useReactFlow();
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [nodes, setNodes, onNodesChangeInternal] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const nodeTypes = useMemo(
@@ -63,6 +70,7 @@ export function FlowView() {
         type: step.type,
         data: stepWithSourceHandles,
         position: { x: step.metadata?.x || 0, y: step.metadata?.y || 0 },
+        selected: step.id === selectedStepId,
       };
     });
     setNodes(newNodes);
@@ -79,7 +87,7 @@ export function FlowView() {
       labelBgStyle: { fill: "#fff", fillOpacity: 0.6 },
     }));
     setEdges(newEdges);
-  }, [flow, setNodes, setEdges]);
+  }, [flow, setNodes, setEdges, selectedStepId]);
 
   const onNodeDragStop: NodeDragHandler = (_, node) => {
     updateNodePosition(node.id, node.position);
@@ -88,6 +96,15 @@ export function FlowView() {
     const vp = getViewport();
     updateFlowViewport(vp);
   }, [getViewport, updateFlowViewport]);
+
+  const onNodesChange: OnNodesChange = (changes) => {
+    onNodesChangeInternal(changes);
+    changes.forEach((change) => {
+      if (change.type === "select" && change.selected) {
+        setSelectedStepId(change.id);
+      }
+    });
+  };
 
   return (
     <ReactFlow

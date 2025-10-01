@@ -19,9 +19,11 @@ type FlowRevision = number;
 
 type FlowState = {
   flow: ParsedFlow;
+  selectedStepId: string | null;
+  editingStepId: string | null;
 
   // revision inc everytime partial update made
-  // use for optimistic component internal state control
+  // use for optimistic component internal state control espcially in JSON Editor view (uncontrolled component)
   revision: FlowRevision;
 
   setFlow: (flow: ParsedFlow) => FlowRevision;
@@ -30,6 +32,12 @@ type FlowState = {
   updateNodePosition: (nodeId: string, position: XYPosition) => FlowRevision;
   updateFlowViewport: (value: Viewport) => FlowRevision;
   updateFlowState: (newState: Record<string, any>) => FlowRevision;
+  setSelectedStepId: (stepId: string | null) => FlowRevision;
+  setEditingStepId: (stepId: string | null) => FlowRevision;
+  updateStepParams: (
+    stepId: string,
+    params: Record<string, any>
+  ) => FlowRevision;
 };
 
 const layoutFlow = async (flow: ParsedFlow): Promise<ParsedFlow> => {
@@ -76,6 +84,8 @@ const layoutFlow = async (flow: ParsedFlow): Promise<ParsedFlow> => {
 export const useFlowStore = create<FlowState>((set, get) => ({
   flow: placeholderFlow,
   revision: 0,
+  selectedStepId: null,
+  editingStepId: null,
 
   getFlowMetadata: () => get().flow.metadata as FlowMetadataState,
   setFlow: (flow) => {
@@ -129,6 +139,35 @@ export const useFlowStore = create<FlowState>((set, get) => ({
       flow: {
         ...state.flow,
         globalState: newState,
+      },
+    }));
+    return revision + 1;
+  },
+  setSelectedStepId: (stepId) => {
+    const { revision } = get();
+    set({ selectedStepId: stepId });
+    return revision;
+  },
+  setEditingStepId: (stepId) => {
+    const { revision } = get();
+    set({ editingStepId: stepId });
+    return revision;
+  },
+  updateStepParams: (stepId, params) => {
+    const { revision } = get();
+    set((state) => ({
+      revision: state.revision + 1,
+      flow: {
+        ...state.flow,
+        steps: state.flow.steps.map((step) => {
+          if (step.id === stepId) {
+            return {
+              ...step,
+              params: params,
+            };
+          }
+          return step;
+        }),
       },
     }));
     return revision + 1;

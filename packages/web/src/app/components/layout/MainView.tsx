@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FlowView } from './FlowView';
 import { JsonEditorView } from './JsonEditorView';
+import { StepEditModal } from '../shared/StepEditModal';
 
 export function MainView() {
   return (
@@ -21,6 +22,7 @@ export function MainView() {
             </div>
         </TabsContent>
       </Tabs>
+      <StepEditModal />
     </div>
   );
 }
