@@ -1,25 +1,36 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_06.md",
+  "save_to": "create _ai/task_07.md",
   "resources": {
     "requirement.md": "_ai/doc/requirement.md",
-    "doc_autoform.md": "_ai/doc/ref/doc_autoform.md"
+    "doc_autoform.md": "_ai/doc/ref/doc_autoform.md",
+    "ref_github.png": "_ai/doc/ref/ref_github.png"
   },
-  "mcp": {
-    "context7": "for fetching  Fetches up-to-date documentation for a library"
-  },
+  "mcp": {},
   "target": [
     {
-      "goal": "update packages/web JSON view use validate before save and show humanize error"
+      "goal": "review design LeftPanel",
+      "requirements": [
+        "Find a better way to display Global State",
+        "Left panel should collabsible into left ( open by default )",
+        "Available to display focus step",
+        "Room to display paramsSchema and params value - reuse component create for GlobalState",
+        "Please output an ascii render version for discuss in task"
+      ]
     },
     {
-      "goal": "left panel - use @autoform/zod to display the globalStateZodSchema and save to flow.state when schema satified. in case validation failed. show humanize error"
+      "goal": "The Flow View. Handle step select and sync with left panel",
+      "requirements": [
+        "leff panel select step -> highlight display in Flow view",
+        "Flow view select step -> highlight display on Left panel"
+      ]
     }
   ],
   "steps": {
-    "1": "read resources, use context7 when need",
+    "1": "read resources, use context7 mcp when need",
     "2": "read current source code",
-    "3": "create a task_06 to achieve goal",
-    "4": "waiting for human review and confirm before start to code"
+    "3": "create a task_07 to achieve goal",
+    "4": "generate ascii draft design to discuss first",
+    "5": "waiting for human review and confirm everything before start to code"
   }
 }
