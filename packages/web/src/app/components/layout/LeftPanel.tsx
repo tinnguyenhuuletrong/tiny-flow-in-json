@@ -29,13 +29,21 @@ export function LeftPanel() {
       )}
     >
       <div className="p-2 border-b">
-        <Button variant="ghost" size="icon" onClick={() => setIsCollapsed(!isCollapsed)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+        >
           {isCollapsed ? <ChevronsRight /> : <ChevronsLeft />}
         </Button>
       </div>
       {!isCollapsed && (
         <div className="p-4 overflow-y-auto">
-          <Accordion type="multiple" defaultValue={["steps"]} className="w-full">
+          <Accordion
+            type="multiple"
+            defaultValue={["steps"]}
+            className="w-full"
+          >
             <AccordionItem value="global-state">
               <AccordionTrigger>Global State</AccordionTrigger>
               <AccordionContent>
@@ -47,7 +55,9 @@ export function LeftPanel() {
                       onDataChange={updateFlowState}
                     />
                   ) : (
-                    <p className="text-sm text-gray-500">No global state schema defined.</p>
+                    <p className="text-sm text-gray-500">
+                      No global state schema defined.
+                    </p>
                   )}
                 </div>
               </AccordionContent>
@@ -66,16 +76,18 @@ export function LeftPanel() {
                       )}
                     >
                       <span>{step.name}</span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingStepId(step.id);
-                        }}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
+                      {step.paramsZodSchema && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingStepId(step.id);
+                          }}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      )}
                     </li>
                   ))}
                 </ul>

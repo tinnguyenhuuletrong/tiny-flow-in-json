@@ -65,12 +65,15 @@ export function FlowView() {
         },
       };
 
+      const isSelected = step.id === selectedStepId;
+
       return {
         id: step.id,
         type: step.type,
         data: stepWithSourceHandles,
         position: { x: step.metadata?.x || 0, y: step.metadata?.y || 0 },
-        selected: step.id === selectedStepId,
+        selected: isSelected,
+        className: isSelected ? "rounded-lg ring-4 ring-blue-500" : "",
       };
     });
     setNodes(newNodes);
