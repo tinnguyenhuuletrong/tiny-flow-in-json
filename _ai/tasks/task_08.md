@@ -45,16 +45,8 @@ This plan incorporates the feedback to build the SVG generator as a separate, te
     - Inside the new `@tiny-json-workflow/svg-export` package, develop the function to programmatically generate a self-contained SVG from the flow data object `@tiny-json-workflow/core` - `ParsedFlow`.
     - Adopt a Test-Driven Development (TDD) approach, creating tests for node rendering, connection rendering, and overall SVG structure using `bun:test`.
     - The generator will inline all styles (colors, fonts, etc.) to ensure the exported SVG is fully portable, referencing the styles from the existing custom nodes for visual consistency.
-
-3.  **Integrate SVG Package into Web App:**
-
-    - Add the new `@tiny-json-workflow/svg-export` package as a dependency to the `@tiny-json-workflow/web` package.
-    - Update `FlowView.tsx` to import the generation function from the new package and use it to power the "Export SVG" modal.
-
-4.  **Update Branding (Priority 2):**
-
-    - Update `Header.tsx` to replace "tiny-json-workflow" with "FlowCraft".
-
-5.  **Future Work (Postponed):**
-    - **Full Layout Refactor:** A more significant layout overhaul (e.g., a three-column, resizable IDE-like view) will be considered in a future iteration.
-    - **Advanced UI Panels:** The implementation of a dedicated `AssetPanel` (for drag-and-drop nodes) and a `BottomPanel` (for an integrated inspector) is also postponed.
+    - Caution on layer order. make sure the step on top of connection line
+    - Display the condition at a middle of connection line
+    - ParsedFlow may have info for better layout see `examples/data/simple.json`
+      - Step.metadata contain x y for a steps
+      - Flow metadata contain a viewport

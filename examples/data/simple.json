@@ -2,6 +2,10 @@
   "id": "onboarding-flow-v1",
   "name": "User Onboarding Flow",
   "version": "1.0.0",
+  "globalState": {
+    "userId": "001",
+    "profileIsComplete": true
+  },
   "globalStateSchema": {
     "type": "object",
     "properties": {
@@ -9,8 +13,7 @@
         "type": "string"
       },
       "profileIsComplete": {
-        "type": "boolean",
-        "default": false
+        "type": "boolean"
       }
     },
     "required": [
@@ -21,12 +24,21 @@
     {
       "id": "start-flow",
       "name": "Begin Onboarding",
-      "type": "begin"
+      "type": "begin",
+      "metadata": {
+        "x": 12,
+        "y": 37
+      }
     },
     {
       "id": "send-welcome",
       "name": "Send Welcome Email",
       "type": "task",
+      "metadata": {
+        "owner": "engagement-team",
+        "x": 412,
+        "y": 37
+      },
       "paramsSchema": {
         "type": "object",
         "properties": {
@@ -35,25 +47,34 @@
             "default": "welcome-email-v2"
           }
         }
-      },
-      "metadata": {
-        "owner": "engagement-team"
       }
     },
     {
       "id": "check-profile",
       "name": "Is Profile Complete?",
-      "type": "decision"
+      "type": "decision",
+      "metadata": {
+        "x": 812,
+        "y": 37
+      }
     },
     {
       "id": "send-reminder",
       "name": "Send Profile Reminder",
-      "type": "task"
+      "type": "task",
+      "metadata": {
+        "x": 1202.766789125643,
+        "y": 139.94592211609114
+      }
     },
     {
       "id": "end-flow",
       "name": "End Onboarding",
-      "type": "end"
+      "type": "end",
+      "metadata": {
+        "x": 1612,
+        "y": 37
+      }
     }
   ],
   "connections": [
@@ -84,5 +105,12 @@
       "sourceStepId": "send-reminder",
       "targetStepId": "end-flow"
     }
-  ]
+  ],
+  "metadata": {
+    "reactflowViewport": {
+      "x": 79.32352941176475,
+      "y": 350.19625761766866,
+      "zoom": 1.1397058823529411
+    }
+  }
 }

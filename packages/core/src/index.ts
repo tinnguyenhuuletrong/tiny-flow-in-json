@@ -5,6 +5,7 @@ import {
   type ParsedFlow,
   type ParsedStep,
   KEY_ORDERS,
+  type Connection,
 } from "./types"; // Updated import
 import { jsonSchemaToZod } from "@tiny-json-workflow/json-schema-adapter";
 import { prettifyError, toJSONSchema } from "zod";
@@ -157,4 +158,11 @@ export function validate(flow: ParsedFlow): FlowError[] {
   return errors;
 }
 
-export { FlowSchema, type Flow, type Step, type ParsedFlow, type ParsedStep };
+export {
+  FlowSchema,
+  type Flow,
+  type Step,
+  type ParsedFlow,
+  type ParsedStep,
+  type Connection,
+};

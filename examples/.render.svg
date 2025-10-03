@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-38 -13 1850 242.94592211609114"><path d="M52,57 L412,57" stroke="#000" stroke-width="2" fill="none" />
+<path d="M562,57 L812,57" stroke="#000" stroke-width="2" fill="none" />
+<g><path d="M962,57 L1612,57" stroke="#000" stroke-width="2" fill="none" /><text x="1287" y="52" dominant-baseline="auto" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#000">state.profileIsComplete == true</text></g>
+<g><path d="M962,57 L1202.766789125643,159.94592211609114" stroke="#000" stroke-width="2" fill="none" /><text x="1082.3833945628216" y="103.47296105804557" dominant-baseline="auto" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#000">state.profileIsComplete == false</text></g>
+<path d="M1352.766789125643,159.94592211609114 L1612,57" stroke="#000" stroke-width="2" fill="none" />
+<g><circle cx="32" cy="57" r="20" fill="#fff" stroke="#000" stroke-width="2" data-testid="begin-node" /></g>
+<g><rect x="412" y="37" width="150" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="task-node" /><text x="487" y="57" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Send Welcome Email</text></g>
+<g><rect x="812" y="37" width="150" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="decision-node" /><text x="887" y="57" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Is Profile Complete?</text></g>
+<g><rect x="1202.766789125643" y="139.94592211609114" width="150" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="task-node" /><text x="1277.766789125643" y="159.94592211609114" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Send Profile Reminder</text></g>
+<g><circle cx="1632" cy="57" r="20" fill="#000" data-testid="end-node" /></g></svg>
