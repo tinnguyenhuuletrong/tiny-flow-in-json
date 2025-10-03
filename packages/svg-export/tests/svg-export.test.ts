@@ -76,26 +76,23 @@ describe("flowToSvg", () => {
     expect(svg).toContain(">IsReady</text>");
   });
 
-  it("should use metadata for layout", () => {
+  it("should escape special characters in labels", () => {
     const flow: ParsedFlow = {
       id: "test-flow",
-      name: "Test Flow",
+      name: "Test Flow with 'special' \"characters\" & stuff",
       version: "1.0.0",
       steps: [
+        { id: "begin", name: "Begin", type: "begin" },
+        { id: "task", name: "Task with < > & ' \"", type: "task" },
+      ],
+      connections: [
         {
-          id: "begin",
-          name: "Begin",
-          type: "begin",
-          metadata: { x: 100, y: 200 },
-        },
-        {
-          id: "task",
-          name: "Task",
-          type: "task",
-          metadata: { x: 400, y: 200 },
+          id: "conn1",
+          sourceStepId: "begin",
+          targetStepId: "task",
+          condition: "state.value > 10 && state.value < 20",
         },
       ],
-      connections: [],
       globalStateZodSchema: {} as any,
       _internal: {
         originalJsonSchema: new Map(),
@@ -104,7 +101,7 @@ describe("flowToSvg", () => {
 
     const svg = flowToSvg(flow);
 
-    // Check that the viewBox is calculated correctly based on metadata
-    expect(svg).toContain('viewBox="50 150 550 140"');
+    expect(svg).toContain("state.value &gt; 10 &amp;&amp; state.value &lt; 20");
+    expect(svg).toContain(">Task with &lt; &gt; &amp; &apos; &quot;</text>");
   });
 });

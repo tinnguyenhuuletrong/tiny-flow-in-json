@@ -43,42 +43,74 @@
     {
       "id": "start-routing",
       "name": "Begin Ticket Routing",
-      "type": "begin"
+      "type": "begin",
+      "metadata": {
+        "x": 12,
+        "y": 57
+      }
     },
     {
       "id": "evaluate-ticket",
       "name": "Evaluate Ticket Priority & Category",
-      "type": "decision"
+      "type": "decision",
+      "metadata": {
+        "x": 412,
+        "y": 57
+      }
     },
     {
       "id": "escalate-urgent",
       "name": "Escalate to L2 Tech Support",
-      "type": "task"
+      "type": "task",
+      "metadata": {
+        "x": 812,
+        "y": 612
+      }
     },
     {
       "id": "route-to-billing",
       "name": "Route to Billing Team",
-      "type": "task"
+      "type": "task",
+      "metadata": {
+        "x": 812,
+        "y": 312
+      }
     },
     {
       "id": "assign-general",
       "name": "Assign to General Support Queue",
-      "type": "task"
+      "type": "task",
+      "metadata": {
+        "x": 812,
+        "y": 12
+      }
     },
     {
       "id": "add-vip-tag",
       "name": "Tag as VIP Customer",
-      "type": "task"
+      "type": "task",
+      "metadata": {
+        "x": 1212,
+        "y": 697
+      }
     },
     {
       "id": "send-confirmation",
       "name": "Send Confirmation to Customer",
-      "type": "task"
+      "type": "task",
+      "metadata": {
+        "x": 1212,
+        "y": 312
+      }
     },
     {
       "id": "end-routing",
       "name": "End Routing Process",
-      "type": "end"
+      "type": "end",
+      "metadata": {
+        "x": 1612,
+        "y": 337
+      }
     }
   ],
   "connections": [
