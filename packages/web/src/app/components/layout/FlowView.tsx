@@ -8,6 +8,8 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
   type OnNodesChange,
+  MarkerType,
+  type DefaultEdgeOptions,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -18,9 +20,9 @@ import { EndNode } from "../custom-nodes/EndNode";
 import { DecisionNode } from "../custom-nodes/DecisionNode";
 import { TaskNode } from "../custom-nodes/TaskNode";
 
-const defaultEdgeOptions = {
+const defaultEdgeOptions: DefaultEdgeOptions = {
   animated: true,
-  type: "smoothstep",
+  type: "step",
 };
 
 export function FlowView() {
@@ -88,6 +90,12 @@ export function FlowView() {
       labelBgPadding: [6, 4],
       labelBgBorderRadius: 4,
       labelBgStyle: { fill: "#fff", fillOpacity: 0.6 },
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        width: 20,
+        height: 20,
+        color: "black",
+      },
     }));
     setEdges(newEdges);
   }, [flow, setNodes, setEdges, selectedStepId]);
@@ -119,6 +127,7 @@ export function FlowView() {
       defaultEdgeOptions={defaultEdgeOptions}
       onNodeDragStop={onNodeDragStop}
       defaultViewport={initViewPort}
+      snapToGrid={true}
     >
       <Controls onFitView={onFitView} />
       <Background />

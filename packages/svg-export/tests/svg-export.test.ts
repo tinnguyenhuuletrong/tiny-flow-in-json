@@ -1,6 +1,6 @@
 import { describe, it, expect } from "bun:test";
 import { flowToSvg } from "../src";
-import { ParsedFlow } from "@tiny-json-workflow/core";
+import type { ParsedFlow } from "@tiny-json-workflow/core";
 
 describe("flowToSvg", () => {
   it("should return a string", () => {
@@ -82,8 +82,18 @@ describe("flowToSvg", () => {
       name: "Test Flow",
       version: "1.0.0",
       steps: [
-        { id: "begin", name: "Begin", type: "begin", metadata: { x: 100, y: 200 } },
-        { id: "task", name: "Task", type: "task", metadata: { x: 400, y: 200 } },
+        {
+          id: "begin",
+          name: "Begin",
+          type: "begin",
+          metadata: { x: 100, y: 200 },
+        },
+        {
+          id: "task",
+          name: "Task",
+          type: "task",
+          metadata: { x: 400, y: 200 },
+        },
       ],
       connections: [],
       globalStateZodSchema: {} as any,
