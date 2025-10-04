@@ -2,7 +2,6 @@ import { useMemo, useState, useEffect } from "react";
 import { z } from "zod";
 import { ZodProvider } from "@autoform/zod";
 import { AutoForm } from "@/components/ui/autoform";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
 
