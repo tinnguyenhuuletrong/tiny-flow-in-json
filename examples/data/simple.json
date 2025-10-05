@@ -1,4 +1,5 @@
 {
+  "$schema": "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/v0.1.0/flow.json",
   "id": "onboarding-flow-v1",
   "name": "User Onboarding Flow",
   "version": "1.0.0",
