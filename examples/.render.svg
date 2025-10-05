@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-58 -58 1740 825"><path d="M 32,57 L 252,57" stroke="#000" stroke-width="2" fill="none" />
+<g><path d="M 572,57 L 618,57 Q 628,57 628,67 L 628,602 Q 628,612 638,612 L 684,612" stroke="#000" stroke-width="2" fill="none" /><text x="628" y="329.5" dominant-baseline="auto" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#000">state.ticket.priority == &apos;urgent&apos; &amp;&amp; state.ticket.category == &apos;technical&apos;</text></g>
+<g><path d="M 572,57 L 630,57 Q 640,57 640,67 L 640,302 Q 640,312 650,312 L 708,312" stroke="#000" stroke-width="2" fill="none" /><text x="640" y="179.5" dominant-baseline="auto" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#000">state.ticket.category == &apos;billing&apos;</text></g>
+<path d="M 572,57 L 610,57 Q 620,57 620,47 L 620,22 Q 620,12 630,12 L 668,12" stroke="#000" stroke-width="2" fill="none" />
+<g><path d="M 572,57 L 834,57 Q 844,57 844,67 L 844,687 Q 844,697 854,697 L 1116,697" stroke="#000" stroke-width="2" fill="none" /><text x="844" y="372" dominant-baseline="auto" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#000">state.ticket.isVip == true</text></g>
+<path d="M 940,612 L 998,612 Q 1008,612 1008,602 L 1008,322 Q 1008,312 1018,312 L 1076,312" stroke="#000" stroke-width="2" fill="none" />
+<path d="M 916,312 L 1076,312" stroke="#000" stroke-width="2" fill="none" />
+<path d="M 956,12 L 1006,12 Q 1016,12 1016,22 L 1016,302 Q 1016,312 1026,312 L 1076,312" stroke="#000" stroke-width="2" fill="none" />
+<path d="M 1308,697 L 1440,697 Q 1450,697 1450,687 L 1450,347 Q 1450,337 1460,337 L 1592,337" stroke="#000" stroke-width="2" fill="none" />
+<path d="M 1348,312 L 1460,312 Q 1470,312 1470,322 L 1470,327 Q 1470,337 1480,337 L 1592,337" stroke="#000" stroke-width="2" fill="none" />
+<g><circle cx="12" cy="57" r="20" fill="#fff" stroke="#000" stroke-width="2" data-testid="begin-node" /></g>
+<g><rect x="252" y="37" width="320" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="decision-node" /><text x="412" y="57" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Evaluate Ticket Priority &amp; Category</text></g>
+<g><rect x="684" y="592" width="256" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="task-node" /><text x="812" y="612" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Escalate to L2 Tech Support</text></g>
+<g><rect x="708" y="292" width="208" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="task-node" /><text x="812" y="312" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Route to Billing Team</text></g>
+<g><rect x="668" y="-8" width="288" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="task-node" /><text x="812" y="12" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Assign to General Support Queue</text></g>
+<g><rect x="1116" y="677" width="192" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="task-node" /><text x="1212" y="697" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Tag as VIP Customer</text></g>
+<g><rect x="1076" y="292" width="272" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="task-node" /><text x="1212" y="312" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Send Confirmation to Customer</text></g>
+<g><circle cx="1612" cy="337" r="20" fill="#000" data-testid="end-node" /></g></svg>

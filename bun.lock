@@ -14,6 +14,7 @@
       "name": "@tiny-json-workflow/core",
       "version": "0.1.0",
       "dependencies": {
+        "@tiny-json-workflow/json-schema-adapter": "workspace:*",
         "zod": "^4",
       },
     },
@@ -23,6 +24,13 @@
       "dependencies": {
         "@autoform/zod": "^5.0.0",
         "zod": "^4",
+      },
+    },
+    "packages/svg-export": {
+      "name": "@tiny-json-workflow/svg-export",
+      "version": "0.1.0",
+      "dependencies": {
+        "@tiny-json-workflow/core": "workspace:*",
       },
     },
     "packages/web": {
@@ -43,6 +51,7 @@
         "@radix-ui/react-tabs": "^1.1.13",
         "@radix-ui/react-toggle": "^1.1.10",
         "@tailwindcss/vite": "^4.1.13",
+        "@tiny-json-workflow/core": "workspace:*",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "dagre": "^0.8.5",
@@ -398,6 +407,8 @@
     "@tiny-json-workflow/core": ["@tiny-json-workflow/core@workspace:packages/core"],
 
     "@tiny-json-workflow/json-schema-adapter": ["@tiny-json-workflow/json-schema-adapter@workspace:packages/json-schema-adapter"],
+
+    "@tiny-json-workflow/svg-export": ["@tiny-json-workflow/svg-export@workspace:packages/svg-export"],
 
     "@tiny-json-workflow/web": ["@tiny-json-workflow/web@workspace:packages/web"],
 

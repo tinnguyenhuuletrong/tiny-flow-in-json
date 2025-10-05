@@ -1,5 +1,5 @@
 {
-  "name": "@tiny-json-workflow/core",
+  "name": "@tiny-json-workflow/svg-export",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,8 +9,7 @@
     "check": "tsc -b"
   },
   "dependencies": {
-    "zod": "^4",
-    "@tiny-json-workflow/json-schema-adapter": "workspace:*"
+    "@tiny-json-workflow/core": "workspace:*"
   },
   "devDependencies": {}
 }

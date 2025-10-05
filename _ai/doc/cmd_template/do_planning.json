@@ -1,35 +1,25 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_07.md",
+  "save_to": "create _ai/task_08.md",
   "resources": {
-    "requirement.md": "_ai/doc/requirement.md",
-    "doc_autoform.md": "_ai/doc/ref/doc_autoform.md",
-    "ref_github.png": "_ai/doc/ref/ref_github.png"
+    "current.mov.mp4": "_ai/doc/ref/current.mov.mp4"
   },
   "mcp": {},
   "target": [
     {
-      "goal": "review design LeftPanel",
+      "goal": "review design",
       "requirements": [
-        "Find a better way to display Global State",
-        "Left panel should collabsible into left ( open by default )",
-        "Available to display focus step",
-        "Room to display paramsSchema and params value - reuse component create for GlobalState",
-        "Please output an ascii render version for discuss in task"
-      ]
-    },
-    {
-      "goal": "The Flow View. Handle step select and sync with left panel",
-      "requirements": [
-        "leff panel select step -> highlight display in Flow view",
-        "Flow view select step -> highlight display on Left panel"
+        "Try to propose a better UI/ UX",
+        "target audiance. Developer who need to design a json flow -> save it as file and use it as input in their app",
+        "newcomer can easy to understand the syntax via auto complete and json schema or learn from pre defined Examples",
+        "clear brand name"
       ]
     }
   ],
   "steps": {
     "1": "read resources, use context7 mcp when need",
     "2": "read current source code",
-    "3": "create a task_07 to achieve goal",
+    "3": "create a task_08 to achieve goal",
     "4": "generate ascii draft design to discuss first",
     "5": "waiting for human review and confirm everything before start to code"
   }
