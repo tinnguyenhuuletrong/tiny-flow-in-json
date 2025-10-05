@@ -6,7 +6,8 @@
   "main": "src/index",
   "scripts": {
     "test": "bun test",
-    "check": "tsc -b"
+    "check": "tsc -b",
+    "build:schema": "bun scripts/generate-schema.ts"
   },
   "dependencies": {
     "zod": "^4",

@@ -1,0 +1,90 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests
+        run: make test
+
+      - name: Run type check
+        run: make check
+
+      - name: Generate JSON schema
+        run: bun run --cwd packages/core build:schema
+
+      - name: Upload schema artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: json-schema
+          path: packages/core/schema.json
+
+      - name: Build web app
+        run: bun run --cwd packages/web build
+
+      - name: Upload web app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-app
+          path: packages/web/dist
+
+  deploy:
+    name: Deploy to Github Pages
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download web app artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-app
+          path: ./dist
+
+      - name: Download schema artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: json-schema
+          path: ./
+
+      - name: Get package version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+
+      - name: Prepare schema files
+        run: |
+          mkdir -p ./dist/schema/v${{ steps.package-version.outputs.current-version }}
+          mkdir -p ./dist/schema/latest
+          mv ./schema.json ./dist/schema/v${{ steps.package-version.outputs.current-version }}/flow.json
+          cp ./dist/schema/v${{ steps.package-version.outputs.current-version }}/flow.json ./dist/schema/latest/flow.json
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dist"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
