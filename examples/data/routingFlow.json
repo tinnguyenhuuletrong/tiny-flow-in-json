@@ -1,4 +1,5 @@
 {
+  "$schema": "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
   "id": "support-ticket-router-v2",
   "name": "Customer Support Ticket Routing Flow",
   "version": "2.0.0",

@@ -6,6 +6,8 @@ import {
 
 export const placeholderFlow: ParsedFlow = parseFromJson(
   JSON.stringify({
+    $schema:
+      "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
     id: "onboarding-flow-v1",
     name: "User Onboarding Flow",
     version: "1.0.0",

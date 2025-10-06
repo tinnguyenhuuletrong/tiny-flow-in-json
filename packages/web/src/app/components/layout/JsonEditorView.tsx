@@ -136,7 +136,7 @@ export function JsonEditorView() {
             schemaValidation: "error",
             schemas: [
               {
-                uri: "http://tiny-json-workflow/flow-schema.json", // A unique URI for our schema
+                uri: "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json", // A unique URI for our schema
                 fileMatch: ["*"], // Temporarily use "*" to ensure it's broadly applied, will refine in onMount
                 schema: flowJsonSchema,
               },

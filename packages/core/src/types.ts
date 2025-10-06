@@ -52,6 +52,7 @@ export type Connection = z.infer<typeof ConnectionSchema>;
 
 // The main schema for the entire workflow.
 export const FlowSchema = z.object({
+  $schema: z.string().optional(),
   id: z.string(),
   name: z.string(),
   version: z.string(),
@@ -65,6 +66,7 @@ export const FlowSchema = z.object({
 export type Flow = z.infer<typeof FlowSchema>;
 
 export const KEY_ORDERS = asAllUniqueKeys<Flow>()([
+  "$schema",
   "id",
   "name",
   "version",
