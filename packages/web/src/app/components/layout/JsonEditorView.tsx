@@ -23,6 +23,7 @@ export function JsonEditorView() {
   // watch for external update -> refresh
   // optimistic state control for uncontrolled component
   useEffect(() => {
+    if (!flow) return;
     if (currentRevision !== revision) {
       editorRef.current?.setValue(saveToJson(flow));
       console.log("external reloaded for", currentRevision);
@@ -92,6 +93,8 @@ export function JsonEditorView() {
       setValidationErrors([`Invalid JSON format: ${error.message}`]);
     }
   };
+
+  if (!flow) return null;
 
   return (
     <div className="flex flex-col h-full">

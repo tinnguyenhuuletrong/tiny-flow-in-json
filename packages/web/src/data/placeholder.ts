@@ -8,79 +8,56 @@ export const placeholderFlow: ParsedFlow = parseFromJson(
   JSON.stringify({
     $schema:
       "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
-    id: "onboarding-flow-v1",
-    name: "User Onboarding Flow",
+    id: "some_id",
+    name: "UPDATE_ME",
     version: "1.0.0",
+    globalState: {
+      userId: "001",
+    },
     globalStateSchema: {
       type: "object",
       properties: {
         userId: {
           type: "string",
         },
-        profileIsComplete: {
-          type: "boolean",
-        },
       },
       required: ["userId"],
-    },
-    globalState: {
-      userId: "001",
-      profileIsComplete: true,
     },
     steps: [
       {
         id: "start-flow",
-        name: "Begin Onboarding",
+        name: "Begin",
         type: "begin",
         metadata: {
-          x: 12,
-          y: 37,
+          x: 15,
+          y: 30,
         },
       },
       {
-        id: "send-welcome",
-        name: "Send Welcome Email",
+        id: "do-something",
+        name: "Do Something",
         type: "task",
+        metadata: {
+          x: 150,
+          y: 0,
+        },
         paramsSchema: {
           type: "object",
           properties: {
-            template: {
+            message: {
               type: "string",
-              default: "welcome-email-v2",
+              default: "update-me!",
             },
           },
-        },
-        metadata: {
-          owner: "engagement-team",
-          x: 412,
-          y: 37,
-        },
-      },
-      {
-        id: "check-profile",
-        name: "Is Profile Complete?",
-        type: "decision",
-        metadata: {
-          x: 812,
-          y: 37,
-        },
-      },
-      {
-        id: "send-reminder",
-        name: "Send Profile Reminder",
-        type: "task",
-        metadata: {
-          x: 1202.766789125643,
-          y: 139.94592211609114,
         },
       },
       {
         id: "end-flow",
-        name: "End Onboarding",
+        name: "End",
         type: "end",
         metadata: {
-          x: 1612,
-          y: 37,
+          x: 495,
+          y: 30,
         },
       },
     ],
@@ -88,36 +65,19 @@ export const placeholderFlow: ParsedFlow = parseFromJson(
       {
         id: "c1",
         sourceStepId: "start-flow",
-        targetStepId: "send-welcome",
+        targetStepId: "do-something",
       },
       {
         id: "c2",
-        sourceStepId: "send-welcome",
-        targetStepId: "check-profile",
-      },
-      {
-        id: "c3",
-        sourceStepId: "check-profile",
-        targetStepId: "end-flow",
-        condition: "state.profileIsComplete == true",
-      },
-      {
-        id: "c4",
-        sourceStepId: "check-profile",
-        targetStepId: "send-reminder",
-        condition: "state.profileIsComplete == false",
-      },
-      {
-        id: "c5",
-        sourceStepId: "send-reminder",
+        sourceStepId: "do-something",
         targetStepId: "end-flow",
       },
     ],
     metadata: {
       reactflowViewport: {
-        x: 52.76604278074876,
-        y: 342.5353721033868,
-        zoom: 0.758132798573975,
+        x: 17.65411931818187,
+        y: 438.7223011363636,
+        zoom: 1.6654829545454544,
       },
     },
   } satisfies Flow)

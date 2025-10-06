@@ -1,6 +1,10 @@
 import { create } from "zustand";
-import { type ParsedFlow } from "@tiny-json-workflow/core";
-import { placeholderFlow } from "../../data/placeholder";
+import { persist, type PersistStorage } from "zustand/middleware";
+import {
+  parseFromJson,
+  saveToJson,
+  type ParsedFlow,
+} from "@tiny-json-workflow/core";
 import { getLayoutedElements } from "../../lib/layout";
 import {
   type Node,
@@ -8,6 +12,8 @@ import {
   type XYPosition,
   type Viewport,
 } from "reactflow";
+
+const PersistStorageVersion = 1;
 
 type FlowMetadataState =
   | Partial<{
@@ -18,7 +24,7 @@ type FlowMetadataState =
 type FlowRevision = number;
 
 type FlowState = {
-  flow: ParsedFlow;
+  flow: ParsedFlow | undefined;
   selectedStepId: string | null;
   editingStepId: string | null;
 
@@ -38,6 +44,7 @@ type FlowState = {
     stepId: string,
     params: Record<string, any>
   ) => FlowRevision;
+  reset: () => void;
 };
 
 const layoutFlow = async (flow: ParsedFlow): Promise<ParsedFlow> => {
@@ -81,95 +88,150 @@ const layoutFlow = async (flow: ParsedFlow): Promise<ParsedFlow> => {
   return { ...flow, steps: newSteps };
 };
 
-export const useFlowStore = create<FlowState>((set, get) => ({
-  flow: placeholderFlow,
-  revision: 0,
-  selectedStepId: null,
-  editingStepId: null,
+const storage: PersistStorage<FlowState> = {
+  getItem: (name) => {
+    const str = localStorage.getItem(name);
+    if (!str) return null;
 
-  getFlowMetadata: () => get().flow.metadata as FlowMetadataState,
-  setFlow: (flow) => {
-    const revision = get().revision;
-    set({ flow: flow, revision: revision + 1 });
-    return revision + 1;
-  },
-  doAutoLayout: async () => {
-    const { flow, revision } = get();
-    const layoutedFlow = await layoutFlow(flow);
-    set({ flow: layoutedFlow, revision: revision + 1 });
-    return revision + 1;
-  },
-  updateNodePosition: (nodeId, position) => {
-    const { revision } = get();
-    set((state) => ({
-      revision: state.revision + 1,
-      flow: {
-        ...state.flow,
-        steps: state.flow.steps.map((step) => {
-          if (step.id === nodeId) {
-            return {
-              ...step,
-              metadata: { ...step.metadata, ...position },
-            };
-          }
-          return step;
-        }),
-      },
-    }));
-    return revision + 1;
-  },
-  updateFlowViewport: (value: Viewport) => {
-    const metadata = get().flow?.metadata ?? {};
-    const { revision } = get();
-    metadata.reactflowViewport = value;
+    const { state, version } = JSON.parse(str);
 
-    set((state) => ({
-      revision: state.revision + 1,
-      flow: {
-        ...state.flow,
-        metadata,
+    return {
+      state: {
+        ...state,
+        flow: state.flow ? parseFromJson(state.flow) : undefined,
       },
-    }));
-    return revision + 1;
+      version,
+    };
   },
-  updateFlowState: (newState) => {
-    const { revision } = get();
-    set((state) => ({
-      revision: state.revision + 1,
-      flow: {
-        ...state.flow,
-        globalState: newState,
+  setItem: (name, newValue) => {
+    const str = JSON.stringify({
+      state: {
+        ...newValue.state,
+        flow: newValue.state.flow ? saveToJson(newValue.state.flow) : undefined,
       },
-    }));
-    return revision + 1;
+      version: PersistStorageVersion,
+    });
+    localStorage.setItem(name, str);
   },
-  setSelectedStepId: (stepId) => {
-    const { revision } = get();
-    set({ selectedStepId: stepId });
-    return revision;
-  },
-  setEditingStepId: (stepId) => {
-    const { revision } = get();
-    set({ editingStepId: stepId });
-    return revision;
-  },
-  updateStepParams: (stepId, params) => {
-    const { revision } = get();
-    set((state) => ({
-      revision: state.revision + 1,
-      flow: {
-        ...state.flow,
-        steps: state.flow.steps.map((step) => {
-          if (step.id === stepId) {
-            return {
-              ...step,
-              params: params,
-            };
-          }
-          return step;
-        }),
+  removeItem: (name) => localStorage.removeItem(name),
+};
+
+export const useFlowStore = create<FlowState>()(
+  persist(
+    (set, get) => ({
+      flow: undefined,
+      revision: 0,
+      selectedStepId: null,
+      editingStepId: null,
+
+      getFlowMetadata: () => get().flow?.metadata as FlowMetadataState,
+      setFlow: (flow) => {
+        const revision = get().revision;
+        set({ flow: flow, revision: revision + 1 });
+        return revision + 1;
       },
-    }));
-    return revision + 1;
-  },
-}));
+      doAutoLayout: async () => {
+        const { flow, revision } = get();
+        if (!flow) return revision;
+        const layoutedFlow = await layoutFlow(flow);
+        set({ flow: layoutedFlow, revision: revision + 1 });
+        return revision + 1;
+      },
+      updateNodePosition: (nodeId, position) => {
+        const { revision } = get();
+        set((state) => ({
+          revision: state.revision + 1,
+          flow: state.flow
+            ? {
+                ...state.flow,
+                steps: state.flow.steps.map((step) => {
+                  if (step.id === nodeId) {
+                    return {
+                      ...step,
+                      metadata: { ...step.metadata, ...position },
+                    };
+                  }
+                  return step;
+                }),
+              }
+            : undefined,
+        }));
+        return revision + 1;
+      },
+      updateFlowViewport: (value: Viewport) => {
+        const metadata = get().flow?.metadata ?? {};
+        const { revision } = get();
+        metadata.reactflowViewport = value;
+
+        set((state) => ({
+          revision: state.revision + 1,
+          flow: state.flow
+            ? {
+                ...state.flow,
+                metadata,
+              }
+            : undefined,
+        }));
+        return revision + 1;
+      },
+      updateFlowState: (newState) => {
+        const { revision } = get();
+        set((state) => ({
+          revision: state.revision + 1,
+          flow: state.flow
+            ? {
+                ...state.flow,
+                globalState: newState,
+              }
+            : undefined,
+        }));
+        return revision + 1;
+      },
+      setSelectedStepId: (stepId) => {
+        const { revision } = get();
+        set({ selectedStepId: stepId });
+        return revision;
+      },
+      setEditingStepId: (stepId) => {
+        const { revision } = get();
+        set({ editingStepId: stepId });
+        return revision;
+      },
+      updateStepParams: (stepId, params) => {
+        const { revision } = get();
+        set((state) => ({
+          revision: state.revision + 1,
+          flow: state.flow
+            ? {
+                ...state.flow,
+                steps: state.flow.steps.map((step) => {
+                  if (step.id === stepId) {
+                    return {
+                      ...step,
+                      params: params,
+                    };
+                  }
+                  return step;
+                }),
+              }
+            : undefined,
+        }));
+        return revision + 1;
+      },
+      reset: () => {
+        useFlowStore.persist.clearStorage();
+        set({
+          flow: undefined,
+          revision: 0,
+          selectedStepId: null,
+          editingStepId: null,
+        });
+      },
+    }),
+    {
+      name: "tiny-json-workflow-session",
+      storage: storage,
+      version: PersistStorageVersion,
+    }
+  )
+);

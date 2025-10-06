@@ -21,6 +21,8 @@ export function LeftPanel() {
   } = useFlowStore();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  if (!flow) return null;
+
   return (
     <div
       className={cn(
