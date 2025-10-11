@@ -23,6 +23,7 @@ export function JsonEditorView() {
   // watch for external update -> refresh
   // optimistic state control for uncontrolled component
   useEffect(() => {
+    if (!flow) return;
     if (currentRevision !== revision) {
       editorRef.current?.setValue(saveToJson(flow));
       console.log("external reloaded for", currentRevision);
@@ -93,6 +94,8 @@ export function JsonEditorView() {
     }
   };
 
+  if (!flow) return null;
+
   return (
     <div className="flex flex-col h-full">
       {validationErrors.length > 0 && (
@@ -136,7 +139,7 @@ export function JsonEditorView() {
             schemaValidation: "error",
             schemas: [
               {
-                uri: "http://tiny-json-workflow/flow-schema.json", // A unique URI for our schema
+                uri: "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json", // A unique URI for our schema
                 fileMatch: ["*"], // Temporarily use "*" to ensure it's broadly applied, will refine in onMount
                 schema: flowJsonSchema,
               },

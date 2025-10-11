@@ -16,7 +16,9 @@ export function StepEditModal() {
     useFlowStore();
   const [formData, setFormData] = useState<Record<string, any>>({});
 
-  const editingStep = flow.steps.find((s) => s.id === editingStepId);
+  const editingStep = flow
+    ? flow.steps.find((s) => s.id === editingStepId)
+    : undefined;
 
   useEffect(() => {
     if (editingStep?.params) {

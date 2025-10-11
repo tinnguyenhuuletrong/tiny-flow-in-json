@@ -1,11 +1,25 @@
-import { Button } from "@/components/ui/button";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarSeparator,
+} from "@/components/ui/menubar";
 import { useFlowStore } from "@/app/store/flowStore";
 import { parseFromJson, saveToJson } from "@tiny-json-workflow/core";
+import { examples } from "@tiny-json-workflow/examples";
+import { placeholderFlow } from "@/data/placeholder";
 
 export function Toolbar() {
-  const { doAutoLayout, flow, setFlow } = useFlowStore();
+  const { doAutoLayout, flow, setFlow, reset } = useFlowStore();
 
   const handleExport = () => {
+    if (!flow) return;
+
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
       saveToJson(flow)
     )}`;
@@ -38,17 +52,57 @@ export function Toolbar() {
     input.click();
   };
 
+  const handleNewFile = () => {
+    setFlow(placeholderFlow);
+  };
+
+  const handleLoadExample = (example: any) => {
+    const parsedFlow = parseFromJson(JSON.stringify(example));
+    setFlow(parsedFlow);
+  };
+
   return (
-    <div className="p-2 border-b flex gap-2">
-      <Button variant="outline" onClick={handleImport}>
-        Import
-      </Button>
-      <Button variant="outline" onClick={handleExport}>
-        Export
-      </Button>
-      <Button variant="outline" onClick={doAutoLayout}>
-        Auto Layout
-      </Button>
-    </div>
+    <Menubar>
+      <MenubarMenu>
+        <MenubarTrigger>File</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem onClick={handleNewFile}>New</MenubarItem>
+          <MenubarItem disabled={!flow} onClick={handleImport}>
+            Import
+          </MenubarItem>
+          <MenubarItem disabled={!flow} onClick={handleExport}>
+            Export
+          </MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem onClick={reset}>Reset</MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+      <MenubarMenu>
+        <MenubarTrigger>View</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem disabled={!flow} onClick={doAutoLayout}>
+            Auto Layout
+          </MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+      <MenubarMenu>
+        <MenubarTrigger>Examples</MenubarTrigger>
+        <MenubarContent>
+          <MenubarSub>
+            <MenubarSubTrigger>Load Example</MenubarSubTrigger>
+            <MenubarSubContent>
+              {Object.entries(examples).map(([name, example]) => (
+                <MenubarItem
+                  key={name}
+                  onClick={() => handleLoadExample(example)}
+                >
+                  {name}
+                </MenubarItem>
+              ))}
+            </MenubarSubContent>
+          </MenubarSub>
+        </MenubarContent>
+      </MenubarMenu>
+    </Menubar>
   );
 }

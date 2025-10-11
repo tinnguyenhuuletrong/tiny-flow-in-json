@@ -53,6 +53,7 @@ export function FlowView() {
   );
 
   useEffect(() => {
+    if (!flow) return;
     if (flow.steps.length === 0) return;
 
     const newNodes: Node[] = flow.steps.map((step) => {
