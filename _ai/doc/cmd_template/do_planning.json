@@ -1,6 +1,6 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_10.md",
+  "save_to": "create _ai/task_11.md",
   "resources": {},
   "mcp": {},
   "target": [
@@ -16,6 +16,6 @@
   "steps": {
     "1": "read resources, use context7 mcp when need",
     "2": "read current source code",
-    "3": "create a task_10 to achieve goal"
+    "3": "create a task_11 to achieve goal"
   }
 }
