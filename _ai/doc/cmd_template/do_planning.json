@@ -1,20 +1,21 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_08.md",
+  "save_to": "create _ai/task_10.md",
   "resources": {},
   "mcp": {},
   "target": [
     {
-      "goal": "Create CI Github action",
+      "goal": "Create a test for packages/web",
       "requirements": [
-        "Build packages/web and publish as github page",
-        "Build JSON schema packages/core/src/index.ts JSON_SCHEMA to a file. and publish to Github page also with version"
+        "Now the web is become bigger. We should start to make a test for this",
+        "Let analyze what the structure. Propose the test statergy for this using bun test",
+        "Let 's targeting on unit and integration test first. since e2e test is quite overkill now"
       ]
     }
   ],
   "steps": {
     "1": "read resources, use context7 mcp when need",
     "2": "read current source code",
-    "3": "create a task_08 to achieve goal"
+    "3": "create a task_10 to achieve goal"
   }
 }
