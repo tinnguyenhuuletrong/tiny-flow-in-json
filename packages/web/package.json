@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --force",
-    "test": "echo 'todo'",
+    "test": "bun test",
     "check": "tsc -b",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -50,6 +50,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@happy-dom/global-registrator": "^20.0.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
     "@types/dagre": "^0.7.52",
     "@types/lodash.debounce": "^4.0.9",
     "@types/react": "^19.1.10",

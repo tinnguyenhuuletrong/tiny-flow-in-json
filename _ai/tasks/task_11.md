@@ -6,40 +6,52 @@ Create a comprehensive testing strategy for the `packages/web` package to ensure
 
 ## Test Strategy
 
-We will use `bun:test` for running tests and `@testing-library/react` for rendering and interacting with React components. We'll use `@happy-dom/global-registrator` for a fast DOM environment.
+We will use `bun:test` for running tests and `@testing-library/react` for rendering and interacting with React components. We'll use `@happy-dom/global-registrator` for a fast DOM environment. ( guide https://bun.com/guides/test/testing-library )
 
 ### 1. Test Setup
 
-- **Install Dependencies:** Add `bun-types`, `@testing-library/react`, `@testing-library/jest-dom`, and `@happy-dom/global-registrator` to `devDependencies`.
+- **Install dev dependencies:**
+  Run the following command in the `packages/web` directory:
+  ```bash
+  bun add -d @testing-library/react @testing-library/jest-dom @happy-dom/global-registrator
+  ```
 
-- **Create Preload Scripts:** Create a `tests` directory in `packages/web` and add the following files:
-    - `tests/happydom.ts`:
-        ```typescript
-        import { GlobalRegistrator } from '@happy-dom/global-registrator';
-        GlobalRegistrator.register();
-        ```
-    - `tests/setup.ts`:
-        ```typescript
-        import { afterEach } from 'bun:test';
-        import { cleanup } from '@testing-library/react';
-        import '@testing-library/jest-dom';
+- **Create a test setup file:**
+  Create a `tests/setup.ts` file in `packages/web` to set up the DOM environment. This file will be preloaded by Bun's test runner.
 
-        afterEach(() => {
-          cleanup();
-        });
-        ```
+  ```typescript
+  // packages/web/tests/setup.ts
+  import { GlobalRegistrator } from '@happy-dom/global-registrator'
 
-- **Configure `bunfig.toml`:** Create a `bunfig.toml` file in the `packages/web` directory with the following content to automatically preload the setup scripts:
-    ```toml
-    [test]
-    preload = ["./tests/happydom.ts", "./tests/setup.ts"]
-    ```
+  GlobalRegistrator.register()
+  ```
 
-- **Configure `tsconfig.json`:**
-  - Add `"dom"` to `compilerOptions.lib`.
-  - Create a `tests/tsconfig.json` to include the test files.
+- **Configure Bun:**
+  Create a `bunfig.toml` file in `packages/web` to tell Bun to preload the setup script before running tests.
 
-- **Create Test Script:** Update the `test` script in `packages/web/package.json` to run `bun test`.
+  ```toml
+  # packages/web/bunfig.toml
+  [test]
+  preload = "./tests/setup.ts"
+  ```
+
+- **Add a test script:**
+  Update the `test` script in `packages/web/package.json` to execute `bun test`.
+
+  ```json
+  "scripts": {
+    "test": "bun test"
+  }
+  ```
+
+- **Update `tsconfig.json`:**
+  Update `packages/web/tsconfig.json` to include the `tests` directory in the compilation.
+
+  ```json
+  {
+    "include": ["src", "tests"]
+  }
+  ```
 
 ### 2. Unit Tests
 
