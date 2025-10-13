@@ -57,4 +57,108 @@ describe("useFlowStore", () => {
     expect(revision).toBe(initialRevision + 1);
     expect(newRevision).toBe(initialRevision + 1);
   });
+
+  it("setSelectedStepId should update the selectedStepId", () => {
+    useFlowStore.getState().setSelectedStepId("step1");
+    expect(useFlowStore.getState().selectedStepId).toBe("step1");
+  });
+
+  it("setEditingStepId should update the editingStepId", () => {
+    useFlowStore.getState().setEditingStepId("step2");
+    expect(useFlowStore.getState().editingStepId).toBe("step2");
+  });
+
+  it("updateStepParams should update the params of a specific step and increment revision", () => {
+    useFlowStore.getState().setFlow(mockFlow);
+    const initialRevision = useFlowStore.getState().revision;
+    const newParams = { newParam: "newValue" };
+    const newRevision = useFlowStore
+      .getState()
+      .updateStepParams("step1", newParams);
+
+    const { flow, revision } = useFlowStore.getState();
+    const updatedStep = flow?.steps.find((s) => s.id === "step1");
+
+    expect(updatedStep?.params).toEqual(newParams);
+    expect(revision).toBe(initialRevision + 1);
+    expect(newRevision).toBe(initialRevision + 1);
+  });
+
+  it("updateNodePosition should update a node position and increment revision", () => {
+    useFlowStore.getState().setFlow(mockFlow);
+    const initialRevision = useFlowStore.getState().revision;
+    const newPosition = { x: 200, y: 300 };
+    const newRevision = useFlowStore
+      .getState()
+      .updateNodePosition("step1", newPosition);
+
+    const { flow, revision } = useFlowStore.getState();
+    const updatedStep = flow?.steps.find((s) => s.id === "step1");
+
+    expect(updatedStep?.metadata?.x).toBe(200);
+    expect(updatedStep?.metadata?.y).toBe(300);
+    expect(revision).toBe(initialRevision + 1);
+    expect(newRevision).toBe(initialRevision + 1);
+  });
+
+  it("updateFlowState should update the globalState and increment revision", () => {
+    useFlowStore.getState().setFlow(mockFlow);
+    const initialRevision = useFlowStore.getState().revision;
+    const newGlobalState = { global: "state" };
+    const newRevision = useFlowStore.getState().updateFlowState(newGlobalState);
+
+    const { flow, revision } = useFlowStore.getState();
+    expect(flow?.globalState).toEqual(newGlobalState);
+    expect(revision).toBe(initialRevision + 1);
+    expect(newRevision).toBe(initialRevision + 1);
+  });
+
+  it("updateFlowViewport should update the viewport in metadata and increment revision", () => {
+    useFlowStore.getState().setFlow(mockFlow);
+    const initialRevision = useFlowStore.getState().revision;
+    const newViewport = { x: 100, y: 200, zoom: 2 };
+    const newRevision = useFlowStore.getState().updateFlowViewport(newViewport);
+
+    const { flow, revision } = useFlowStore.getState();
+    expect(flow?.metadata?.reactflowViewport).toEqual(newViewport);
+    expect(revision).toBe(initialRevision + 1);
+    expect(newRevision).toBe(initialRevision + 1);
+  });
+
+  it("doAutoLayout should update node positions and increment revision", async () => {
+    useFlowStore.getState().setFlow(mockFlow);
+    const initialRevision = useFlowStore.getState().revision;
+    const newRevision = await useFlowStore.getState().doAutoLayout();
+
+    const { flow, revision } = useFlowStore.getState();
+    const step1 = flow?.steps.find((s) => s.id === "step1");
+    const step2 = flow?.steps.find((s) => s.id === "step2");
+
+    // Check against the mocked layout values
+    expect(step1?.metadata?.x).toBe(10);
+    expect(step1?.metadata?.y).toBe(20);
+    expect(step2?.metadata?.x).toBe(10);
+    expect(step2?.metadata?.y).toBe(20);
+
+    expect(revision).toBe(initialRevision + 1);
+    expect(newRevision).toBe(initialRevision + 1);
+  });
+
+  it("getFlowMetadata should return the flow metadata", () => {
+    const metadata = { reactflowViewport: { x: 1, y: 1, zoom: 0.5 } };
+    const flowWithMeta = {
+      ...mockFlow,
+      metadata,
+      _internal: mockFlow._internal,
+    };
+    useFlowStore.getState().setFlow(flowWithMeta);
+
+    const result = useFlowStore.getState().getFlowMetadata();
+    expect(result).toEqual(metadata);
+  });
+
+  it("getFlowMetadata should return undefined if flow is not set", () => {
+    const result = useFlowStore.getState().getFlowMetadata();
+    expect(result).toBeUndefined();
+  });
 });

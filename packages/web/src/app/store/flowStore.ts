@@ -15,7 +15,7 @@ import {
 
 const PersistStorageVersion = 1;
 
-type FlowMetadataState =
+export type FlowMetadataState =
   | Partial<{
       reactflowViewport: Viewport;
     }>
