@@ -23,7 +23,7 @@ export type FlowMetadataState =
 
 type FlowRevision = number;
 
-type FlowState = {
+export type FlowState = {
   flow: ParsedFlow | undefined;
   selectedStepId: string | null;
   editingStepId: string | null;

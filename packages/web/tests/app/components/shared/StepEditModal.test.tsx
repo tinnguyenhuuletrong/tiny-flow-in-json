@@ -2,8 +2,10 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, expect, it, mock, vi, beforeEach } from "bun:test";
 import { StepEditModal } from "@/app/components/shared/StepEditModal";
 import { type Flow, parseFromJson } from "@tiny-json-workflow/core";
+import type { FlowState } from "@/app/store/flowStore";
 
-const mockUseStore = vi.fn();
+const mockUseStore = vi.fn<(...args: any[]) => Partial<FlowState>>();
+
 // Mock the useFlowStore
 mock.module("@/app/store/flowStore", () => ({
   useFlowStore: mockUseStore,
