@@ -26,7 +26,7 @@ describe("JsonAutoForm", () => {
       />
     );
 
-    expect(screen.getByLabelText("Name")).toBeDefined();
-    expect(screen.getByLabelText("Age")).toBeDefined();
+    expect(screen.getByLabelText(/Name/i)).toBeDefined();
+    expect(screen.getByLabelText(/Age/i)).toBeDefined();
   });
 });

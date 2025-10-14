@@ -8,7 +8,7 @@ export function DecisionNode({ data }: { data: Step }) {
   return (
     <div className="w-48 h-24 border border-gray-400 rounded-lg flex items-center justify-center bg-yellow-100 font-medium p-2 text-center shadow-sm relative">
       {data.name}
-      <Handle type="target" position={Position.Left} id="a" />
+      <Handle type="target" position={Position.Left} id="a" data-testid="target-handle" />
       {sourceHandles.map((handleId: string, index: number) => (
         <Handle
           key={handleId}
@@ -18,6 +18,7 @@ export function DecisionNode({ data }: { data: Step }) {
           style={{
             top: `${(index + 1) * 100 / (sourceHandles.length + 1)}%`,
           }}
+          data-testid={`source-handle-${handleId}`}
         />
       ))}
     </div>
