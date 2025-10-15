@@ -15,7 +15,19 @@ const mockStep: Step = {
 
 describe("DecisionNode", () => {
   it("should render the node with name, target handle, and source handles", () => {
-    render(<DecisionNode data={mockStep} />);
+    render(
+      <DecisionNode
+        data={mockStep}
+        id={mockStep.id}
+        type={mockStep.type}
+        selected={false}
+        zIndex={0}
+        isConnectable={false}
+        xPos={0}
+        yPos={0}
+        dragging={false}
+      />
+    );
 
     expect(screen.getByText("Test Decision")).toBeDefined();
 

@@ -1,9 +1,17 @@
-import { Handle, Position } from "reactflow";
+import { Handle, Position, type NodeProps } from "reactflow";
+import type { ParsedStep } from "@tiny-json-workflow/core";
 
-export function BeginNode() {
+export function BeginNode({ data }: NodeProps<ParsedStep>) {
   return (
-    <div className="w-8 h-8 bg-white rounded-full border-2 border-black">
-      <Handle type="source" position={Position.Right} data-testid="source-handle" />
+    <div
+      data-testid={`node-${data.id}`}
+      className="w-8 h-8 bg-white rounded-full border-2 border-black"
+    >
+      <Handle
+        type="source"
+        position={Position.Right}
+        data-testid="source-handle"
+      />
     </div>
   );
 }

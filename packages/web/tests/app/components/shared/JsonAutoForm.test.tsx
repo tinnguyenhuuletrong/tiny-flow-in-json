@@ -29,4 +29,22 @@ describe("JsonAutoForm", () => {
     expect(screen.getByLabelText(/Name/i)).toBeDefined();
     expect(screen.getByLabelText(/Age/i)).toBeDefined();
   });
+
+  it("should render with default value from schema", () => {
+    const onDataChange = vi.fn();
+    const schemaWithDefault = z.object({
+      name: z.string().default("Default Name"),
+    });
+
+    render(
+      <JsonAutoForm
+        schema={schemaWithDefault}
+        data={{} as any}
+        onDataChange={onDataChange}
+      />
+    );
+
+    const input = screen.getByLabelText(/Name/i) as HTMLInputElement;
+    expect(input.value).toBe("Default Name");
+  });
 });

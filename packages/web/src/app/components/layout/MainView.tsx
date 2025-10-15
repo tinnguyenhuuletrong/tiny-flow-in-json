@@ -16,8 +16,12 @@ export function MainView() {
     <div className="flex-1 p-4 flex flex-col">
       <Tabs defaultValue="flow" className="flex-1 flex flex-col">
         <TabsList>
-          <TabsTrigger value="flow">Flow</TabsTrigger>
-          <TabsTrigger value="json">JSON</TabsTrigger>
+          <TabsTrigger value="flow" data-testid="tab-flow">
+            Flow
+          </TabsTrigger>
+          <TabsTrigger value="json" data-testid="tab-json">
+            JSON
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="flow" className="flex-1 overflow-y-auto">
           <div className="w-full h-full border rounded-md">

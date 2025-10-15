@@ -71,16 +71,6 @@ We will start by unit testing the core logic and individual components.
 - **`components/custom-nodes`:**
   - [x] Test each node component (`BeginNode`, `DecisionNode`, `EndNode`, `TaskNode`) to ensure it renders correctly based on its props.
 
-### 3. Integration Tests
-
-After unit tests are in place, we will write integration tests to ensure different parts of the application work together correctly.
-
-- **`JsonEditorView` and `FlowView`:**
-  - [ ] Test that updating the JSON in `JsonEditorView` correctly updates the nodes and edges in `FlowView`.
-- **`FlowView` and `StepEditModal`:**
-  - [ ] Test that double-clicking a node in `FlowView` opens the `StepEditModal` with the correct data.
-  - [ ] Test that saving changes in the modal updates the node in the `FlowView`.
-
 ## Implementation Plan
 
 1.  [x] **Setup the test environment:** Install dependencies, create preload scripts, configure `bunfig.toml` and `tsconfig.json`, and create the test script.
@@ -89,5 +79,3 @@ After unit tests are in place, we will write integration tests to ensure differe
 4.  [x] **Write unit tests for `hooks/useFlow.ts`**
 5.  [x] **Write unit tests for `components/shared`**
 6.  [x] **Write unit tests for `components/custom-nodes`**
-7.  [ ] **Write integration tests for `JsonEditorView` and `FlowView`**
-8.  [ ] **Write integration tests for `FlowView` and `StepEditModal`**

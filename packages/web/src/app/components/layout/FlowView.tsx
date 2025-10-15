@@ -128,7 +128,6 @@ export function FlowView() {
       defaultEdgeOptions={defaultEdgeOptions}
       onNodeDragStop={onNodeDragStop}
       defaultViewport={initViewPort}
-      snapToGrid={true}
     >
       <Controls onFitView={onFitView} />
       <Background />
