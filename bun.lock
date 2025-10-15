@@ -62,6 +62,7 @@
         "@tailwindcss/vite": "^4.1.13",
         "@tiny-json-workflow/core": "workspace:*",
         "@tiny-json-workflow/examples": "workspace:*",
+        "@tiny-json-workflow/json-schema-adapter": "workspace:*",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "dagre": "^0.8.5",

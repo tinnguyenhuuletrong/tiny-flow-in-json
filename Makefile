@@ -9,7 +9,7 @@ check:
 	bun run --cwd packages/core check && \
 	bun run --cwd packages/json-schema-adapter check && \
 	bun run --cwd packages/web check && \
-	bun run --cwd packages/svg-export test
+	bun run --cwd packages/svg-export check
 
 web-dev:
 	bun run --cwd packages/web dev
