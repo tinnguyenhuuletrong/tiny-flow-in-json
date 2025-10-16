@@ -98,7 +98,7 @@ packages/examples/src/
   - [x] Reorganize directory structure
   - [x] Create new examples (E-commerce, Dynamic Form)
   - [x] Create READMEs for all examples
-- [ ] Update `README.md`
-- [ ] Document the `FlowJSON` Structure (Core Focus)
-- [ ] Create "Getting Started" Guide (JSON-first)
-- [ ] Fix `forkJoinFlow.json`
+- [x] Update `README.md`
+- [x] Document the `FlowJSON` Structure (Core Focus)
+- [x] Create "Getting Started" Guide (JSON-first)
+- [x] Fix `forkJoinFlow.json`

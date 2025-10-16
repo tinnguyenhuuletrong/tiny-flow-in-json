@@ -1,0 +1,115 @@
+{
+  "$schema": "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
+  "id": "user-profile-update-v3",
+  "name": "User Profile Update with Parallel Tasks",
+  "version": "3.0.0",
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "string"
+      },
+      "updatedFields": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "searchIndexStatus": {
+        "type": "string"
+      },
+      "emailNotificationStatus": {
+        "type": "string"
+      }
+    },
+    "required": ["userId", "updatedFields"]
+  },
+  "steps": [
+    {
+      "id": "begin-update",
+      "name": "Begin Profile Update",
+      "type": "begin",
+      "metadata": {
+        "x": 12,
+        "y": 37
+      }
+    },
+    {
+      "id": "fork-tasks",
+      "name": "Initiate Parallel Tasks",
+      "type": "task",
+      "metadata": {
+        "x": 412,
+        "y": 37
+      }
+    },
+    {
+      "id": "update-search-index",
+      "name": "Update Search Index",
+      "type": "task",
+      "metadata": {
+        "x": 812,
+        "y": 312
+      }
+    },
+    {
+      "id": "send-email-notification",
+      "name": "Send 'Profile Updated' Email",
+      "type": "task",
+      "metadata": {
+        "x": 812,
+        "y": 12
+      }
+    },
+    {
+      "id": "join-tasks",
+      "name": "Synchronize and Finalize",
+      "type": "task",
+      "metadata": {
+        "x": 1212,
+        "y": 37
+      }
+    },
+    {
+      "id": "end-update",
+      "name": "End Profile Update",
+      "type": "end",
+      "metadata": {
+        "x": 1612,
+        "y": 37
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "begin-update",
+      "targetStepId": "fork-tasks"
+    },
+    {
+      "id": "c2-path-A",
+      "sourceStepId": "fork-tasks",
+      "targetStepId": "update-search-index"
+    },
+    {
+      "id": "c3-path-B",
+      "sourceStepId": "fork-tasks",
+      "targetStepId": "send-email-notification"
+    },
+    {
+      "id": "c4-join-A",
+      "sourceStepId": "update-search-index",
+      "targetStepId": "join-tasks"
+    },
+    {
+      "id": "c5-join-B",
+      "sourceStepId": "send-email-notification",
+      "targetStepId": "join-tasks"
+    },
+    {
+      "id": "c6",
+      "sourceStepId": "join-tasks",
+      "targetStepId": "end-update"
+    }
+  ]
+}
