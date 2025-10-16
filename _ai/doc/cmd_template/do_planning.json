@@ -1,21 +1,21 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_11.md",
+  "save_to": "create _ai/task_12.md",
   "resources": {},
   "mcp": {},
   "target": [
     {
-      "goal": "Create a test for packages/web",
+      "goal": "Update Readme and Create Document for this",
       "requirements": [
-        "Now the web is become bigger. We should start to make a test for this",
-        "Let analyze what the structure. Propose the test statergy for this using bun test",
-        "Let 's targeting on unit and integration test first. since e2e test is quite overkill now"
+        "Getting Start document. Quick introduce feature base on _ai/doc/ref/current.mov.mp4",
+        "Introduce about JSON structure for workflow prefer packages/core/schema.json and packages/core/src/types.ts",
+        "Explain usecase by examples packages/examples - consider to create a new one or reorganize if need"
       ]
     }
   ],
   "steps": {
     "1": "read resources, use context7 mcp when need",
     "2": "read current source code",
-    "3": "create a task_11 to achieve goal"
+    "3": "create a task_12 to achieve goal"
   }
 }
