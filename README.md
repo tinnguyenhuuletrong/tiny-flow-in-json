@@ -2,7 +2,11 @@
 
 [![CI/CD](https://github.com/tinnguyenhuuletrong/tiny-flow-in-json/actions/workflows/ci.yml/badge.svg)](https://github.com/tinnguyenhuuletrong/tiny-flow-in-json/actions/workflows/ci.yml)
 
-A tiny, self-descriptive, JSON-based workflow engine.
+A tiny, self-descriptive, JSON-based workflow data structure.
+
+<video controls src="https://github.com/user-attachments/assets/ad34bb3b-cc85-44f1-9b64-98462bcb1157" title="Title"></video>
+
+You can access it here: [https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/](https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/)
 
 ## Introduction
 
@@ -121,8 +125,6 @@ console.log(parsedFlow.name); // "Hello World Workflow"
 *   **Extensible:** Use metadata to store custom information.
 
 ## The Playground: A Visual Workflow Editor
-
-<video controls src="_ai/doc/ref/current.mov.mp4" title="Title"></video>
 
 While `FlowJSON` is designed to be human-readable, the project also includes a powerful web-based playground that provides a visual way to create, edit, and debug your workflows.
 
