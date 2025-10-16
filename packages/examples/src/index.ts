@@ -1,9 +1,11 @@
-import onboarding from "./onboarding.json";
-import routingFlow from "./routingFlow.json";
-import forkJoinFlow from "./forkJoinFlow.json";
+import onboarding from "./user-onboarding/workflow.json";
+import routingFlow from "./support-ticket-routing/workflow.json";
+import ecommerce from "./e-commerce-order-fulfillment/workflow.json";
+import dynamicForm from "./dynamic-multi-step-form/workflow.json";
 
 export const examples = {
   onboarding,
   routingFlow,
-  forkJoinFlow,
+  ecommerce,
+  dynamicForm,
 };

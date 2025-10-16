@@ -1,0 +1,147 @@
+{
+  "$schema": "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
+  "id": "dynamic-multi-step-form-v1",
+  "name": "Dynamic Multi-Step Form",
+  "version": "1.0.0",
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "accountType": {
+        "type": "string",
+        "enum": ["personal", "business"]
+      }
+    }
+  },
+  "steps": [
+    {
+      "id": "start-registration",
+      "name": "Start Registration",
+      "type": "begin",
+      "metadata": {
+        "x": 12,
+        "y": 37
+      }
+    },
+    {
+      "id": "account-details",
+      "name": "Account Details",
+      "type": "task",
+      "metadata": {
+        "x": 184.6725285031589,
+        "y": 21.231620474207546
+      },
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": ["email", "password"]
+      }
+    },
+    {
+      "id": "profile-details",
+      "name": "Profile Details",
+      "type": "task",
+      "metadata": {
+        "x": 534.739326671483,
+        "y": 21.231620474207546
+      },
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "id": "ask-for-account-type",
+      "name": "Ask for Account Type",
+      "type": "decision",
+      "metadata": {
+        "x": 874.2938718226119,
+        "y": 5.46324094841512
+      }
+    },
+    {
+      "id": "business-details",
+      "name": "Business Details",
+      "type": "task",
+      "metadata": {
+        "x": 1204.6501955836952,
+        "y": 193.33636454661308
+      },
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "companyName": {
+            "type": "string"
+          },
+          "vatNumber": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "id": "end-registration",
+      "name": "End Registration",
+      "type": "end",
+      "metadata": {
+        "x": 1582.311657922156,
+        "y": 18.603557219908794
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "start-registration",
+      "targetStepId": "account-details"
+    },
+    {
+      "id": "c2",
+      "sourceStepId": "account-details",
+      "targetStepId": "profile-details"
+    },
+    {
+      "id": "c3",
+      "sourceStepId": "profile-details",
+      "targetStepId": "ask-for-account-type"
+    },
+    {
+      "id": "c4",
+      "sourceStepId": "ask-for-account-type",
+      "targetStepId": "end-registration",
+      "condition": "state.accountType == 'personal'"
+    },
+    {
+      "id": "c5",
+      "sourceStepId": "ask-for-account-type",
+      "targetStepId": "business-details",
+      "condition": "state.accountType == 'business'"
+    },
+    {
+      "id": "c6",
+      "sourceStepId": "business-details",
+      "targetStepId": "end-registration"
+    }
+  ],
+  "metadata": {
+    "reactflowViewport": {
+      "x": 60.210779973272224,
+      "y": 281.84912415960514,
+      "zoom": 0.8839501537424665
+    }
+  }
+}

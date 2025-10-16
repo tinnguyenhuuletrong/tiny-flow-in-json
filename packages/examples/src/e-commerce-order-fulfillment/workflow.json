@@ -1,0 +1,146 @@
+{
+  "$schema": "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
+  "id": "ecommerce-order-fulfillment-v1",
+  "name": "E-commerce Order Fulfillment",
+  "version": "1.0.0",
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "orderId": {
+        "type": "string"
+      },
+      "itemId": {
+        "type": "string"
+      },
+      "inStock": {
+        "type": "boolean"
+      }
+    },
+    "required": ["orderId", "itemId", "inStock"]
+  },
+  "steps": [
+    {
+      "id": "start-order",
+      "name": "Start Order",
+      "type": "begin",
+      "metadata": {
+        "x": 12,
+        "y": 37
+      }
+    },
+    {
+      "id": "process-payment",
+      "name": "Process Payment",
+      "type": "task",
+      "metadata": {
+        "x": 133,
+        "y": 21
+      }
+    },
+    {
+      "id": "check-inventory",
+      "name": "Check Inventory",
+      "type": "decision",
+      "metadata": {
+        "x": 573,
+        "y": 5
+      }
+    },
+    {
+      "id": "ship-order",
+      "name": "Ship Order",
+      "type": "task",
+      "metadata": {
+        "x": 1212,
+        "y": 312
+      }
+    },
+    {
+      "id": "notify-customer-shipped",
+      "name": "Notify Customer (Shipped)",
+      "type": "task",
+      "metadata": {
+        "x": 1612,
+        "y": 312
+      }
+    },
+    {
+      "id": "trigger-backorder",
+      "name": "Trigger Backorder",
+      "type": "task",
+      "metadata": {
+        "x": 1213,
+        "y": -37
+      }
+    },
+    {
+      "id": "notify-customer-backordered",
+      "name": "Notify Customer (Backordered)",
+      "type": "task",
+      "metadata": {
+        "x": 1612,
+        "y": -37
+      }
+    },
+    {
+      "id": "end-order",
+      "name": "End Order",
+      "type": "end",
+      "metadata": {
+        "x": 2012,
+        "y": 37
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "start-order",
+      "targetStepId": "process-payment"
+    },
+    {
+      "id": "c2",
+      "sourceStepId": "process-payment",
+      "targetStepId": "check-inventory"
+    },
+    {
+      "id": "c3",
+      "sourceStepId": "check-inventory",
+      "targetStepId": "ship-order",
+      "condition": "state.inStock == true"
+    },
+    {
+      "id": "c4",
+      "sourceStepId": "ship-order",
+      "targetStepId": "notify-customer-shipped"
+    },
+    {
+      "id": "c5",
+      "sourceStepId": "notify-customer-shipped",
+      "targetStepId": "end-order"
+    },
+    {
+      "id": "c6",
+      "sourceStepId": "check-inventory",
+      "targetStepId": "trigger-backorder",
+      "condition": "state.inStock == false"
+    },
+    {
+      "id": "c7",
+      "sourceStepId": "trigger-backorder",
+      "targetStepId": "notify-customer-backordered"
+    },
+    {
+      "id": "c8",
+      "sourceStepId": "notify-customer-backordered",
+      "targetStepId": "end-order"
+    }
+  ],
+  "metadata": {
+    "reactflowViewport": {
+      "x": 62.45382963493205,
+      "y": 279.8535254115963,
+      "zoom": 0.6970293486041517
+    }
+  }
+}

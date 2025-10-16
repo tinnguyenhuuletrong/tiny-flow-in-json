@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-58 -107 2140 489"><path d="M 32,37 L 34.5,37 Q 42.5,37 42.5,29 L 42.5,29 Q 42.5,21 50.5,21 L 53,21" stroke="#000" stroke-width="2" fill="none" />
+<path d="M 213,21 L 345,21 Q 353,21 353,13 L 353,13 Q 353,5 361,5 L 493,5" stroke="#000" stroke-width="2" fill="none" />
+<g><path d="M 653,5 L 892.5,5 Q 902.5,5 902.5,15 L 902.5,302 Q 902.5,312 912.5,312 L 1152,312" stroke="#000" stroke-width="2" fill="none" /><text x="902.5" y="153.5" dominant-baseline="auto" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#000">state.inStock == true</text></g>
+<path d="M 1272,312 L 1492,312" stroke="#000" stroke-width="2" fill="none" />
+<path d="M 1732,312 L 1852,312 Q 1862,312 1862,302 L 1862,47 Q 1862,37 1872,37 L 1992,37" stroke="#000" stroke-width="2" fill="none" />
+<g><path d="M 653,5 L 879,5 Q 889,5 889,-5 L 889,-27 Q 889,-37 899,-37 L 1125,-37" stroke="#000" stroke-width="2" fill="none" /><text x="889" y="-21" dominant-baseline="auto" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#000">state.inStock == false</text></g>
+<path d="M 1301,-37 L 1476,-37" stroke="#000" stroke-width="2" fill="none" />
+<path d="M 1748,-37 L 1860,-37 Q 1870,-37 1870,-27 L 1870,27 Q 1870,37 1880,37 L 1992,37" stroke="#000" stroke-width="2" fill="none" />
+<g><circle cx="12" cy="37" r="20" fill="#fff" stroke="#000" stroke-width="2" data-testid="begin-node" /></g>
+<g><rect x="53" y="1" width="160" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="task-node" /><text x="133" y="21" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Process Payment</text></g>
+<g><rect x="493" y="-15" width="160" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="decision-node" /><text x="573" y="5" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Check Inventory</text></g>
+<g><rect x="1152" y="292" width="120" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="task-node" /><text x="1212" y="312" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Ship Order</text></g>
+<g><rect x="1492" y="292" width="240" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="task-node" /><text x="1612" y="312" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Notify Customer (Shipped)</text></g>
+<g><rect x="1125" y="-57" width="176" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="task-node" /><text x="1213" y="-37" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Trigger Backorder</text></g>
+<g><rect x="1476" y="-57" width="272" height="40" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="task-node" /><text x="1612" y="-37" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14">Notify Customer (Backordered)</text></g>
+<g><circle cx="2012" cy="37" r="20" fill="#000" data-testid="end-node" /></g></svg>
