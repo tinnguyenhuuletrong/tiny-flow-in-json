@@ -120,11 +120,20 @@ console.log(parsedFlow.name); // "Hello World Workflow"
 *   **Conditional Logic:** Implement branching with decision nodes.
 *   **Extensible:** Use metadata to store custom information.
 
-## Visualizing Your Workflow (The Playground)
+## The Playground: A Visual Workflow Editor
 
-While `FlowJSON` is designed to be human-readable, it can be helpful to visualize your workflows. The project includes a web-based playground that allows you to create, edit, and debug your `FlowJSON` in a graphical interface.
+<video controls src="_ai/doc/ref/current.mov.mp4" title="Title"></video>
+
+While `FlowJSON` is designed to be human-readable, the project also includes a powerful web-based playground that provides a visual way to create, edit, and debug your workflows.
 
 You can access it here: [https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/](https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/)
+
+### Key Features of the Playground
+
+*   **Visual Editor:** Drag and drop nodes to organize your workflow visually.
+*   **JSON Synchronization:** The visual editor and the raw `FlowJSON` are always in sync. Changes in one are immediately reflected in the other.
+*   **AutoForm for Step Parameters:** The playground automatically generates a form for editing step parameters based on the `globalStateSchema` or `paramsSchema`. Your changes are saved directly to the coresponding field in the `FlowJSON`, simplifying the configuration of complex steps.
+*   **Auto Layout:** Automatically arranges the nodes in your workflow for a clean and organized view. This is a basic feature with more improvements to come.
 
 ## Examples
 
