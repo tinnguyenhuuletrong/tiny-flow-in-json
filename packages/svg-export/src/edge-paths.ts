@@ -38,7 +38,7 @@ export const getSmoothStepPath = ({
   // The radius for the corners is adjusted if the vertical distance is small.
   const r = Math.min(borderRadius, Math.abs(targetY - sourceY) / 2);
 
-  let path = '';
+  let path = "";
   let labelX = midX;
   let labelY = midY;
 

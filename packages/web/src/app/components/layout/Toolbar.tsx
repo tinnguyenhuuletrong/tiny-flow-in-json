@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/menubar";
 import { useFlowStore } from "@/app/store/flowStore";
 import { parseFromJson, saveToJson } from "@tiny-json-workflow/core";
+import { flowToSvg } from "@tiny-json-workflow/svg-export";
 import { examples } from "@tiny-json-workflow/examples";
 import { placeholderFlow } from "@/data/placeholder";
 
@@ -25,7 +26,20 @@ export function Toolbar() {
     )}`;
     const link = document.createElement("a");
     link.href = jsonString;
-    link.download = "flow.json";
+    link.download = `flow_${flow.name}_${flow.version}.json`;
+    link.click();
+  };
+
+  const handleExportSVG = () => {
+    if (!flow) return;
+
+    const svgString = `data:text/svg;charset=utf-8,${encodeURIComponent(
+      flowToSvg(flow)
+    )}`;
+
+    const link = document.createElement("a");
+    link.href = svgString;
+    link.download = `flow_${flow.name}_${flow.version}.svg`;
     link.click();
   };
 
@@ -71,7 +85,10 @@ export function Toolbar() {
             Import
           </MenubarItem>
           <MenubarItem disabled={!flow} onClick={handleExport}>
-            Export
+            Export (JSON)
+          </MenubarItem>
+          <MenubarItem disabled={!flow} onClick={handleExportSVG}>
+            Export (SVG)
           </MenubarItem>
           <MenubarSeparator />
           <MenubarItem onClick={reset}>Reset</MenubarItem>
