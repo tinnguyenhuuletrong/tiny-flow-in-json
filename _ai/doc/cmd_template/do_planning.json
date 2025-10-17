@@ -1,21 +1,20 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_12.md",
+  "save_to": "create _ai/task_13.md",
   "resources": {},
   "mcp": {},
   "target": [
     {
-      "goal": "Update Readme and Create Document for this",
+      "goal": "Find a way to encode json data into url for more portable sharing",
       "requirements": [
-        "Getting Start document. Quick introduce feature base on _ai/doc/ref/current.mov.mp4",
-        "Introduce about JSON structure for workflow prefer packages/core/schema.json and packages/core/src/types.ts",
-        "Explain usecase by examples packages/examples - consider to create a new one or reorganize if need"
+        "brainstorm the technical approach",
+        "Given url lengh maximum around 2048. respect this limit. try to calculate limit of lengh for each approach"
       ]
     }
   ],
   "steps": {
     "1": "read resources, use context7 mcp when need",
     "2": "read current source code",
-    "3": "create a task_12 to achieve goal"
+    "3": "create a task_13 to achieve goal"
   }
 }

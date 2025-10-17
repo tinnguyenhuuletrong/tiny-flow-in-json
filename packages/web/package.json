@@ -32,6 +32,7 @@
     "@tiny-json-workflow/examples": "workspace:*",
     "@tiny-json-workflow/json-schema-adapter": "workspace:*",
     "@tiny-json-workflow/svg-export": "workspace:*",
+    "@types/pako": "^2.0.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dagre": "^0.8.5",
@@ -40,6 +41,7 @@
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.544.0",
     "monaco-editor": "^0.50.0",
+    "pako": "^2.1.0",
     "react": "^19.1.1",
     "react-day-picker": "^9.11.0",
     "react-dom": "^19.1.1",
@@ -47,9 +49,9 @@
     "reactflow": "^11.11.4",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.13",
+    "zod": "^4",
     "zod-validation-error": "^4.0.2",
-    "zustand": "^4.5.4",
-    "zod": "^4"
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
