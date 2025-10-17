@@ -35,11 +35,13 @@ export const SelectField: React.FC<AutoFormFieldProps> = ({
         <SelectValue placeholder="Select an option" />
       </SelectTrigger>
       <SelectContent>
-        {(field.options || []).map(([key, label]) => (
-          <SelectItem key={key} value={key}>
-            {label}
-          </SelectItem>
-        ))}
+        {(field.options || [])
+          .filter(([key]) => !!key)
+          .map(([key, label]) => (
+            <SelectItem key={key} value={key}>
+              {label}
+            </SelectItem>
+          ))}
       </SelectContent>
     </Select>
   );
