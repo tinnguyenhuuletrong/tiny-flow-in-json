@@ -1,0 +1,11 @@
+{
+  "name": "@tiny-json-workflow/runtime-durable-state",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "bun test",
+    "check": "tsc -b"
+  },
+  "devDependencies": {},
+  "peerDependencies": {}
+}

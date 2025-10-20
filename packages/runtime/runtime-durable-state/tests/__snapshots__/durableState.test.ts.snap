@@ -1,0 +1,297 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`simple_durable_state: final_state 1`] = `
+{
+  "computed": 3.141592653589793,
+  "endHit": true,
+  "startHit": true,
+}
+`;
+
+exports[`simple_durable_state: audit_logs 1`] = `
+[
+  {
+    "_step": "step_begin",
+    "type": "start_hit",
+    "values": {},
+  },
+  {
+    "_step": "step_compute",
+    "type": "transition",
+    "values": {
+      "from": "step_begin",
+      "stepSeq": 1,
+      "to": "step_compute",
+    },
+  },
+  {
+    "_step": "step_compute",
+    "type": "cache",
+    "values": {
+      "key": "1:step_compute:cache_computed",
+    },
+  },
+  {
+    "_step": "step_compute",
+    "type": "computed_hit",
+    "values": {
+      "actionValue": 3.141592653589793,
+    },
+  },
+  {
+    "_step": "step_end",
+    "type": "transition",
+    "values": {
+      "from": "step_compute",
+      "stepSeq": 2,
+      "to": "step_end",
+    },
+  },
+  {
+    "_step": "step_end",
+    "type": "end_hit",
+    "values": {},
+  },
+]
+`;
+
+exports[`step_durable_state: run_part_1 1`] = `
+{
+  "cache": {
+    "1:step_compute:cache_computed_0": 3.141592653589793,
+    "_seq": 1,
+  },
+  "logs": [
+    {
+      "_step": "step_begin",
+      "type": "start_hit",
+      "values": {},
+    },
+    {
+      "_step": "step_compute",
+      "type": "transition",
+      "values": {
+        "from": "step_begin",
+        "stepSeq": 1,
+        "to": "step_compute",
+      },
+    },
+    {
+      "_step": "step_compute",
+      "type": "cache",
+      "values": {
+        "key": "1:step_compute:cache_computed_0",
+      },
+    },
+  ],
+  "state": {
+    "computed": 0,
+    "startHit": true,
+  },
+  "step": "step_compute",
+  "system": {},
+}
+`;
+
+exports[`step_durable_state: run_part_2 1`] = `
+{
+  "cache": {
+    "1:step_compute:cache_computed_0": 3.141592653589793,
+    "1:step_compute:cache_computed_1": 3.141592653589793,
+    "1:step_compute:cache_computed_2": 3.141592653589793,
+    "_seq": 2,
+  },
+  "logs": [
+    {
+      "_step": "step_begin",
+      "type": "start_hit",
+      "values": {},
+    },
+    {
+      "_step": "step_compute",
+      "type": "transition",
+      "values": {
+        "from": "step_begin",
+        "stepSeq": 1,
+        "to": "step_compute",
+      },
+    },
+    {
+      "_step": "step_compute",
+      "type": "cache",
+      "values": {
+        "key": "1:step_compute:cache_computed_0",
+      },
+    },
+    {
+      "_step": "step_compute",
+      "type": "cache",
+      "values": {
+        "key": "1:step_compute:cache_computed_1",
+      },
+    },
+    {
+      "_step": "step_compute",
+      "type": "cache",
+      "values": {
+        "key": "1:step_compute:cache_computed_2",
+      },
+    },
+    {
+      "_step": "step_compute",
+      "type": "computed_hit",
+      "values": {
+        "actionValue": 9.42477796076938,
+      },
+    },
+    {
+      "_step": "step_end",
+      "type": "transition",
+      "values": {
+        "from": "step_compute",
+        "stepSeq": 2,
+        "to": "step_end",
+      },
+    },
+    {
+      "_step": "step_end",
+      "type": "end_hit",
+      "values": {},
+    },
+  ],
+  "state": {
+    "computed": 9.42477796076938,
+    "endHit": true,
+    "startHit": true,
+  },
+  "step": "step_end",
+  "system": {},
+}
+`;
+
+exports[`wait_ms_durable_state 1`] = `
+{
+  "resumeId": "wait_for_1sec-1",
+  "type": "time",
+}
+`;
+
+exports[`wait_ms_durable_state: durable_state_with_waiting 1`] = `
+{
+  "cache": {
+    "_seq": 1,
+  },
+  "logs": [
+    {
+      "_step": "step_begin",
+      "type": "interrupt_begin",
+      "values": {
+        "resumeId": "wait_for_1sec-1",
+        "type": "time",
+      },
+    },
+    {
+      "_step": "step_begin",
+      "type": "interrupt_end",
+      "values": {
+        "resumeId": "wait_for_1sec-1",
+      },
+    },
+    {
+      "_step": "step_begin",
+      "type": "log",
+      "values": {
+        "msg": "after 1 sec",
+      },
+    },
+    {
+      "_step": "step_end",
+      "type": "transition",
+      "values": {
+        "from": "step_begin",
+        "stepSeq": 1,
+        "to": "step_end",
+      },
+    },
+  ],
+  "state": {
+    "endHit": true,
+    "startHit": true,
+  },
+  "step": "step_end",
+  "system": {
+    "0:step_begin:timer:wait_for_1sec": {
+      "isDone": true,
+      "responsePayload": {},
+      "resumeId": "wait_for_1sec-1",
+      "type": "timer",
+    },
+  },
+}
+`;
+
+exports[`wait_event_durable_state 1`] = `
+{
+  "resumeId": "event_01-1",
+  "type": "event",
+}
+`;
+
+exports[`wait_event_durable_state: durable_state_with_event 1`] = `
+{
+  "cache": {
+    "_seq": 1,
+  },
+  "logs": [
+    {
+      "_step": "step_begin",
+      "type": "interrupt_begin",
+      "values": {
+        "resumeId": "event_01-1",
+        "type": "event",
+      },
+    },
+    {
+      "_step": "step_begin",
+      "type": "interrupt_end",
+      "values": {
+        "resumeId": "event_01-1",
+      },
+    },
+    {
+      "_step": "step_begin",
+      "type": "log",
+      "values": {
+        "answer": 2,
+        "msg": "event_01 resolved with value",
+      },
+    },
+    {
+      "_step": "step_end",
+      "type": "transition",
+      "values": {
+        "from": "step_begin",
+        "stepSeq": 1,
+        "to": "step_end",
+      },
+    },
+  ],
+  "state": {
+    "endHit": true,
+    "eventResponse": 2,
+    "startHit": true,
+  },
+  "step": "step_end",
+  "system": {
+    "0:step_begin:event:event_01": {
+      "isDone": true,
+      "requestPayload": {
+        "question": "hey human. 1 + 1 = ?",
+      },
+      "responsePayload": 2,
+      "resumeId": "event_01-1",
+      "type": "event",
+    },
+  },
+}
+`;
