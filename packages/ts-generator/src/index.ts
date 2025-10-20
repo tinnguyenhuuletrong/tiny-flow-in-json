@@ -75,7 +75,11 @@ function generateStepHandlers(flowJson: Flow): string {
         case "end":
           return `  private async *${stepName}(): StepIt<EStep, null> {\n    return { nextStep: null };\n  }`;
         case "task":
-          return `  private async *${stepName}(): StepIt<EStep, ${nextStepName}> {\n    await this.tasks.${stepName}(this.state);
+          return `  private async *${stepName}(): StepIt<EStep, ${nextStepName}> {\n    const res = await this.withAction<TStateShape>("${stepName}", async () => { 
+      return this.tasks.${stepName}(this.state); 
+    });\n
+    if (res.it) yield res.it;
+    if (res.value) this.state = res.value;
     return { nextStep: ${nextStepName} };\n  }`;
         case "decision":
           const decisionConnections = flowJson.connections.filter(
@@ -130,7 +134,10 @@ export async function generate(
 
   const taskSignatures = flowJson.steps
     .filter((step) => step.type === "task")
-    .map((step) => `${pascalCase(step.id)}: (context: any) => Promise<any>`);
+    .map(
+      (step) =>
+        `${pascalCase(step.id)}: (context: TStateShape) => Promise<TStateShape>`
+    );
 
   const tasksType = `type Tasks = {\n${taskSignatures
     .map((sig) => `  ${sig}`)
@@ -173,9 +180,9 @@ ${flowJson.steps
     (step) =>
       `async function ${pascalCase(
         step.id
-      )}(context: any): Promise<any> {\n  // TODO: Implement task '${
+      )}(context: TStateShape): Promise<TStateShape> {\n  // TODO: Implement task '${
         step.name
-      }'\n  return {};\n}`
+      }'\n  return context;\n}`
   )
   .join(
     "\n\n"

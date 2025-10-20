@@ -24,8 +24,8 @@ type TStateShape = {
 };
 
 type Tasks = {
-  SendWelcomeEmail: (context: any) => Promise<any>,
-  SendActivationReminder: (context: any) => Promise<any>
+  SendWelcomeEmail: (context: TStateShape) => Promise<TStateShape>,
+  SendActivationReminder: (context: TStateShape) => Promise<TStateShape>
 }
 
 export class UserOnboarding extends DurableState<EStep, TStateShape, any> {
@@ -44,7 +44,12 @@ export class UserOnboarding extends DurableState<EStep, TStateShape, any> {
   }
 
   private async *SendWelcomeEmail(): StepIt<EStep, EStep.IsUserActivated> {
-    await this.tasks.SendWelcomeEmail(this.state);
+    const res = await this.withAction<TStateShape>("SendWelcomeEmail", async () => { 
+      return this.tasks.SendWelcomeEmail(this.state); 
+    });
+
+    if (res.it) yield res.it;
+    if (res.value) this.state = res.value;
     return { nextStep: EStep.IsUserActivated };
   }
 
@@ -61,7 +66,12 @@ export class UserOnboarding extends DurableState<EStep, TStateShape, any> {
   }
 
   private async *SendActivationReminder(): StepIt<EStep, EStep.IsUserActivated> {
-    await this.tasks.SendActivationReminder(this.state);
+    const res = await this.withAction<TStateShape>("SendActivationReminder", async () => { 
+      return this.tasks.SendActivationReminder(this.state); 
+    });
+
+    if (res.it) yield res.it;
+    if (res.value) this.state = res.value;
     return { nextStep: EStep.IsUserActivated };
   }
 
