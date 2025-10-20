@@ -68,10 +68,7 @@ export class UserOnboarding extends DurableState<EStep, TStateShape, any> {
     return { nextStep: null };
   }
 
-  private async *SendActivationReminder(): StepIt<
-    EStep,
-    EStep.IsUserActivated
-  > {
+  private async *SendActivationReminder(): StepIt<EStep, EStep.End> {
     const res = await this.withAction<TStateShape>(
       "SendActivationReminder",
       async () => {
@@ -81,7 +78,7 @@ export class UserOnboarding extends DurableState<EStep, TStateShape, any> {
 
     if (res.it) yield res.it;
     if (res.value) this.state = res.value;
-    return { nextStep: EStep.IsUserActivated };
+    return { nextStep: EStep.End };
   }
 
   private async *End(): StepIt<EStep, null> {

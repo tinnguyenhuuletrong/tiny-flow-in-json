@@ -64,7 +64,7 @@
     {
       "id": "c5",
       "sourceStepId": "send-activation-reminder",
-      "targetStepId": "is-user-activated"
+      "targetStepId": "end"
     }
   ]
 }
