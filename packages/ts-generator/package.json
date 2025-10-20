@@ -1,0 +1,15 @@
+{
+  "name": "@tiny-json-workflow/ts-generator",
+  "version": "0.1.0",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@tiny-json-workflow/core": "workspace:*",
+    "@tiny-json-workflow/runtime-durable-state": "workspace:*"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  }
+}

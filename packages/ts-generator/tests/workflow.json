@@ -1,0 +1,70 @@
+{
+  "id": "user-onboarding",
+  "name": "User Onboarding",
+  "version": "1.0.0",
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "userId": { "type": "string" },
+      "email": { "type": "string" },
+      "onboarded": { "type": "boolean" },
+      "activated": { "type": "boolean" }
+    },
+    "required": ["userId", "email"]
+  },
+  "steps": [
+    {
+      "id": "begin",
+      "name": "Start Onboarding",
+      "type": "begin"
+    },
+    {
+      "id": "send-welcome-email",
+      "name": "Send Welcome Email",
+      "type": "task"
+    },
+    {
+      "id": "is-user-activated",
+      "name": "Is User Activated?",
+      "type": "decision"
+    },
+    {
+      "id": "send-activation-reminder",
+      "name": "Send Activation Reminder",
+      "type": "task"
+    },
+    {
+      "id": "end",
+      "name": "End Onboarding",
+      "type": "end"
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "begin",
+      "targetStepId": "send-welcome-email"
+    },
+    {
+      "id": "c2",
+      "sourceStepId": "send-welcome-email",
+      "targetStepId": "is-user-activated"
+    },
+    {
+      "id": "c3",
+      "sourceStepId": "is-user-activated",
+      "targetStepId": "end",
+      "condition": "activated === true"
+    },
+    {
+      "id": "c4",
+      "sourceStepId": "is-user-activated",
+      "targetStepId": "send-activation-reminder"
+    },
+    {
+      "id": "c5",
+      "sourceStepId": "send-activation-reminder",
+      "targetStepId": "is-user-activated"
+    }
+  ]
+}

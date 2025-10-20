@@ -1,6 +1,6 @@
 {
   "name": "@tiny-json-workflow/runtime-durable-state",
-  "module": "index.ts",
+  "main": "src/index",
   "type": "module",
   "scripts": {
     "test": "bun test",

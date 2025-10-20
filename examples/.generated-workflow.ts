@@ -1,0 +1,87 @@
+// -----------------
+// --- GENERATED ---
+// -----------------
+// This section is automatically generated and will be overwritten.
+
+import { DurableState, type StepIt } from "@tiny-json-workflow/runtime-durable-state";
+
+enum EStep {
+  Begin = 'Begin',
+  SendWelcomeEmail = 'SendWelcomeEmail',
+  IsUserActivated = 'IsUserActivated',
+  SendActivationReminder = 'SendActivationReminder',
+  End = 'End'
+}
+
+type TStateShape = {
+  userId: string;
+  email: string;
+  onboarded?: boolean;
+  activated?: boolean;
+};
+
+type Tasks = {
+  SendWelcomeEmail: (context: any) => Promise<any>,
+  SendActivationReminder: (context: any) => Promise<any>
+}
+
+export class UserOnboarding extends DurableState<EStep, TStateShape, any> {
+  constructor(private tasks: Tasks) {
+    super(EStep.Begin, {
+      withAuditLog: true,
+    });
+
+    Object.values(EStep).map((step) =>
+      this.stepHandler.set(step, this[step].bind(this))
+    );
+  }
+
+  private async *Begin(): StepIt<EStep, EStep.SendWelcomeEmail> {
+    return { nextStep: EStep.SendWelcomeEmail };
+  }
+
+  private async *SendWelcomeEmail(): StepIt<EStep, EStep.IsUserActivated> {
+    await this.tasks.SendWelcomeEmail(this.state);
+    return { nextStep: EStep.IsUserActivated };
+  }
+
+  private async *IsUserActivated(): StepIt<EStep, any> {
+    if (this.state.activated === true) {
+      return { nextStep: EStep.End };
+    }
+ 
+    {
+      return { nextStep: EStep.SendActivationReminder };
+    }
+   // Default case if no condition is met
+    return { nextStep: null };
+  }
+
+  private async *SendActivationReminder(): StepIt<EStep, EStep.IsUserActivated> {
+    await this.tasks.SendActivationReminder(this.state);
+    return { nextStep: EStep.IsUserActivated };
+  }
+
+  private async *End(): StepIt<EStep, null> {
+    return { nextStep: null };
+  }
+
+}
+// --- IMPLEMENTATION ---
+
+async function SendWelcomeEmail(context: any): Promise<any> {
+  // TODO: Implement task 'Send Welcome Email'
+  return {};
+}
+
+async function SendActivationReminder(context: any): Promise<any> {
+  // TODO: Implement task 'Send Activation Reminder'
+  return {};
+}
+
+export function createWorkflow() {
+  return new UserOnboarding({
+    SendWelcomeEmail,
+    SendActivationReminder,
+  });
+}
