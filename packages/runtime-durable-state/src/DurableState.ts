@@ -37,6 +37,16 @@ export class DurableState<
     }
   }
 
+  setState(state: StateShape) {
+    this.state = state;
+    this.addLog({
+      type: "init",
+      values: {
+        state,
+      },
+    });
+  }
+
   /** Current step */
   get currentStep() {
     return this.step;

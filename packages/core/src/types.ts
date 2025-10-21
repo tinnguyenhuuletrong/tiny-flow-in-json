@@ -19,12 +19,17 @@ export const JsonSchema: z.ZodType<any> = z.lazy(() =>
         .optional()
         .describe("The data type of the schema."),
       format: z.string().optional().describe("The format of the data."),
-      enum: z.array(z.string()).optional().describe("A list of possible values."),
+      enum: z
+        .array(z.string())
+        .optional()
+        .describe("A list of possible values."),
       properties: z
         .record(z.string(), JsonSchema)
         .optional()
         .describe("The properties of an object schema."),
-      items: JsonSchema.optional().describe("The schema for items in an array."),
+      items: JsonSchema.optional().describe(
+        "The schema for items in an array."
+      ),
       required: z
         .array(z.string())
         .optional()

@@ -64,6 +64,7 @@ export class UserOnboarding extends DurableState<EStep, TStateShape, any> {
     {
       return { nextStep: EStep.SendActivationReminder };
     }
+
     // Default case if no condition is met
     return { nextStep: null };
   }
