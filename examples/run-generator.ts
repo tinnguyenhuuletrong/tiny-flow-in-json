@@ -11,8 +11,19 @@ async function genCode() {
 }
 
 async function runCode() {
-  const { createWorkflow } = await import("./.generated-workflow.ts");
-  let ins = createWorkflow();
+  const { createWorkflow, UserOnboarding } = await import(
+    "./.generated-workflow.ts"
+  );
+  let ins = new UserOnboarding({
+    SendWelcomeEmail: async (state) => {
+      console.log("TODO SendWelcomeEmail");
+      return state;
+    },
+    SendActivationReminder: async (state) => {
+      console.log("TODO SendActivationReminder");
+      return state;
+    },
+  });
   ins.setState({
     userId: "u1",
     email: "abc@def.com",

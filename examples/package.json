@@ -5,8 +5,8 @@
   "scripts": {},
   "dependencies": {
     "@tiny-json-workflow/core": "workspace:*",
+    "@tiny-json-workflow/runtime-durable-state": "^0.1.0",
     "@tiny-json-workflow/svg-export": "workspace:*",
-    "@tiny-json-workflow/ts-generator": "workspace:*",
-    "@tiny-json-workflow/runtime-durable-state": "workspace:*"
+    "@tiny-json-workflow/ts-generator": "workspace:*"
   }
 }

@@ -16,7 +16,7 @@
       "version": "0.0.1",
       "dependencies": {
         "@tiny-json-workflow/core": "workspace:*",
-        "@tiny-json-workflow/runtime-durable-state": "workspace:*",
+        "@tiny-json-workflow/runtime-durable-state": "^0.1.0",
         "@tiny-json-workflow/svg-export": "workspace:*",
         "@tiny-json-workflow/ts-generator": "workspace:*",
       },
@@ -1066,6 +1066,8 @@
     "lru-cache/yallist": ["yallist@3.1.1", "", {}, "sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g=="],
 
     "micromatch/picomatch": ["picomatch@2.3.1", "", {}, "sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA=="],
+
+    "playground/@tiny-json-workflow/runtime-durable-state": ["@tiny-json-workflow/runtime-durable-state@0.1.0", "", {}, "sha512-EQDR5jIJE9/GX9+ncR2GNj4SqZaOIyWyw1FoirtHHFikS5Og0oojJs+82djRlrPsd+M3lmwsKB9Rp4fRJt5Rtg=="],
 
     "wrap-ansi/ansi-styles": ["ansi-styles@4.3.0", "", { "dependencies": { "color-convert": "^2.0.1" } }, "sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg=="],
 
