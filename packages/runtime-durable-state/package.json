@@ -1,11 +1,37 @@
 {
   "name": "@tiny-json-workflow/runtime-durable-state",
-  "main": "src/index",
+  "version": "0.1.0",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs"
+  },
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "tiny-json-workflow"
+  ],
   "scripts": {
     "test": "bun test",
-    "check": "tsc -b"
+    "check": "tsc -b",
+    "build": "bun run ../../tools/buildNpm.ts",
+    "prepublishOnly": "bun run build"
   },
   "devDependencies": {},
-  "peerDependencies": {}
+  "peerDependencies": {},
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/tinnguyenhuuletrong/tiny-flow-in-json",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:tinnguyenhuuletrong/tiny-flow-in-json.git"
+  },
+  "bugs": "https://github.com/tinnguyenhuuletrong/tiny-flow-in-json/issues",
+  "author": "TTin <tinnguyenhuuletrong@gmail.com>"
 }

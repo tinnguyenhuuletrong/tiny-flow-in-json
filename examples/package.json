@@ -1,0 +1,12 @@
+{
+  "name": "playground",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {},
+  "dependencies": {
+    "@tiny-json-workflow/core": "workspace:*",
+    "@tiny-json-workflow/svg-export": "workspace:*",
+    "@tiny-json-workflow/ts-generator": "workspace:*",
+    "@tiny-json-workflow/runtime-durable-state": "workspace:*"
+  }
+}
