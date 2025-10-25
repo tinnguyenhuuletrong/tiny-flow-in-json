@@ -53,7 +53,12 @@
           "type": {
             "description": "The type of the step.",
             "type": "string",
-            "enum": ["begin", "end", "task", "decision"]
+            "enum": [
+              "begin",
+              "end",
+              "task",
+              "decision"
+            ]
           },
           "paramsSchema": {
             "description": "A JSON schema that defines the parameters for the step.",
@@ -80,7 +85,11 @@
             "additionalProperties": {}
           }
         },
-        "required": ["id", "name", "type"]
+        "required": [
+          "id",
+          "name",
+          "type"
+        ]
       }
     },
     "connections": {
@@ -106,7 +115,11 @@
             "type": "string"
           }
         },
-        "required": ["id", "sourceStepId", "targetStepId"]
+        "required": [
+          "id",
+          "sourceStepId",
+          "targetStepId"
+        ]
       }
     },
     "metadata": {

@@ -67,11 +67,11 @@ ${GENERATED_SECTION_START}
 
 import { DurableState, type StepIt } from "@tiny-json-workflow/runtime-durable-state";
 
-${eStepEnum}
+export ${eStepEnum}
 
-${tStateShape}
+export ${tStateShape}
 
-${tasksType}
+export ${tasksType}
 
 export class ${workflowClassName} extends DurableState<EStep, TStateShape, any> {\n${constructor}\n\n${stepHandlers}\n\n}
 `;

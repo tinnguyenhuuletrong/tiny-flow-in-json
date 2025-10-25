@@ -3,7 +3,7 @@ import { generate } from "../src/index";
 import { promises as fs } from "fs";
 import path from "path";
 
-const jsonPath = path.join(__dirname, "workflow.json");
+const jsonPath = path.join(__dirname, "./samples/workflow.json");
 const tsPath = path.join(__dirname, "generated.ts");
 
 describe("generate", () => {
@@ -27,7 +27,7 @@ describe("generate", () => {
 
 import { DurableState, type StepIt } from "@tiny-json-workflow/runtime-durable-state";
 
-enum EStep {
+export enum EStep {
   Begin = 'Begin',
   SendWelcomeEmail = 'SendWelcomeEmail',
   IsUserActivated = 'IsUserActivated',
@@ -35,14 +35,14 @@ enum EStep {
   End = 'End'
 }
 
-type TStateShape = {
+export type TStateShape = {
   userId: string;
   email: string;
   onboarded?: boolean;
   activated?: boolean;
 };
 
-type Tasks = {
+export type Tasks = {
   SendWelcomeEmail: (context: TStateShape) => Promise<TStateShape>,
   SendActivationReminder: (context: TStateShape) => Promise<TStateShape>
 }
@@ -119,7 +119,9 @@ export function createWorkflow() {
 }
 `.trim();
 
-    expect(generatedContent.replace(/\s/g, "")).toBe(expectedContent.replace(/\s/g, ""));
+    expect(generatedContent.replace(/\s/g, "")).toBe(
+      expectedContent.replace(/\s/g, "")
+    );
   });
 
   test("should preserve existing implementation when file exists", async () => {
@@ -159,7 +161,7 @@ export function createWorkflow() {
 
 import { DurableState, type StepIt } from "@tiny-json-workflow/runtime-durable-state";
 
-enum EStep {
+export enum EStep {
   Begin = 'Begin',
   SendWelcomeEmail = 'SendWelcomeEmail',
   IsUserActivated = 'IsUserActivated',
@@ -167,14 +169,14 @@ enum EStep {
   End = 'End'
 }
 
-type TStateShape = {
+export type TStateShape = {
   userId: string;
   email: string;
   onboarded?: boolean;
   activated?: boolean;
 };
 
-type Tasks = {
+export type Tasks = {
   SendWelcomeEmail: (context: TStateShape) => Promise<TStateShape>,
   SendActivationReminder: (context: TStateShape) => Promise<TStateShape>
 }
@@ -235,6 +237,8 @@ export class UserOnboarding extends DurableState<EStep, TStateShape, any> {
 
     const expectedContent = `${expectedGeneratedPart}\n${existingImplementation}`;
 
-    expect(generatedContent.replace(/\s/g, "")).toBe(expectedContent.replace(/\s/g, ""));
+    expect(generatedContent.replace(/\s/g, "")).toBe(
+      expectedContent.replace(/\s/g, "")
+    );
   });
 });
