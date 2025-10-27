@@ -1,10 +1,10 @@
 import { promises as fs } from "fs";
-import type { Flow, Step } from "@tiny-json-workflow/core";
+import type { Flow } from "@tiny-json-workflow/core";
 import { generateTStateShape } from "./utils/schema-to-ts";
 import { pascalCase } from "./utils/string";
 import { generateStepHandlers } from "./utils/step-handlers";
+import { loadTemplate } from "./utils/template";
 
-const GENERATED_SECTION_START = "// --- GENERATED ---";
 const IMPLEMENTATION_SECTION_START = "// --- IMPLEMENTATION ---";
 
 async function parseExistingFile(filePath: string): Promise<string> {
@@ -33,9 +33,11 @@ export async function generate(
 
   const workflowClassName = pascalCase(flowJson.name);
 
-  const eStepEnum = `enum EStep {\n${flowJson.steps
-    .map((step) => `  ${pascalCase(step.id)} = '${pascalCase(step.id)}'`)
-    .join(",\n")}\n}`;
+  const eStepEnum = await loadTemplate("enum.ts.tpl", {
+    steps: flowJson.steps
+      .map((step) => `  ${pascalCase(step.id)} = '${pascalCase(step.id)}'`)
+      .join(",\n"),
+  });
 
   const tStateShape = generateTStateShape(flowJson.globalStateSchema);
 
@@ -46,59 +48,51 @@ export async function generate(
         `${pascalCase(step.id)}: (context: TStateShape) => Promise<TStateShape>`
     );
 
-  const tasksType = `type Tasks = {\n${taskSignatures
-    .map((sig) => `  ${sig}`)
-    .join(",\n")}\n}`;
+  const tasksType = await loadTemplate("tasks.ts.tpl", {
+    taskSignatures: taskSignatures.map((sig) => `  ${sig}`).join(",\n"),
+  });
 
-  const constructor = `  constructor(private tasks: Tasks) {\n    super(EStep.${pascalCase(
-    flowJson.steps.find((s) => s.type === "begin")?.id || "Begin"
-  )}, {\n      withAuditLog: true,\n    });\n\n    Object.values(EStep).map((step) =>
-      this.stepHandler.set(step, this[step].bind(this))
-    );
-  }`;
+  const constructor = await loadTemplate("constructor.ts.tpl", {
+    startStep: pascalCase(
+      flowJson.steps.find((s) => s.type === "begin")?.id || "Begin"
+    ),
+  });
 
-  const stepHandlers = generateStepHandlers(flowJson, 1);
+  const stepHandlers = await generateStepHandlers(flowJson, 1);
 
-  const generatedCode = `
-// -----------------
-${GENERATED_SECTION_START}
-// -----------------
-// This section is automatically generated and will be overwritten.
-
-import { DurableState, type StepIt } from "@tiny-json-workflow/runtime-durable-state";
-
-export ${eStepEnum}
-
-export ${tStateShape}
-
-export ${tasksType}
-
-export class ${workflowClassName} extends DurableState<EStep, TStateShape, any> {\n${constructor}\n\n${stepHandlers}\n\n}
-`;
+  const workflowClass = await loadTemplate("workflow-class.ts.tpl", {
+    workflowClassName,
+    constructor,
+    stepHandlers,
+  });
 
   const implementationSection =
     implementationContent ||
-    `
-${IMPLEMENTATION_SECTION_START}
+    (await loadTemplate("implementation.ts.tpl", {
+      functions: flowJson.steps
+        .filter((step) => step.type === "task")
+        .map(
+          (step) =>
+            `async function ${pascalCase(
+              step.id
+            )}(context: TStateShape): Promise<TStateShape> {\n  // TODO: Implement task '${
+              step.name
+            }'\n  return context;\n}`
+        )
+        .join("\n\n"),
+      workflowClassName,
+      tasks: flowJson.steps
+        .filter((step) => step.type === "task")
+        .map((step) => pascalCase(step.id))
+        .join(",\n    "),
+    }));
 
-${flowJson.steps
-  .filter((step) => step.type === "task")
-  .map(
-    (step) =>
-      `async function ${pascalCase(
-        step.id
-      )}(context: TStateShape): Promise<TStateShape> {\n  // TODO: Implement task '${
-        step.name
-      }'\n  return context;\n}`
-  )
-  .join(
-    "\n\n"
-  )}\n\nexport function createWorkflow() {\n  return new ${workflowClassName}({\n    ${flowJson.steps
-      .filter((step) => step.type === "task")
-      .map((step) => pascalCase(step.id))
-      .join(",\n    ")}
-  });\n}
-`;
+  const generatedCode = await loadTemplate("main.ts.tpl", {
+    eStepEnum,
+    tStateShape,
+    tasksType,
+    workflowClass,
+  });
 
   const finalContent = `${generatedCode.trim()}\n${implementationSection.trim()}`;
 

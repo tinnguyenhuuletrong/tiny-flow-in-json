@@ -1,15 +1,16 @@
 import type { Flow } from "@tiny-json-workflow/core";
 import { pascalCase } from "./string";
+import { loadTemplate } from "./template";
 
-export function generateStepHandlers(
+export async function generateStepHandlers(
   flowJson: Flow,
   baseIndentLevel: number = 1
-): string {
+): Promise<string> {
   const baseIndent = "  ".repeat(baseIndentLevel);
   const bodyIndent = "  ".repeat(baseIndentLevel + 1);
 
-  return flowJson.steps
-    .map((step) => {
+  const handlers = await Promise.all(
+    flowJson.steps.map(async (step) => {
       const stepName = pascalCase(step.id);
       const nextStep = flowJson.connections.find(
         (c) => c.sourceStepId === step.id
@@ -18,29 +19,19 @@ export function generateStepHandlers(
 
       switch (step.type) {
         case "begin":
-          return `
-${baseIndent}private async *${stepName}(): StepIt<EStep, ${nextStepName}> {
-${bodyIndent}return { nextStep: ${nextStepName} };
-${baseIndent}}
-`;
+          return await loadTemplate("step-handlers/begin.ts.tpl", {
+            stepName,
+            nextStepName,
+          });
         case "end":
-          return `
-${baseIndent}private async *${stepName}(): StepIt<EStep, null> {
-${bodyIndent}return { nextStep: null };
-${baseIndent}}
-`;
+          return await loadTemplate("step-handlers/end.ts.tpl", {
+            stepName,
+          });
         case "task":
-          return `
-${baseIndent}private async *${stepName}(): StepIt<EStep, ${nextStepName}> {
-${bodyIndent}const res = await this.withAction<TStateShape>("${stepName}", async () => { 
-${bodyIndent}  return this.tasks.${stepName}(this.state); 
-${bodyIndent}}); 
-
-${bodyIndent}if (res.it) yield res.it;
-${bodyIndent}if (res.value) this.state = res.value;
-${bodyIndent}return { nextStep: ${nextStepName} };
-${baseIndent}}
-`;
+          return await loadTemplate("step-handlers/task.ts.tpl", {
+            stepName,
+            nextStepName,
+          });
         case "decision":
           const decisionConnections = flowJson.connections.filter(
             (c) => c.sourceStepId === step.id
@@ -63,25 +54,21 @@ ${bodyIndent}}
             .map(
               (c) =>
                 `
-${bodyIndent}{
-${conditionIndent}return { nextStep: EStep.${pascalCase(c.targetStepId)} };
-${bodyIndent}}
+${bodyIndent}return { nextStep: EStep.${pascalCase(c.targetStepId)} };
 `
             )
             .join("\n");
 
-          return `
-${baseIndent}private async *${stepName}(): StepIt<EStep, any> {
-${conditions}
- 
-${unConditions}
-${bodyIndent}// Default case if no condition is met
-${bodyIndent}return { nextStep: null };
-${baseIndent}}
-`;
+          return await loadTemplate("step-handlers/decision.ts.tpl", {
+            stepName,
+            conditions,
+            unConditions,
+          });
         default:
           return "";
       }
     })
-    .join("\n\n");
+  );
+
+  return handlers.join("\n\n");
 }
