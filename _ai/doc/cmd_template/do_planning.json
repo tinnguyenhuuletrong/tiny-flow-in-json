@@ -1,23 +1,19 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_14.md",
-  "resources": {
-    "doc_git_repo_tiny-workflow.md": "_ai/doc/ref/doc_git_repo_tiny-workflow.md",
-    "tiny-json-workflow-schema": "packages/core/schema.json"
-  },
+  "save_to": "create _ai/task_15.md",
+  "resources": {},
   "mcp": {},
   "target": [
     {
-      "goal": "Create a plugin package try to convert json which satify schema into a single file typescript can exe by tiny-workflow",
+      "goal": "refactor packages/ts-generator",
       "requirements": [
-        "input a valid json string satify Flow json schema",
-        "output a single typescript file can run with tiny-workflow"
+        "Currently ts mixed in src as string inline. Find a way to move it into a template file so easier to maintain"
       ]
     }
   ],
   "steps": {
     "1": "read resources, use context7 mcp when need",
     "2": "read current source code",
-    "3": "create a task_14 to achieve goal"
+    "3": "create a task_15 to achieve goal"
   }
 }
