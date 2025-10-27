@@ -1,3 +1,0 @@
-type Tasks = {
-{{taskSignatures}}
-}

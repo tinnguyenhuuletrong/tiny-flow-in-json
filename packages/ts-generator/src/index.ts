@@ -3,7 +3,15 @@ import type { Flow } from "@tiny-json-workflow/core";
 import { generateTStateShape } from "./utils/schema-to-ts";
 import { pascalCase } from "./utils/string";
 import { generateStepHandlers } from "./utils/step-handlers";
-import { loadTemplate } from "./utils/template";
+import { renderTemplate } from "./utils/template";
+import {
+  CONSTRUCTOR_TEMPLATE,
+  ENUM_TEMPLATE,
+  IMPLEMENTATION_TEMPLATE,
+  MAIN_TEMPLATE,
+  TASKS_TEMPLATE,
+  WORKFLOW_CLASS_TEMPLATE,
+} from "./templates";
 
 const IMPLEMENTATION_SECTION_START = "// --- IMPLEMENTATION ---";
 
@@ -33,10 +41,10 @@ export async function generate(
 
   const workflowClassName = pascalCase(flowJson.name);
 
-  const eStepEnum = await loadTemplate("enum.ts.tpl", {
+  const eStepEnum = renderTemplate(ENUM_TEMPLATE, {
     steps: flowJson.steps
-      .map((step) => `  ${pascalCase(step.id)} = '${pascalCase(step.id)}'`)
-      .join(",\n"),
+      .map((step) => `${pascalCase(step.id)} = '${pascalCase(step.id)}'`)
+      .join(",\n  "),
   });
 
   const tStateShape = generateTStateShape(flowJson.globalStateSchema);
@@ -48,19 +56,19 @@ export async function generate(
         `${pascalCase(step.id)}: (context: TStateShape) => Promise<TStateShape>`
     );
 
-  const tasksType = await loadTemplate("tasks.ts.tpl", {
-    taskSignatures: taskSignatures.map((sig) => `  ${sig}`).join(",\n"),
+  const tasksType = renderTemplate(TASKS_TEMPLATE, {
+    taskSignatures: taskSignatures.map((sig) => `${sig}`).join(",\n  "),
   });
 
-  const constructor = await loadTemplate("constructor.ts.tpl", {
+  const constructor = renderTemplate(CONSTRUCTOR_TEMPLATE, {
     startStep: pascalCase(
       flowJson.steps.find((s) => s.type === "begin")?.id || "Begin"
     ),
   });
 
-  const stepHandlers = await generateStepHandlers(flowJson, 1);
+  const stepHandlers = generateStepHandlers(flowJson, 1);
 
-  const workflowClass = await loadTemplate("workflow-class.ts.tpl", {
+  const workflowClass = renderTemplate(WORKFLOW_CLASS_TEMPLATE, {
     workflowClassName,
     constructor,
     stepHandlers,
@@ -68,7 +76,7 @@ export async function generate(
 
   const implementationSection =
     implementationContent ||
-    (await loadTemplate("implementation.ts.tpl", {
+    renderTemplate(IMPLEMENTATION_TEMPLATE, {
       functions: flowJson.steps
         .filter((step) => step.type === "task")
         .map(
@@ -85,9 +93,9 @@ export async function generate(
         .filter((step) => step.type === "task")
         .map((step) => pascalCase(step.id))
         .join(",\n    "),
-    }));
+    });
 
-  const generatedCode = await loadTemplate("main.ts.tpl", {
+  const generatedCode = renderTemplate(MAIN_TEMPLATE, {
     eStepEnum,
     tStateShape,
     tasksType,
