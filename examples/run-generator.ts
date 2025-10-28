@@ -1,9 +1,13 @@
 import { generate } from "@tiny-json-workflow/ts-generator";
 import path from "path";
+import { rmSync } from "fs";
 
 async function genCode() {
-  const jsonPath = path.join(__dirname, "./workflow.json");
+  const jsonPath = path.join(__dirname, "./workflow_with_params.json");
+  // const jsonPath = path.join(__dirname, "./workflow.json");
   const tsPath = path.join(__dirname, "./.generated-workflow.ts");
+
+  rmSync(tsPath, { force: true });
 
   await generate(jsonPath, tsPath);
 
@@ -11,23 +15,8 @@ async function genCode() {
 }
 
 async function runCode() {
-  const { createWorkflow, UserOnboarding } = await import(
-    "./.generated-workflow.ts"
-  );
-  let ins = new UserOnboarding({
-    SendWelcomeEmail: async (state) => {
-      console.log("TODO SendWelcomeEmail");
-      return state;
-    },
-    SendActivationReminder: async (state) => {
-      console.log("TODO SendActivationReminder");
-      return state;
-    },
-  });
-  ins.setState({
-    userId: "u1",
-    email: "abc@def.com",
-  });
+  const { createWorkflow } = await import("./.generated-workflow.ts");
+  let ins = createWorkflow();
 
   console.log("begin");
 
@@ -43,7 +32,7 @@ async function runCode() {
     );
   }
 
-  console.log("end");
+  console.log("end", ins.listPendingResume());
   console.log("finalWorkflowData:");
   console.dir(ins.toJSON(), { depth: 10 });
 }

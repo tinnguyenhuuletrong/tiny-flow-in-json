@@ -9,98 +9,110 @@ import {
 } from "@tiny-json-workflow/runtime-durable-state";
 
 export enum EStep {
-  Begin = "Begin",
-  SendWelcomeEmail = "SendWelcomeEmail",
-  IsUserActivated = "IsUserActivated",
-  SendActivationReminder = "SendActivationReminder",
-  End = "End",
+  StartFlow = "StartFlow",
+  SendWelcome = "SendWelcome",
+  CheckProfile = "CheckProfile",
+  SendReminder = "SendReminder",
+  EndFlow = "EndFlow",
 }
 
 export type TStateShape = {
   userId: string;
-  email: string;
-  onboarded?: boolean;
-  activated?: boolean;
+  profileIsComplete?: boolean;
 };
+
+export const defaultState: TStateShape = {
+  userId: "001",
+  profileIsComplete: true,
+};
+
+export type TSendWelcomeParams =
+  | {
+      template?: string;
+    }
+  | undefined;
 
 export type Tasks = {
-  SendWelcomeEmail: (context: TStateShape) => Promise<TStateShape>;
-  SendActivationReminder: (context: TStateShape) => Promise<TStateShape>;
+  SendWelcome: (
+    context: TStateShape,
+    params: TSendWelcomeParams
+  ) => Promise<TStateShape>;
+  SendReminder: (context: TStateShape) => Promise<TStateShape>;
 };
 
-export class UserOnboarding extends DurableState<EStep, TStateShape, any> {
+export class UserOnboardingFlow extends DurableState<EStep, TStateShape, any> {
   constructor(private tasks: Tasks) {
-    super(EStep.Begin, {
+    super(EStep.StartFlow, {
       withAuditLog: true,
     });
+
+    if (defaultState) this.setState(defaultState);
 
     Object.values(EStep).map((step) =>
       this.stepHandler.set(step, this[step].bind(this))
     );
   }
 
-  private async *Begin(): StepIt<EStep, EStep.SendWelcomeEmail> {
-    return { nextStep: EStep.SendWelcomeEmail };
+  private async *StartFlow(): StepIt<EStep, EStep.SendWelcome> {
+    return { nextStep: EStep.SendWelcome };
   }
 
-  private async *SendWelcomeEmail(): StepIt<EStep, EStep.IsUserActivated> {
-    const res = await this.withAction<TStateShape>(
-      "SendWelcomeEmail",
-      async () => {
-        return this.tasks.SendWelcomeEmail(this.state);
-      }
-    );
+  private async *SendWelcome(): StepIt<EStep, EStep.CheckProfile> {
+    const res = await this.withAction<TStateShape>("SendWelcome", async () => {
+      return this.tasks.SendWelcome(this.state, undefined);
+    });
 
     if (res.it) yield res.it;
     if (res.value) this.state = res.value;
-    return { nextStep: EStep.IsUserActivated };
+    return { nextStep: EStep.CheckProfile };
   }
 
-  private async *IsUserActivated(): StepIt<EStep, any> {
-    if (this.state.activated === true) {
-      return { nextStep: EStep.End };
+  private async *CheckProfile(): StepIt<EStep, any> {
+    if (this.state.profileIsComplete == true) {
+      return { nextStep: EStep.EndFlow };
     }
 
-    return { nextStep: EStep.SendActivationReminder };
+    if (this.state.profileIsComplete == false) {
+      return { nextStep: EStep.SendReminder };
+    }
 
     // Default case if no condition is met
     return { nextStep: null };
   }
 
-  private async *SendActivationReminder(): StepIt<EStep, EStep.End> {
-    const res = await this.withAction<TStateShape>(
-      "SendActivationReminder",
-      async () => {
-        return this.tasks.SendActivationReminder(this.state);
-      }
-    );
+  private async *SendReminder(): StepIt<EStep, EStep.EndFlow> {
+    const res = await this.withAction<TStateShape>("SendReminder", async () => {
+      return this.tasks.SendReminder(this.state);
+    });
 
     if (res.it) yield res.it;
     if (res.value) this.state = res.value;
-    return { nextStep: EStep.End };
+    return { nextStep: EStep.EndFlow };
   }
 
-  private async *End(): StepIt<EStep, null> {
+  private async *EndFlow(): StepIt<EStep, null> {
     return { nextStep: null };
   }
 }
+
 // --- IMPLEMENTATION ---
 
-async function SendWelcomeEmail(context: TStateShape): Promise<TStateShape> {
+async function SendWelcome(
+  context: TStateShape,
+  params: TSendWelcomeParams
+): Promise<TStateShape> {
   // TODO: Implement task 'Send Welcome Email'
   return context;
 }
 
-async function SendActivationReminder(
-  context: TStateShape
-): Promise<TStateShape> {
-  // TODO: Implement task 'Send Activation Reminder'
+async function SendReminder(context: TStateShape): Promise<TStateShape> {
+  // TODO: Implement task 'Send Profile Reminder'
   return context;
 }
 
 export function createWorkflow() {
-  return new UserOnboarding({
-    SendWelcomeEmail,
-    SendActivationReminder,
+  return new UserOnboardingFlow({
+    SendWelcome,
+    SendReminder,
   });
 }

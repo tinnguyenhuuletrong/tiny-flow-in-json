@@ -37,7 +37,7 @@ describe("generateStepHandlers", () => {
 
     const expected = `private async *ProcessData(): StepIt<EStep, EStep.NextStep> {
     const res = await this.withAction<TStateShape>("ProcessData", async () => { 
-      return this.tasks.ProcessData(this.state); 
+      return this.tasks.ProcessData(this.state,); 
     });
 
     if (res.it) yield res.it;

@@ -4,17 +4,19 @@ constructor(private tasks: Tasks) {
     withAuditLog: true,
   });
 
+  if (defaultState) this.setState(defaultState);
+
   Object.values(EStep).map((step) =>
     this.stepHandler.set(step, this[step].bind(this))
   );
 }
-`;
+` as const;
 
 export const ENUM_TEMPLATE = `
 enum EStep {
   {{steps}}
 }
-`;
+` as const;
 
 export const IMPLEMENTATION_TEMPLATE = `
 // --- IMPLEMENTATION ---
@@ -26,7 +28,7 @@ export function createWorkflow() {
     {{tasks}}
   });
 }
-`;
+` as const;
 
 export const MAIN_TEMPLATE = `
 // -----------------
@@ -40,16 +42,18 @@ export {{eStepEnum}}
 
 export {{tStateShape}}
 
+{{tParamsShapes}}
+
 export {{tasksType}}
 
 {{workflowClass}}
-`;
+` as const;
 
 export const BEGIN_HANDLER_TEMPLATE = `
 private async *{{stepName}}(): StepIt<EStep, {{nextStepName}}> {
   return { nextStep: {{nextStepName}} };
 }
-`;
+` as const;
 
 export const DECISION_HANDLER_TEMPLATE = `
 private async *{{stepName}}(): StepIt<EStep, any> {
@@ -59,31 +63,31 @@ private async *{{stepName}}(): StepIt<EStep, any> {
   // Default case if no condition is met
   return { nextStep: null };
 }
-`;
+` as const;
 
 export const END_HANDLER_TEMPLATE = `
 private async *{{stepName}}(): StepIt<EStep, null> {
   return { nextStep: null };
 }
-`;
+` as const;
 
 export const TASK_HANDLER_TEMPLATE = `
 private async *{{stepName}}(): StepIt<EStep, {{nextStepName}}> {
   const res = await this.withAction<TStateShape>("{{stepName}}", async () => { 
-    return this.tasks.{{stepName}}(this.state); 
+    return this.tasks.{{stepName}}(this.state, {{params}}); 
   }); 
 
   if (res.it) yield res.it;
   if (res.value) this.state = res.value;
   return { nextStep: {{nextStepName}} };
 }
-`;
+` as const;
 
 export const TASKS_TEMPLATE = `
 type Tasks = {
   {{taskSignatures}}
 }
-`;
+` as const;
 
 export const WORKFLOW_CLASS_TEMPLATE = `
 export class {{workflowClassName}} extends DurableState<EStep, TStateShape, any> {
@@ -91,4 +95,4 @@ export class {{workflowClassName}} extends DurableState<EStep, TStateShape, any>
 
   {{stepHandlers}}
 }
-`;
+` as const;

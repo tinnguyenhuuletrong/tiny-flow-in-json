@@ -6,7 +6,7 @@ import {
   DECISION_HANDLER_TEMPLATE,
   END_HANDLER_TEMPLATE,
   TASK_HANDLER_TEMPLATE,
-} from "../templates";
+} from "../constant/DurableStateTemplate";
 
 export function generateStepHandlers(
   flowJson: Flow,
@@ -32,11 +32,20 @@ export function generateStepHandlers(
         return renderTemplate(END_HANDLER_TEMPLATE, {
           stepName,
         });
-      case "task":
+      case "task": {
+        const hasParam = !!step.paramsSchema;
+
         return renderTemplate(TASK_HANDLER_TEMPLATE, {
           stepName,
           nextStepName,
+          params: hasParam
+            ? step.params
+              ? JSON.stringify(step.params)
+              : "undefined"
+            : "",
         });
+      }
+
       case "decision":
         const decisionConnections = flowJson.connections.filter(
           (c) => c.sourceStepId === step.id

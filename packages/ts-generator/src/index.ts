@@ -1,6 +1,9 @@
 import { promises as fs } from "fs";
 import type { Flow } from "@tiny-json-workflow/core";
-import { generateTStateShape } from "./utils/schema-to-ts";
+import {
+  generateTParamsShape,
+  generateTStateShape,
+} from "./utils/schema-to-ts";
 import { pascalCase } from "./utils/string";
 import { generateStepHandlers } from "./utils/step-handlers";
 import { renderTemplate } from "./utils/template";
@@ -11,7 +14,7 @@ import {
   MAIN_TEMPLATE,
   TASKS_TEMPLATE,
   WORKFLOW_CLASS_TEMPLATE,
-} from "./templates";
+} from "./constant/DurableStateTemplate";
 
 const IMPLEMENTATION_SECTION_START = "// --- IMPLEMENTATION ---";
 
@@ -47,17 +50,30 @@ export async function generate(
       .join(",\n  "),
   });
 
-  const tStateShape = generateTStateShape(flowJson.globalStateSchema);
+  const tStateShape = generateTStateShape(
+    flowJson.globalStateSchema,
+    flowJson.globalState
+  );
+
+  const tParamsShapes = flowJson.steps
+    .filter((step) => step.paramsSchema)
+    .map((step) =>
+      generateTParamsShape(step.paramsSchema!, pascalCase(step.id))
+    )
+    .join("\n");
 
   const taskSignatures = flowJson.steps
     .filter((step) => step.type === "task")
-    .map(
-      (step) =>
-        `${pascalCase(step.id)}: (context: TStateShape) => Promise<TStateShape>`
-    );
+    .map((step) => {
+      const stepName = pascalCase(step.id);
+      if (step.paramsSchema) {
+        return `${stepName}: (context: TStateShape, params: T${stepName}Params) => Promise<TStateShape>;`;
+      }
+      return `${stepName}: (context: TStateShape) => Promise<TStateShape>;`;
+    });
 
   const tasksType = renderTemplate(TASKS_TEMPLATE, {
-    taskSignatures: taskSignatures.map((sig) => `${sig}`).join(",\n  "),
+    taskSignatures: taskSignatures.map((sig) => `${sig}`).join("\n  "),
   });
 
   const constructor = renderTemplate(CONSTRUCTOR_TEMPLATE, {
@@ -79,14 +95,13 @@ export async function generate(
     renderTemplate(IMPLEMENTATION_TEMPLATE, {
       functions: flowJson.steps
         .filter((step) => step.type === "task")
-        .map(
-          (step) =>
-            `async function ${pascalCase(
-              step.id
-            )}(context: TStateShape): Promise<TStateShape> {\n  // TODO: Implement task '${
-              step.name
-            }'\n  return context;\n}`
-        )
+        .map((step) => {
+          const stepName = pascalCase(step.id);
+          if (step.paramsSchema) {
+            return `async function ${stepName}(context: TStateShape, params: T${stepName}Params): Promise<TStateShape> {\n  // TODO: Implement task '${step.name}'\n  return context;\n}`;
+          }
+          return `async function ${stepName}(context: TStateShape): Promise<TStateShape> {\n  // TODO: Implement task '${step.name}'\n  return context;\n}`;
+        })
         .join("\n\n"),
       workflowClassName,
       tasks: flowJson.steps
@@ -98,11 +113,12 @@ export async function generate(
   const generatedCode = renderTemplate(MAIN_TEMPLATE, {
     eStepEnum,
     tStateShape,
+    tParamsShapes,
     tasksType,
     workflowClass,
   });
 
-  const finalContent = `${generatedCode.trim()}\n${implementationSection.trim()}`;
+  const finalContent = `${generatedCode.trim()}\n\n${implementationSection.trim()}`;
 
   await fs.writeFile(outputTsPath, finalContent);
 }

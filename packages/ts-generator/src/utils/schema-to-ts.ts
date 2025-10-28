@@ -1,58 +1,33 @@
 import type { JsonSchema } from "@tiny-json-workflow/core/src/types";
+import { generateTypeFromSchema } from "./code-generation";
 
-function generateTypeFromSchema(
-  schema: JsonSchema,
-  indentLevel: number
+export function generateTStateShape(
+  globalStateSchema: JsonSchema,
+  globalState?: Record<string, any>
 ): string {
-  if (!schema) return "any";
+  const shape = globalStateSchema
+    ? generateTypeFromSchema(globalStateSchema, 1)
+    : "Record<string, any>";
 
-  const indent = "  ".repeat(indentLevel);
-  const closingIndent = "  ".repeat(indentLevel > 0 ? indentLevel - 1 : 0);
+  const stateShapeType = `type TStateShape = ${shape};`;
 
-  switch (schema.type) {
-    case "string":
-      if (schema.enum) {
-        return schema.enum.map((val: string) => `"${val}"`).join(" | ");
-      }
-      return "string";
-    case "number":
-    case "integer":
-      return "number";
-    case "boolean":
-      return "boolean";
-    case "array":
-      if (schema.items) {
-        const itemType = generateTypeFromSchema(schema.items, indentLevel);
-        return `${itemType}[]`;
-      }
-      return "any[]";
-    case "object":
-      if (schema.properties) {
-        const properties = Object.entries(schema.properties)
-          .map(([key, value]: [string, any]) => {
-            const isRequired = schema.required?.includes(key);
-            const propertyType = generateTypeFromSchema(value, indentLevel + 1);
-            return `${indent}${key}${isRequired ? "" : "?"}: ${propertyType};`;
-          })
-          .join("\n");
-        return `{\n${properties}\n${closingIndent}}`;
-      }
-      return "Record<string, any>";
-    default:
-      if (Array.isArray(schema.type)) {
-        return schema.type
-          .map((t: any) => generateTypeFromSchema({ type: t }, indentLevel))
-          .join(" | ");
-      }
-      return "any";
+  let defaultState =
+    "export const defaultState: TStateShape | undefined = undefined;";
+  if (globalState) {
+    defaultState = `export const defaultState: TStateShape = ${JSON.stringify(
+      globalState,
+      null,
+      2
+    )};`;
   }
+
+  return [stateShapeType, defaultState].join("\n\n");
 }
 
-export function generateTStateShape(globalStateSchema: JsonSchema): string {
-  if (!globalStateSchema) {
-    return `type TStateShape = Record<string, any>;`;
-  }
-
-  const shape = generateTypeFromSchema(globalStateSchema, 1);
-  return `type TStateShape = ${shape};`;
+export function generateTParamsShape(
+  paramsSchema: JsonSchema,
+  stepId: string
+): string {
+  const shape = generateTypeFromSchema(paramsSchema, 1);
+  return `export type T${stepId}Params = ${shape} | undefined;`;
 }

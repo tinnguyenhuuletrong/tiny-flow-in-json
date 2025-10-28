@@ -31,18 +31,18 @@ The primary goal of this task is to enhance the `@tiny-json-workflow/ts-generato
 ### Step 2: Enhance `TStateShape` with `globalState`
 
 - Modify `packages/ts-generator/src/utils/schema-to-ts.ts` to accept an optional `globalState` object.
-- Update the `generateTStateShape` function to incorporate the values from `globalState` as default values in the generated TypeScript type. This might involve generating a `defaultGlobalState` constant.
+- Update the `generateTStateShape` function to incorporate the values from `globalState` as default values in the generated TypeScript type. This might involve generating a `defaultGlobalState` constant. Just in case globalState exists
 
 ### Step 3: Generate Types for Step Parameters
 
 - In `packages/ts-generator/src/index.ts`, iterate through the steps and for each step with a `paramsSchema`, generate a TypeScript type for its parameters.
 - A new utility function, similar to `generateTStateShape`, might be needed to generate types for step parameters. Let's call it `generateTParamsShape`.
-- The generated type should be named based on the step's ID, e.g., `T${pascalCase(step.id)}Params`.
+- The generated type should be named based on the step's ID, e.g., `T${pascalCase(step.id)}Params`. This is optinal. should omit if flow don't contain paramsSchema
 
 ### Step 4: Update Task Signatures and Implementation Stubs
 
 - Modify the `tasksType` generation to include the new parameter types in the task signatures.
-  - The signature for a task should change from `(context: TStateShape) => Promise<TStateShape>` to `(context: TStateShape, params: TStepParams) => Promise<TStateShape>`.
+  - The signature for a task should change from `(context: TStateShape) => Promise<TStateShape>` to `(context: TStateShape, params: T${pascalCase(step.id)}Params) => Promise<TStateShape>`. Just in case task contain a param
 - Update the `IMPLEMENTATION_TEMPLATE` to generate the correct function signatures for the task implementation stubs.
 
 ### Step 5: Update Step Handlers

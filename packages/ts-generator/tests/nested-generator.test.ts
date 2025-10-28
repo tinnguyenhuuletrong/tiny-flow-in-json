@@ -19,7 +19,9 @@ describe("generateTStateShape", () => {
       age: number;
       isStudent?: boolean;
       status: "active" | "inactive";
-    };`;
+    };
+    export const defaultState: TStateShape | undefined = undefined;
+    `;
 
     const result = generateTStateShape(schema);
     expect(result.replace(/\s/g, "")).toBe(expected.replace(/\s/g, ""));
@@ -37,7 +39,9 @@ describe("generateTStateShape", () => {
     const expected = `type TStateShape = {
       tags?: string[];
       flags?: boolean[];
-    };`;
+    };
+    export const defaultState: TStateShape | undefined = undefined;
+    `;
 
     const result = generateTStateShape(schema);
     expect(result.replace(/\s/g, "")).toBe(expected.replace(/\s/g, ""));
@@ -72,7 +76,9 @@ describe("generateTStateShape", () => {
           email: string;
         };
       };
-    };`;
+    };
+    export const defaultState: TStateShape | undefined = undefined;
+    `;
     const result = generateTStateShape(schema);
     expect(result.replace(/\s/g, "")).toBe(expected.replace(/\s/g, ""));
   });
@@ -100,7 +106,9 @@ describe("generateTStateShape", () => {
         id: number;
         name: string;
       }[];
-    };`;
+    };
+    export const defaultState: TStateShape | undefined = undefined;
+    `;
     const result = generateTStateShape(schema);
     expect(result.replace(/\s/g, "")).toBe(expected.replace(/\s/g, ""));
   });
