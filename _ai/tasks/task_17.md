@@ -44,14 +44,7 @@ Enhance `packages/web` to provide a more flexible layout system, allowing users 
     - In dual modes, `FlowView.tsx` and `JsonEditorView.tsx` will be rendered directly within the resizable panels.
     - The `LeftPanel` will remain, but its integration might need adjustment based on the new layout structure.
 
-### 5. Testing
-
-- Create a new test file `packages/web/tests/app/layout.test.tsx`.
-- Add tests for the `ViewMenu` component to ensure it correctly switches the layout mode.
-- Add tests for the `App` component to ensure the correct layout is rendered based on the layout mode.
-- Add tests to verify that the layout mode is persisted to `localStorage`.
-
-### 6. Implementation Steps
+### 5. Implementation Steps
 
 1.  **Install `react-resizable-panels`:**
     ```bash

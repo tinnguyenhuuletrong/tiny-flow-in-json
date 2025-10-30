@@ -54,7 +54,7 @@ export function JsonEditorView() {
 
     if (matches.length > 0) {
       const range = matches[0].range;
-      editor.revealRangeInCenter(range, 1 /* Immediate scroll */);
+      editor.revealRangeAtTop(range, 1 /* Immediate scroll */);
       editor.setPosition({ lineNumber: range.startLineNumber, column: 1 });
       editor.focus();
     }
