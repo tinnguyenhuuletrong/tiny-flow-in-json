@@ -24,7 +24,9 @@ export function Header() {
   return (
     <header className="p-4 border-b flex justify-between items-center">
       <h1 className="text-xl font-bold">{`${flowName} - ${flowVersion}`}</h1>
-      {flow && <Button onClick={handleShare}>Share</Button>}
+      <div className="flex items-center gap-2">
+        {flow && <Button onClick={handleShare}>Share</Button>}
+      </div>
     </header>
   );
 }

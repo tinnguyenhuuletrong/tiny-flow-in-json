@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useFlowStore } from "@/app/store/flowStore";
 import { JsonAutoForm } from "@/app/components/shared/JsonAutoForm";
 import {
@@ -10,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronsLeft, ChevronsRight, Edit } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLayoutStore } from "@/app/store/layoutStore";
 
 export function LeftPanel() {
   const {
@@ -19,7 +19,7 @@ export function LeftPanel() {
     setSelectedStepId,
     setEditingStepId,
   } = useFlowStore();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isLeftPanelCollapsed, toggleLeftPanel } = useLayoutStore();
 
   if (!flow) return null;
 
@@ -27,19 +27,20 @@ export function LeftPanel() {
     <div
       className={cn(
         "border-r h-full flex flex-col transition-all duration-300 ease-in-out",
-        isCollapsed ? "w-12" : "w-80"
+        isLeftPanelCollapsed ? "w-12" : "w-80"
       )}
     >
       <div className="p-2 border-b">
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={toggleLeftPanel}
+          data-testid="left-panel-toggle"
         >
-          {isCollapsed ? <ChevronsRight /> : <ChevronsLeft />}
+          {isLeftPanelCollapsed ? <ChevronsRight /> : <ChevronsLeft />}
         </Button>
       </div>
-      {!isCollapsed && (
+      {!isLeftPanelCollapsed && (
         <div className="p-4 overflow-y-auto">
           <Accordion
             type="multiple"

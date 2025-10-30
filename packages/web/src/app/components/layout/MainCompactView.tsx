@@ -5,7 +5,7 @@ import { FlowView } from "./FlowView";
 import { JsonEditorView } from "./JsonEditorView";
 import { StepEditModal } from "../shared/StepEditModal";
 
-export function MainView() {
+export function MainCompactView() {
   const { flow } = useFlowStore();
 
   if (!flow) {

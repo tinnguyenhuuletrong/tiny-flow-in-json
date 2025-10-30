@@ -14,6 +14,7 @@ import { parseFromJson, saveToJson } from "@tiny-json-workflow/core";
 import { flowToSvg } from "@tiny-json-workflow/svg-export";
 import { examples } from "@tiny-json-workflow/examples";
 import { placeholderFlow } from "@/data/placeholder";
+import { ViewMenu } from "./ViewMenu";
 
 export function Toolbar() {
   const { doAutoLayout, flow, setFlow, reset } = useFlowStore();
@@ -98,8 +99,9 @@ export function Toolbar() {
         <MenubarTrigger>View</MenubarTrigger>
         <MenubarContent>
           <MenubarItem disabled={!flow} onClick={doAutoLayout}>
-            Auto Layout
+            Graph Auto Layout
           </MenubarItem>
+          <ViewMenu />
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
