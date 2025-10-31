@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "The main schema for the entire workflow. It defines the structure of a workflow, including its steps, connections, and global state.",
+  "description": "The main schema for the entire workflow. It defines the structure of a workflow, including its steps, connections, and global state. A workflow must have exactly one 'begin' step and at most one 'end' step.",
   "type": "object",
   "properties": {
     "$schema": {
@@ -39,56 +39,199 @@
       "description": "An array of steps that make up the workflow.",
       "type": "array",
       "items": {
-        "description": "Schema for a single step (node) in the workflow. It defines the structure of a single unit of work in the workflow.",
-        "type": "object",
-        "properties": {
-          "id": {
-            "description": "A unique identifier for the step.",
-            "type": "string"
-          },
-          "name": {
-            "description": "A human-readable name for the step.",
-            "type": "string"
-          },
-          "type": {
-            "description": "The type of the step.",
-            "type": "string",
-            "enum": [
-              "begin",
-              "end",
-              "task",
-              "decision"
-            ]
-          },
-          "paramsSchema": {
-            "description": "A JSON schema that defines the parameters for the step.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/__schema0"
+        "anyOf": [
+          {
+            "description": "Schema for a 'task' step in the workflow. This represents a unit of work to be performed.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "A unique identifier for the step.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A human-readable name for the step.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the step.",
+                "type": "string",
+                "const": "task"
+              },
+              "paramsSchema": {
+                "description": "A JSON schema that defines the parameters for the step.",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/__schema0"
+                  }
+                ]
+              },
+              "params": {
+                "description": "The parameters for the step.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              },
+              "metadata": {
+                "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
               }
+            },
+            "required": [
+              "id",
+              "name",
+              "type"
             ]
           },
-          "params": {
-            "description": "The parameters for the step.",
+          {
+            "description": "Schema for a decision step in the workflow. This type of step is used to control the flow by branching to different steps based on conditions defined in the outgoing connections.",
             "type": "object",
-            "propertyNames": {
-              "type": "string"
+            "properties": {
+              "id": {
+                "description": "A unique identifier for the step.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A human-readable name for the step.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the step.",
+                "type": "string",
+                "const": "decision"
+              },
+              "paramsSchema": {
+                "description": "A JSON schema that defines the parameters for the step. This field should not be used for 'decision' steps.",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/__schema0"
+                  }
+                ]
+              },
+              "params": {
+                "description": "The parameters for the step. This field should not be used for 'decision' steps.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              },
+              "metadata": {
+                "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
             },
-            "additionalProperties": {}
+            "required": [
+              "id",
+              "name",
+              "type"
+            ]
           },
-          "metadata": {
-            "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+          {
+            "description": "Schema for a 'begin' step in the workflow. This is the starting point of the workflow.",
             "type": "object",
-            "propertyNames": {
-              "type": "string"
+            "properties": {
+              "id": {
+                "description": "A unique identifier for the step.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A human-readable name for the step.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the step.",
+                "type": "string",
+                "const": "begin"
+              },
+              "paramsSchema": {
+                "description": "A JSON schema that defines the parameters for the step. This field should not be used for 'begin' steps.",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/__schema0"
+                  }
+                ]
+              },
+              "params": {
+                "description": "The parameters for the step. This field should not be used for 'begin' steps.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              },
+              "metadata": {
+                "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
             },
-            "additionalProperties": {}
+            "required": [
+              "id",
+              "name",
+              "type"
+            ]
+          },
+          {
+            "description": "Schema for an 'end' step in the workflow. This is a terminal point of the workflow.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "A unique identifier for the step.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A human-readable name for the step.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the step.",
+                "type": "string",
+                "const": "end"
+              },
+              "paramsSchema": {
+                "description": "A JSON schema that defines the parameters for the step. This field should not be used for 'end' steps.",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/__schema0"
+                  }
+                ]
+              },
+              "params": {
+                "description": "The parameters for the step. This field should not be used for 'end' steps.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              },
+              "metadata": {
+                "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type"
+            ]
           }
-        },
-        "required": [
-          "id",
-          "name",
-          "type"
         ]
       }
     },

@@ -40,14 +40,11 @@ export const JsonSchema: z.ZodType<any> = z.lazy(() =>
 
 export type JsonSchema = z.infer<typeof JsonSchema>;
 
-// Schema for a single step (node) in the workflow.
-export const StepSchema = z
+export const StepTaskSchema = z
   .object({
     id: z.string().describe("A unique identifier for the step."),
     name: z.string().describe("A human-readable name for the step."),
-    type: z
-      .enum(["begin", "end", "task", "decision"])
-      .describe("The type of the step."),
+    type: z.literal("task").describe("The type of the step."),
     paramsSchema: JsonSchema.optional().describe(
       "A JSON schema that defines the parameters for the step."
     ),
@@ -63,10 +60,90 @@ export const StepSchema = z
       ),
   })
   .describe(
-    "Schema for a single step (node) in the workflow. It defines the structure of a single unit of work in the workflow."
+    "Schema for a 'task' step in the workflow. This represents a unit of work to be performed."
   );
 
-export type Step = z.infer<typeof StepSchema>;
+export const StepBeginSchema = z
+  .object({
+    id: z.string().describe("A unique identifier for the step."),
+    name: z.string().describe("A human-readable name for the step."),
+    type: z.literal("begin").describe("The type of the step."),
+    paramsSchema: JsonSchema.optional().describe(
+      "A JSON schema that defines the parameters for the step. This field should not be used for 'begin' steps."
+    ),
+    params: z
+      .record(z.string(), z.any())
+      .optional()
+      .describe(
+        "The parameters for the step. This field should not be used for 'begin' steps."
+      ),
+    metadata: z
+      .record(z.string(), z.any())
+      .optional()
+      .describe(
+        "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields."
+      ),
+  })
+  .describe(
+    "Schema for a 'begin' step in the workflow. This is the starting point of the workflow."
+  );
+
+export const StepEndSchema = z
+  .object({
+    id: z.string().describe("A unique identifier for the step."),
+    name: z.string().describe("A human-readable name for the step."),
+    type: z.literal("end").describe("The type of the step."),
+    paramsSchema: JsonSchema.optional().describe(
+      "A JSON schema that defines the parameters for the step. This field should not be used for 'end' steps."
+    ),
+    params: z
+      .record(z.string(), z.any())
+      .optional()
+      .describe(
+        "The parameters for the step. This field should not be used for 'end' steps."
+      ),
+    metadata: z
+      .record(z.string(), z.any())
+      .optional()
+      .describe(
+        "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields."
+      ),
+  })
+  .describe(
+    "Schema for an 'end' step in the workflow. This is a terminal point of the workflow."
+  );
+
+// Schema for a single step (node) in the workflow.
+export const StepDecisionSchema = z
+  .object({
+    id: z.string().describe("A unique identifier for the step."),
+    name: z.string().describe("A human-readable name for the step."),
+    type: z.literal("decision").describe("The type of the step."),
+    paramsSchema: JsonSchema.optional().describe(
+      "A JSON schema that defines the parameters for the step. This field should not be used for 'decision' steps."
+    ),
+    params: z
+      .record(z.string(), z.any())
+      .optional()
+      .describe(
+        "The parameters for the step. This field should not be used for 'decision' steps."
+      ),
+    metadata: z
+      .record(z.string(), z.any())
+      .optional()
+      .describe(
+        "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields."
+      ),
+  })
+  .describe(
+    "Schema for a decision step in the workflow. This type of step is used to control the flow by branching to different steps based on conditions defined in the outgoing connections."
+  );
+
+export type Step =
+  | z.infer<typeof StepTaskSchema>
+  | z.infer<typeof StepDecisionSchema>
+  | z.infer<typeof StepBeginSchema>
+  | z.infer<typeof StepEndSchema>;
 
 // Schema for a connection (edge) between two steps.
 export const ConnectionSchema = z.object({
@@ -99,7 +176,14 @@ export const FlowSchema = z
       .optional()
       .describe("The initial global state of the workflow."), // Added state
     steps: z
-      .array(StepSchema)
+      .array(
+        z.union([
+          StepTaskSchema,
+          StepDecisionSchema,
+          StepBeginSchema,
+          StepEndSchema,
+        ])
+      )
       .describe("An array of steps that make up the workflow."),
     connections: z
       .array(ConnectionSchema)
@@ -112,7 +196,7 @@ export const FlowSchema = z
       ),
   })
   .describe(
-    "The main schema for the entire workflow. It defines the structure of a workflow, including its steps, connections, and global state."
+    "The main schema for the entire workflow. It defines the structure of a workflow, including its steps, connections, and global state. A workflow must have exactly one 'begin' step and at most one 'end' step."
   );
 
 export type Flow = z.infer<typeof FlowSchema>;
