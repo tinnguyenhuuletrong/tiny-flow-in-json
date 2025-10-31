@@ -39,7 +39,17 @@ export function JsonAutoForm<T extends z.ZodObject<any, any>>({
     if (!schema) {
       return null;
     }
-    return new ZodProvider(schema);
+    const ins = new ZodProvider(schema);
+
+    // safeguard schema can parse success
+    try {
+      const tmp = ins.parseSchema();
+      if (tmp?.fields?.length <= 0) return null;
+      return ins;
+    } catch (err) {
+      console.log(error, "AutoForm error", schema);
+      return null;
+    }
   }, [schema]);
 
   const handleJsonStringChange = (newJsonString: string) => {

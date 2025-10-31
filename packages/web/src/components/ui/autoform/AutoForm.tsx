@@ -44,13 +44,6 @@ export function AutoForm<T extends Record<string, any>>({
   formComponents,
   ...props
 }: AutoFormProps<T>) {
-  try {
-    if (props?.schema?.parseSchema()?.fields?.length <= 0) return null;
-  } catch (error) {
-    console.log(error, "AutoForm error", props?.schema);
-    return null;
-  }
-
   return (
     <BaseAutoForm
       {...props}
