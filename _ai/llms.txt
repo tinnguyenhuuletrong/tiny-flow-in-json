@@ -1,0 +1,773 @@
+Below are summaries of the use cases from the examples
+
+### Dynamic Multi-Step Form
+
+This use case demonstrates how to use `tiny-json-workflow` to create a dynamic multi-step form. The workflow defines the pages, fields, and branching logic of the form.
+
+The workflow models a user registration process with a dynamic path based on the user's account type (`personal` or `business`).
+
+- It starts with collecting account and profile details.
+- A decision step asks for the account type.
+- If the account type is 'business', an additional step is shown to collect business details.
+- The form logic can be changed by updating the JSON workflow without changing the UI code.
+
+The global state `accountType` is used to control the branching.
+
+#### Workflow JSON:
+
+```json
+{
+  "$schema": "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
+  "id": "dynamic-multi-step-form-v1",
+  "name": "Dynamic Multi-Step Form",
+  "version": "1.0.0",
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "accountType": {
+        "type": "string",
+        "enum": ["personal", "business"]
+      }
+    }
+  },
+  "steps": [
+    {
+      "id": "start-registration",
+      "name": "Start Registration",
+      "type": "begin",
+      "metadata": {
+        "x": 12,
+        "y": 37
+      }
+    },
+    {
+      "id": "account-details",
+      "name": "Account Details",
+      "type": "task",
+      "metadata": {
+        "x": 184.6725285031589,
+        "y": 21.231620474207546
+      },
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": ["email", "password"]
+      }
+    },
+    {
+      "id": "profile-details",
+      "name": "Profile Details",
+      "type": "task",
+      "metadata": {
+        "x": 534.739326671483,
+        "y": 21.231620474207546
+      },
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "id": "ask-for-account-type",
+      "name": "Ask for Account Type",
+      "type": "decision",
+      "metadata": {
+        "x": 874.2938718226119,
+        "y": 5.46324094841512
+      }
+    },
+    {
+      "id": "business-details",
+      "name": "Business Details",
+      "type": "task",
+      "metadata": {
+        "x": 1204.6501955836952,
+        "y": 193.33636454661308
+      },
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "companyName": {
+            "type": "string"
+          },
+          "vatNumber": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "id": "end-registration",
+      "name": "End Registration",
+      "type": "end",
+      "metadata": {
+        "x": 1582.311657922156,
+        "y": 18.603557219908794
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "start-registration",
+      "targetStepId": "account-details"
+    },
+    {
+      "id": "c2",
+      "sourceStepId": "account-details",
+      "targetStepId": "profile-details"
+    },
+    {
+      "id": "c3",
+      "sourceStepId": "profile-details",
+      "targetStepId": "ask-for-account-type"
+    },
+    {
+      "id": "c4",
+      "sourceStepId": "ask-for-account-type",
+      "targetStepId": "end-registration",
+      "condition": "state.accountType == 'personal'"
+    },
+    {
+      "id": "c5",
+      "sourceStepId": "ask-for-account-type",
+      "targetStepId": "business-details",
+      "condition": "state.accountType == 'business'"
+    },
+    {
+      "id": "c6",
+      "sourceStepId": "business-details",
+      "targetStepId": "end-registration"
+    }
+  ],
+  "metadata": {
+    "reactflowViewport": {
+      "x": 60.210779973272224,
+      "y": 281.84912415960514,
+      "zoom": 0.8839501537424665
+    }
+  }
+}
+```
+
+### E-commerce Order Fulfillment
+
+This use case demonstrates a typical e-commerce order fulfillment workflow.
+
+- The workflow starts when a customer places an order.
+- It processes the payment and then checks for inventory.
+- A decision step branches the flow based on whether the item is in stock.
+- If the item is in stock, the order is shipped and the customer is notified.
+- If the item is out of stock, a backorder is triggered and the customer is notified.
+- The global state `inStock` is used to control the branching. Other global states are `orderId` and `itemId`.
+
+#### Workflow JSON:
+
+```json
+{
+  "$schema": "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
+  "id": "ecommerce-order-fulfillment-v1",
+  "name": "E-commerce Order Fulfillment",
+  "version": "1.0.0",
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "orderId": {
+        "type": "string"
+      },
+      "itemId": {
+        "type": "string"
+      },
+      "inStock": {
+        "type": "boolean"
+      }
+    },
+    "required": ["orderId", "itemId", "inStock"]
+  },
+  "steps": [
+    {
+      "id": "start-order",
+      "name": "Start Order",
+      "type": "begin",
+      "metadata": {
+        "x": 12,
+        "y": 37
+      }
+    },
+    {
+      "id": "process-payment",
+      "name": "Process Payment",
+      "type": "task",
+      "metadata": {
+        "x": 133,
+        "y": 21
+      }
+    },
+    {
+      "id": "check-inventory",
+      "name": "Check Inventory",
+      "type": "decision",
+      "metadata": {
+        "x": 573,
+        "y": 5
+      }
+    },
+    {
+      "id": "ship-order",
+      "name": "Ship Order",
+      "type": "task",
+      "metadata": {
+        "x": 1212,
+        "y": 312
+      }
+    },
+    {
+      "id": "notify-customer-shipped",
+      "name": "Notify Customer (Shipped)",
+      "type": "task",
+      "metadata": {
+        "x": 1612,
+        "y": 312
+      }
+    },
+    {
+      "id": "trigger-backorder",
+      "name": "Trigger Backorder",
+      "type": "task",
+      "metadata": {
+        "x": 1213,
+        "y": -37
+      }
+    },
+    {
+      "id": "notify-customer-backordered",
+      "name": "Notify Customer (Backordered)",
+      "type": "task",
+      "metadata": {
+        "x": 1612,
+        "y": -37
+      }
+    },
+    {
+      "id": "end-order",
+      "name": "End Order",
+      "type": "end",
+      "metadata": {
+        "x": 2012,
+        "y": 37
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "start-order",
+      "targetStepId": "process-payment"
+    },
+    {
+      "id": "c2",
+      "sourceStepId": "process-payment",
+      "targetStepId": "check-inventory"
+    },
+    {
+      "id": "c3",
+      "sourceStepId": "check-inventory",
+      "targetStepId": "ship-order",
+      "condition": "state.inStock == true"
+    },
+    {
+      "id": "c4",
+      "sourceStepId": "ship-order",
+      "targetStepId": "notify-customer-shipped"
+    },
+    {
+      "id": "c5",
+      "sourceStepId": "notify-customer-shipped",
+      "targetStepId": "end-order"
+    },
+    {
+      "id": "c6",
+      "sourceStepId": "check-inventory",
+      "targetStepId": "trigger-backorder",
+      "condition": "state.inStock == false"
+    },
+    {
+      "id": "c7",
+      "sourceStepId": "trigger-backorder",
+      "targetStepId": "notify-customer-backordered"
+    },
+    {
+      "id": "c8",
+      "sourceStepId": "notify-customer-backordered",
+      "targetStepId": "end-order"
+    }
+  ],
+  "metadata": {
+    "reactflowViewport": {
+      "x": 62.45382963493205,
+      "y": 279.8535254115963,
+      "zoom": 0.6970293486041517
+    }
+  }
+}
+```
+
+### Fork-Join Flow (Simulated)
+
+This use case demonstrates how to simulate a fork-join pattern for parallel execution.
+
+- `tiny-json-workflow` does not have a built-in mechanism for a "join".
+- The workflow simulates the pattern by defining the structure of parallel tasks.
+- A `fork` task initiates two parallel tasks.
+- A `join-tasks` task is defined to synchronize the parallel branches.
+- The actual orchestration of the join logic needs to be handled by the workflow runner.
+
+#### Workflow JSON:
+
+```json
+{
+  "$schema": "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
+  "id": "user-profile-update-v3",
+  "name": "User Profile Update with Parallel Tasks",
+  "version": "3.0.0",
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "string"
+      },
+      "updatedFields": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "searchIndexStatus": {
+        "type": "string"
+      },
+      "emailNotificationStatus": {
+        "type": "string"
+      }
+    },
+    "required": ["userId", "updatedFields"]
+  },
+  "steps": [
+    {
+      "id": "begin-update",
+      "name": "Begin Profile Update",
+      "type": "begin",
+      "metadata": {
+        "x": 12,
+        "y": 37
+      }
+    },
+    {
+      "id": "fork-tasks",
+      "name": "Initiate Parallel Tasks",
+      "type": "task",
+      "metadata": {
+        "x": 412,
+        "y": 37
+      }
+    },
+    {
+      "id": "update-search-index",
+      "name": "Update Search Index",
+      "type": "task",
+      "metadata": {
+        "x": 812,
+        "y": 312
+      }
+    },
+    {
+      "id": "send-email-notification",
+      "name": "Send 'Profile Updated' Email",
+      "type": "task",
+      "metadata": {
+        "x": 812,
+        "y": 12
+      }
+    },
+    {
+      "id": "join-tasks",
+      "name": "Synchronize and Finalize",
+      "type": "task",
+      "metadata": {
+        "x": 1212,
+        "y": 37
+      }
+    },
+    {
+      "id": "end-update",
+      "name": "End Profile Update",
+      "type": "end",
+      "metadata": {
+        "x": 1612,
+        "y": 37
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "begin-update",
+      "targetStepId": "fork-tasks"
+    },
+    {
+      "id": "c2-path-A",
+      "sourceStepId": "fork-tasks",
+      "targetStepId": "update-search-index"
+    },
+    {
+      "id": "c3-path-B",
+      "sourceStepId": "fork-tasks",
+      "targetStepId": "send-email-notification"
+    },
+    {
+      "id": "c4-join-A",
+      "sourceStepId": "update-search-index",
+      "targetStepId": "join-tasks"
+    },
+    {
+      "id": "c5-join-B",
+      "sourceStepId": "send-email-notification",
+      "targetStepId": "join-tasks"
+    },
+    {
+      "id": "c6",
+      "sourceStepId": "join-tasks",
+      "targetStepId": "end-update"
+    }
+  ]
+}
+```
+
+### Support Ticket Routing
+
+This use case demonstrates a more complex workflow for routing customer support tickets to the correct team.
+
+- The workflow starts when a new support ticket is created.
+- It uses a series of decisions to determine the best destination for the ticket based on `priority` and `category`.
+- If the ticket is `urgent` and `technical`, it is escalated to L2 Tech Support.
+- If the ticket is about `billing`, it is routed to the Billing Team.
+- If the customer is a `VIP`, the ticket is tagged as such.
+- Otherwise, the ticket is assigned to the General Support Queue.
+- A confirmation is sent to the customer after the ticket has been routed.
+- The global state is a `ticket` object which contains `id`, `priority`, `category`, `isVip`, and `assignedAgentId`.
+
+#### Workflow JSON:
+
+```json
+{
+  "$schema": "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
+  "id": "support-ticket-router-v2",
+  "name": "Customer Support Ticket Routing Flow",
+  "version": "2.0.0",
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "priority": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "urgent"
+        ]
+      },
+      "category": {
+        "type": "string",
+        "enum": [
+          "technical",
+          "billing",
+          "general"
+        ]
+      },
+      "isVip": {
+        "type": "boolean",
+        "default": false
+      },
+      "assignedAgentId": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "priority",
+      "category"
+    ]
+  },
+  "steps": [
+    {
+      "id": "start-routing",
+      "name": "Begin Ticket Routing",
+      "type": "begin",
+      "metadata": {
+        "x": 12,
+        "y": 57
+      }
+    },
+    {
+      "id": "evaluate-ticket",
+      "name": "Evaluate Ticket Priority & Category",
+      "type": "decision",
+      "metadata": {
+        "x": 412,
+        "y": 57
+      }
+    },
+    {
+      "id": "escalate-urgent",
+      "name": "Escalate to L2 Tech Support",
+      "type": "task",
+      "metadata": {
+        "x": 812,
+        "y": 612
+      }
+    },
+    {
+      "id": "route-to-billing",
+      "name": "Route to Billing Team",
+      "type": "task",
+      "metadata": {
+        "x": 812,
+        "y": 312
+      }
+    },
+    {
+      "id": "assign-general",
+      "name": "Assign to General Support Queue",
+      "type": "task",
+      "metadata": {
+        "x": 812,
+        "y": 12
+      }
+    },
+    {
+      "id": "add-vip-tag",
+      "name": "Tag as VIP Customer",
+      "type": "task",
+      "metadata": {
+        "x": 1212,
+        "y": 697
+      }
+    },
+    {
+      "id": "send-confirmation",
+      "name": "Send Confirmation to Customer",
+      "type": "task",
+      "metadata": {
+        "x": 1212,
+        "y": 312
+      }
+    },
+    {
+      "id": "end-routing",
+      "name": "End Routing Process",
+      "type": "end",
+      "metadata": {
+        "x": 1612,
+        "y": 337
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "start-routing",
+      "targetStepId": "evaluate-ticket"
+    },
+    {
+      "id": "c2-urgent",
+      "sourceStepId": "evaluate-ticket",
+      "targetStepId": "escalate-urgent",
+      "condition": "state.ticket.priority == 'urgent' && state.ticket.category == 'technical'"
+    },
+    {
+      "id": "c3-billing",
+      "sourceStepId": "evaluate-ticket",
+      "targetStepId": "route-to-billing",
+      "condition": "state.ticket.category == 'billing'"
+    },
+    {
+      "id": "c4-default",
+      "sourceStepId": "evaluate-ticket",
+      "targetStepId": "assign-general"
+    },
+    {
+      "id": "c5-vip",
+      "sourceStepId": "evaluate-ticket",
+      "targetStepId": "add-vip-tag",
+      "condition": "state.ticket.isVip == true"
+    },
+    {
+      "id": "c6",
+      "sourceStepId": "escalate-urgent",
+      "targetStepId": "send-confirmation"
+    },
+    {
+      "id": "c7",
+      "sourceStepId": "route-to-billing",
+      "targetStepId": "send-confirmation"
+    },
+    {
+      "id": "c8",
+      "sourceStepId": "assign-general",
+      "targetStepId": "send-confirmation"
+    },
+    {
+      "id": "c9",
+      "sourceStepId": "add-vip-tag",
+      "targetStepId": "end-routing"
+    },
+    {
+      "id": "c10",
+      "sourceStepId": "send-confirmation",
+      "targetStepId": "end-routing"
+    }
+  ]
+}
+```
+
+### User Onboarding
+
+This use case shows a simple user onboarding workflow.
+
+- The workflow starts when a new user signs up.
+- It sends a welcome email.
+- It then checks if the user's profile is complete.
+- If the profile is not complete, it sends a reminder email.
+- The global state `profileIsComplete` and `userId` are used.
+
+#### Workflow JSON:
+
+```json
+{
+  "$schema": "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
+  "id": "onboarding-flow-v1",
+  "name": "User Onboarding Flow",
+  "version": "1.0.0",
+  "globalState": {
+    "userId": "001",
+    "profileIsComplete": true
+  },
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "string"
+      },
+      "profileIsComplete": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "userId"
+    ]
+  },
+  "steps": [
+    {
+      "id": "start-flow",
+      "name": "Begin Onboarding",
+      "type": "begin",
+      "metadata": {
+        "x": 12,
+        "y": 37
+      }
+    },
+    {
+      "id": "send-welcome",
+      "name": "Send Welcome Email",
+      "type": "task",
+      "metadata": {
+        "owner": "engagement-team",
+        "x": 412,
+        "y": 37
+      },
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "template": {
+            "type": "string",
+            "default": "welcome-email-v2"
+          }
+        }
+      }
+    },
+    {
+      "id": "check-profile",
+      "name": "Is Profile Complete?",
+      "type": "decision",
+      "metadata": {
+        "x": 812,
+        "y": 37
+      }
+    },
+    {
+      "id": "send-reminder",
+      "name": "Send Profile Reminder",
+      "type": "task",
+      "metadata": {
+        "x": 1202.766789125643,
+        "y": 139.94592211609114
+      }
+    },
+    {
+      "id": "end-flow",
+      "name": "End Onboarding",
+      "type": "end",
+      "metadata": {
+        "x": 1612,
+        "y": 37
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "start-flow",
+      "targetStepId": "send-welcome"
+    },
+    {
+      "id": "c2",
+      "sourceStepId": "send-welcome",
+      "targetStepId": "check-profile"
+    },
+    {
+      "id": "c3",
+      "sourceStepId": "check-profile",
+      "targetStepId": "end-flow",
+      "condition": "state.profileIsComplete == true"
+    },
+    {
+      "id": "c4",
+      "sourceStepId": "check-profile",
+      "targetStepId": "send-reminder",
+      "condition": "state.profileIsComplete == false"
+    },
+    {
+      "id": "c5",
+      "sourceStepId": "send-reminder",
+      "targetStepId": "end-flow"
+    }
+  ]
+}
+```

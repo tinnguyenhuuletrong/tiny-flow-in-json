@@ -17,6 +17,7 @@ import { ArrayWrapper } from "./components/ArrayWrapper";
 import { ArrayElementWrapper } from "./components/ArrayElementWrapper";
 import { DateTimeField } from "./components/DateTimeField";
 import { TimeField } from "./components/TimeField";
+import { Suspense } from "react";
 
 const ShadcnUIComponents: AutoFormUIComponents = {
   Form,
@@ -44,6 +45,8 @@ export function AutoForm<T extends Record<string, any>>({
   formComponents,
   ...props
 }: AutoFormProps<T>) {
+  if (props?.schema?.parseSchema()?.fields?.length <= 0) return null;
+
   return (
     <BaseAutoForm
       {...props}
