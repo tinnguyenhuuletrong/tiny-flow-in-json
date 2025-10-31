@@ -9,7 +9,6 @@ import ReactFlow, {
   useEdgesState,
   type OnNodesChange,
   MarkerType,
-  type DefaultEdgeOptions,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -19,11 +18,6 @@ import { BeginNode } from "../custom-nodes/BeginNode";
 import { EndNode } from "../custom-nodes/EndNode";
 import { DecisionNode } from "../custom-nodes/DecisionNode";
 import { TaskNode } from "../custom-nodes/TaskNode";
-
-const defaultEdgeOptions: DefaultEdgeOptions = {
-  animated: true,
-  type: "step",
-};
 
 export function FlowView() {
   const {
@@ -81,23 +75,36 @@ export function FlowView() {
     });
     setNodes(newNodes);
 
-    const newEdges: Edge[] = flow.connections.map((connection) => ({
-      id: connection.id,
-      source: connection.sourceStepId,
-      target: connection.targetStepId,
-      label: connection.condition,
-      sourceHandle: connection.id,
-      labelStyle: { fill: "#777", fontWeight: 500 },
-      labelBgPadding: [6, 4],
-      labelBgBorderRadius: 4,
-      labelBgStyle: { fill: "#fff", fillOpacity: 0.6 },
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-        width: 20,
-        height: 20,
-        color: "black",
-      },
-    }));
+    const newEdges: Edge[] = flow.connections.map((connection) => {
+      const isSourceNodeSelected = connection.sourceStepId === selectedStepId;
+      return {
+        id: connection.id,
+        source: connection.sourceStepId,
+        target: connection.targetStepId,
+        label: connection.condition,
+        sourceHandle: connection.id,
+        type: "smoothstep",
+        animated: isSourceNodeSelected ? true : false,
+        labelStyle: {
+          fill: "#777",
+          fontWeight: 500,
+          stroke: isSourceNodeSelected ? "var(--color-blue-500)" : "",
+        },
+        style: {
+          stroke: isSourceNodeSelected ? "var(--color-blue-500)" : "",
+        },
+        labelBgPadding: [6, 4],
+        labelBgBorderRadius: 4,
+        labelBgStyle: { fill: "#fff", fillOpacity: 0.6 },
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          width: 20,
+          height: 20,
+          color: "black",
+        },
+        selected: isSourceNodeSelected,
+      };
+    });
     setEdges(newEdges);
   }, [flow, setNodes, setEdges, selectedStepId]);
 
@@ -125,7 +132,6 @@ export function FlowView() {
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       nodeTypes={nodeTypes}
-      defaultEdgeOptions={defaultEdgeOptions}
       onNodeDragStop={onNodeDragStop}
       defaultViewport={initViewPort}
     >
