@@ -17,7 +17,6 @@ import { ArrayWrapper } from "./components/ArrayWrapper";
 import { ArrayElementWrapper } from "./components/ArrayElementWrapper";
 import { DateTimeField } from "./components/DateTimeField";
 import { TimeField } from "./components/TimeField";
-import { Suspense } from "react";
 
 const ShadcnUIComponents: AutoFormUIComponents = {
   Form,
