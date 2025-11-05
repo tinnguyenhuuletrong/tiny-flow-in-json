@@ -1,15 +1,16 @@
 import {
-  type Flow,
   FlowSchema,
+  KEY_ORDERS,
+  type Flow,
   type Step,
   type ParsedFlow,
   type ParsedStep,
-  KEY_ORDERS,
   type Connection,
   type StepTask,
+  type StepWaitForEvent,
 } from "./types"; // Updated import
 import { jsonSchemaToZod } from "@tiny-json-workflow/json-schema-adapter";
-import { prettifyError, toJSONSchema } from "zod";
+import { prettifyError, toJSONSchema, ZodError } from "zod";
 import { orderedJsonStringify } from "./utils/helper";
 
 /**
@@ -19,8 +20,16 @@ import { orderedJsonStringify } from "./utils/helper";
  * @throws Will throw an error if the JSON is invalid or doesn't match the Flow schema.
  */
 export function parseFromJson(jsonString: string): ParsedFlow {
-  const json = JSON.parse(jsonString);
-  const flow = FlowSchema.parse(json); // Validate against the raw FlowSchema
+  let flow: Flow;
+  try {
+    const json = JSON.parse(jsonString);
+    flow = FlowSchema.parse(json); // Validate against the raw FlowSchema
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new Error(`Flow schema validation error: ${prettifyError(error)}`);
+    }
+    throw error;
+  }
 
   const originalJsonSchema = new Map<string, string>();
 
@@ -28,7 +37,10 @@ export function parseFromJson(jsonString: string): ParsedFlow {
 
   // Transform globalStateSchema from JSON Schema to Zod Schema
   const parsedGlobalStateSchema = jsonSchemaToZod(flow.globalStateSchema);
-  originalJsonSchema.set("globalStateSchema", flow.globalStateSchema);
+  originalJsonSchema.set(
+    "globalStateSchema",
+    JSON.stringify(flow.globalStateSchema)
+  );
 
   // Transform paramsSchema for each step from JSON Schema to Zod Schema
   const parsedSteps: ParsedStep[] = flow.steps.map((step) => {
@@ -37,9 +49,34 @@ export function parseFromJson(jsonString: string): ParsedFlow {
       let paramsZodSchema;
       if (paramsSchema) {
         paramsZodSchema = jsonSchemaToZod(paramsSchema);
-        originalJsonSchema.set(step.id, paramsSchema);
+        originalJsonSchema.set(step.id, JSON.stringify(paramsSchema));
       }
       const parsedStep: ParsedStep = { ...others, paramsZodSchema };
+      return parsedStep;
+    } else if (step.type === "waitForEvent") {
+      const { eventInput, eventOutput, ...others } = step;
+      let eventInputZodSchema;
+      let eventOutputZodSchema;
+
+      if (eventInput?.eventInputSchema) {
+        eventInputZodSchema = jsonSchemaToZod(eventInput.eventInputSchema);
+        originalJsonSchema.set(
+          `${step.id}-eventInputSchema`,
+          JSON.stringify(eventInput.eventInputSchema)
+        );
+      }
+      if (eventOutput?.eventOutputSchema) {
+        eventOutputZodSchema = jsonSchemaToZod(eventOutput.eventOutputSchema);
+        originalJsonSchema.set(
+          `${step.id}-eventOutputSchema`,
+          JSON.stringify(eventOutput.eventOutputSchema)
+        );
+      }
+      const parsedStep: ParsedStep = {
+        ...others,
+        eventInput: { value: eventInput?.value, eventInputZodSchema },
+        eventOutput: { value: eventOutput?.value, eventOutputZodSchema },
+      };
       return parsedStep;
     }
     return { ...step };
@@ -63,8 +100,9 @@ export function parseFromJson(jsonString: string): ParsedFlow {
  */
 export function saveToJson(flow: ParsedFlow): string {
   // Convert globalStateSchema from Zod Schema back to JSON Schema
-  const rawGlobalStateSchema =
-    flow._internal.originalJsonSchema.get("globalStateSchema");
+  const rawGlobalStateSchema = JSON.parse(
+    flow._internal.originalJsonSchema.get("globalStateSchema") || "{}"
+  );
   const { globalStateZodSchema, _internal, ...others } = flow;
 
   // Convert paramsSchema for each step from Zod Schema back to JSON Schema
@@ -73,7 +111,35 @@ export function saveToJson(flow: ParsedFlow): string {
       const { paramsZodSchema, ...others } = step;
       const rawStep: StepTask = { ...others };
       if (step.paramsZodSchema) {
-        rawStep.paramsSchema = flow._internal.originalJsonSchema.get(step.id);
+        rawStep.paramsSchema = JSON.parse(
+          flow._internal.originalJsonSchema.get(step.id) || "{}"
+        );
+      }
+      return rawStep;
+    } else if (step.type === "waitForEvent") {
+      const { eventInput, eventOutput, ...others } = step;
+      const rawStep: StepWaitForEvent = { ...others };
+
+      if (eventInput?.eventInputZodSchema) {
+        rawStep.eventInput = {
+          value: step.eventInput?.value,
+          eventInputSchema: JSON.parse(
+            flow._internal.originalJsonSchema.get(
+              `${step.id}-eventInputSchema`
+            ) || "{}"
+          ),
+        };
+      }
+
+      if (eventOutput?.eventOutputZodSchema) {
+        rawStep.eventOutput = {
+          value: step.eventOutput?.value,
+          eventOutputSchema: JSON.parse(
+            flow._internal.originalJsonSchema.get(
+              `${step.id}-eventOutputSchema`
+            ) || "{}"
+          ),
+        };
       }
       return rawStep;
     }
@@ -100,7 +166,10 @@ export type FlowError = {
   code:
     | "CONNECTION_ERROR"
     | "GLOBAL_STATE_VALIDATION_ERROR"
-    | "STEP_PARAMS_VALIDATION_ERROR";
+    | "STEP_PARAMS_VALIDATION_ERROR"
+    | "SCHEMA_VALIDATION_ERROR"
+    | "STEP_EVENT_INPUT_VALIDATION_ERROR"
+    | "STEP_EVENT_OUTPUT_VALIDATION_ERROR";
   message: string;
 };
 
@@ -145,7 +214,7 @@ export function validate(flow: ParsedFlow): FlowError[] {
     }
   }
 
-  // Validate step parameters
+  // Validate step parameters and event data
   for (const step of flow.steps) {
     if (step.type === "task" && step.params && step.paramsZodSchema) {
       const stepParamsValidation = step.paramsZodSchema.safeParse(step.params);
@@ -158,6 +227,40 @@ export function validate(flow: ParsedFlow): FlowError[] {
             stepParamsValidation.error
           )}`,
         });
+      }
+    } else if (step.type === "waitForEvent") {
+      if (step.eventInput?.value && step?.eventInput?.eventInputZodSchema) {
+        const eventInputValidation =
+          step?.eventInput?.eventInputZodSchema.safeParse(
+            step.eventInput.value
+          );
+        if (!eventInputValidation.success) {
+          errors.push({
+            code: "STEP_EVENT_INPUT_VALIDATION_ERROR",
+            message: `Step '${
+              step.id
+            }' eventInput validation error: ${prettifyError(
+              eventInputValidation.error
+            )}`,
+          });
+        }
+      }
+
+      if (step.eventOutput?.value && step?.eventOutput?.eventOutputZodSchema) {
+        const eventOutputValidation =
+          step?.eventOutput?.eventOutputZodSchema.safeParse(
+            step.eventOutput.value
+          );
+        if (!eventOutputValidation.success) {
+          errors.push({
+            code: "STEP_EVENT_OUTPUT_VALIDATION_ERROR",
+            message: `Step '${
+              step.id
+            }' eventOutput validation error: ${prettifyError(
+              eventOutputValidation.error
+            )}`,
+          });
+        }
       }
     }
   }

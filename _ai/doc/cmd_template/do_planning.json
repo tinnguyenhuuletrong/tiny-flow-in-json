@@ -1,22 +1,27 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_17.md",
+  "save_to": "create _ai/task_18.md",
   "resources": {},
   "mcp": {},
   "target": [
     {
-      "goal": "enhance packages/web",
+      "goal": "enhance packages/core",
       "requirements": [
-        "Add a layout system. should have a view menu",
-        "-> dual mode where JSON and FlowView side by side horizontal or vertical",
-        "-> compact mode where JSON and FlowView toggle like now",
-        "view mode saved into localStorage as well ( new key to seperated with flow store)"
+        "Add 2 new step type",
+        "- resumeAter. Resume the flow after a time",
+        "   - params a duration string. where are humanize date time string",
+        "- waitForEvent. Resume the flow after a time",
+        "   - params contain 2 parts. eventInput, eventOutput. each Input and Output contain a jsonSchema and associated value"
+      ],
+      "note": [
+        "read the file packages/core/src/types.ts. Also update description + variable name.",
+        "Should consider DX. avoid confuse between different step type"
       ]
     }
   ],
   "steps": {
     "1": "read resources, use context7 mcp when need",
     "2": "read current source code",
-    "3": "create a task_17 to achieve goal"
+    "3": "create a task_18 to achieve goal"
   }
 }

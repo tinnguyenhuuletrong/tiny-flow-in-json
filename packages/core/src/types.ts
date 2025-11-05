@@ -112,12 +112,79 @@ export const StepDecisionSchema = z
     "Schema for a decision step in the workflow. This type of step is used to control the flow by branching to different steps based on conditions defined in the outgoing connections."
   );
 
-export type Step = StepTask | StepDecision | StepBegin | StepEnd;
+export const StepResumeAfterSchema = z
+  .object({
+    id: z.string().describe("A unique identifier for the step."),
+    name: z.string().describe("A human-readable name for the step."),
+    type: z.literal("resumeAfter").describe("The type of the step."),
+    duration: z
+      .string()
+      .regex(
+        /^(\d+(\.\d+)?\s+(second|minute|hour|day|week|month|year)s?)?$/,
+        "Invalid duration format. Expected human-readable date-time string (e.g., '2.5 hours', '1 day')."
+      )
+      .describe(
+        "A human-readable date-time string (e.g., '2.5 hours', '1 day')."
+      ),
+    metadata: z
+      .record(z.string(), z.any())
+      .optional()
+      .describe(
+        "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields."
+      ),
+  })
+  .describe(
+    "Schema for a 'resumeAfter' step in the workflow. This step pauses the workflow and resumes it after a specified duration."
+  );
+
+export const StepWaitForEventSchema = z
+  .object({
+    id: z.string().describe("A unique identifier for the step."),
+    name: z.string().describe("A human-readable name for the step."),
+    type: z.literal("waitForEvent").describe("The type of the step."),
+    eventInput: z
+      .object({
+        value: z.any().describe("The value of the event input."),
+        eventInputSchema: JsonSchema.describe(
+          "A JSON schema for the expected event payload."
+        ),
+      })
+      .optional()
+      .describe("Defines the expected input for the event."),
+    eventOutput: z
+      .object({
+        value: z.any().describe("The value of the event output."),
+        eventOutputSchema: JsonSchema.describe(
+          "A JSON schema for the data that will be passed to the next step."
+        ),
+      })
+      .optional()
+      .describe("Defines the output of the event."),
+    metadata: z
+      .record(z.string(), z.any())
+      .optional()
+      .describe(
+        "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields."
+      ),
+  })
+  .describe(
+    "Schema for a 'waitForEvent' step in the workflow. This step pauses the workflow until a specific event is received."
+  );
+
+export type Step =
+  | StepTask
+  | StepDecision
+  | StepBegin
+  | StepEnd
+  | StepResumeAfter
+  | StepWaitForEvent;
 
 export type StepTask = z.infer<typeof StepTaskSchema>;
 export type StepDecision = z.infer<typeof StepDecisionSchema>;
 export type StepBegin = z.infer<typeof StepBeginSchema>;
 export type StepEnd = z.infer<typeof StepEndSchema>;
+export type StepResumeAfter = z.infer<typeof StepResumeAfterSchema>;
+export type StepWaitForEvent = z.infer<typeof StepWaitForEventSchema>;
 
 // Schema for a connection (edge) between two steps.
 export const ConnectionSchema = z.object({
@@ -156,6 +223,8 @@ export const FlowSchema = z
           StepDecisionSchema,
           StepBeginSchema,
           StepEndSchema,
+          StepResumeAfterSchema,
+          StepWaitForEventSchema,
         ])
       )
       .describe("An array of steps that make up the workflow."),
@@ -192,9 +261,14 @@ export type ParsedStep =
   | (Omit<StepTask, "paramsSchema"> & {
       readonly paramsZodSchema?: z.ZodType;
     })
+  | (Omit<StepWaitForEvent, "eventInput" | "eventOutput"> & {
+      readonly eventInput?: { value: any; eventInputZodSchema?: z.ZodType };
+      readonly eventOutput?: { value: any; eventOutputZodSchema?: z.ZodType };
+    })
   | StepDecision
   | StepBegin
-  | StepEnd;
+  | StepEnd
+  | StepResumeAfter;
 
 export type ParsedFlow = Omit<Flow, "globalStateSchema" | "steps"> & {
   readonly globalStateZodSchema: z.ZodType;

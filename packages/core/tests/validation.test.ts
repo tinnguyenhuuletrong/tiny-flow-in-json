@@ -133,4 +133,140 @@ describe("FlowJSON Validation", () => {
     expect(errors[0]?.code).toBe("STEP_PARAMS_VALIDATION_ERROR");
     expect(errors[0]?.message).toContain("expected string, received number");
   });
+
+  test("should validate a valid resumeAfter step", () => {
+    const validResumeAfterFlowJson = `{
+      "id": "valid-resume-after-flow",
+      "name": "Valid Resume After Flow",
+      "version": "1.0.0",
+      "globalStateSchema": {},
+      "steps": [
+        { "id": "start", "name": "Start", "type": "begin" },
+        { "id": "resume1", "name": "Resume After", "type": "resumeAfter", "duration": "10 minutes" },
+        { "id": "end", "name": "End", "type": "end" }
+      ],
+      "connections": [
+        { "id": "c1", "sourceStepId": "start", "targetStepId": "resume1" },
+        { "id": "c2", "sourceStepId": "resume1", "targetStepId": "end" }
+      ]
+    }`;
+    const flow = parseFromJson(validResumeAfterFlowJson);
+    const errors = validate(flow);
+    expect(errors).toEqual([]);
+  });
+
+  test("should detect invalid duration in resumeAfter step", () => {
+    const invalidResumeAfterFlowJson = `{
+      "id": "invalid-resume-after-flow",
+      "name": "Invalid Resume After Flow",
+      "version": "1.0.0",
+      "globalStateSchema": {},
+      "steps": [
+        { "id": "start", "name": "Start", "type": "begin" },
+        { "id": "resume1", "name": "Resume After", "type": "resumeAfter", "duration": "ten minutes" },
+        { "id": "end", "name": "End", "type": "end" }
+      ],
+      "connections": [
+        { "id": "c1", "sourceStepId": "start", "targetStepId": "resume1" },
+        { "id": "c2", "sourceStepId": "resume1", "targetStepId": "end" }
+      ]
+    }`;
+    expect(() => parseFromJson(invalidResumeAfterFlowJson)).toThrow(
+      /Flow schema validation error/
+    );
+  });
+
+  test("should validate a valid waitForEvent step", () => {
+    const validWaitForEventFlowJson = `{
+      "id": "valid-wait-for-event-flow",
+      "name": "Valid Wait For Event Flow",
+      "version": "1.0.0",
+      "globalStateSchema": {},
+      "steps": [
+        { "id": "start", "name": "Start", "type": "begin" },
+        { "id": "wait1", "name": "Wait For Event", "type": "waitForEvent",
+          "eventInput": {
+            "value": { "orderId": "123" },
+            "eventInputSchema": { "type": "object", "properties": { "orderId": { "type": "string" } }, "required": ["orderId"] }
+          },
+          "eventOutput": {
+            "value": { "status": "completed" },
+            "eventOutputSchema": { "type": "object", "properties": { "status": { "type": "string" } }, "required": ["status"] }
+          }
+        },
+        { "id": "end", "name": "End", "type": "end" }
+      ],
+      "connections": [
+        { "id": "c1", "sourceStepId": "start", "targetStepId": "wait1" },
+        { "id": "c2", "sourceStepId": "wait1", "targetStepId": "end" }
+      ]
+    }`;
+    const flow = parseFromJson(validWaitForEventFlowJson);
+    const errors = validate(flow);
+    expect(errors).toEqual([]);
+  });
+
+  test("should detect invalid eventInput value in waitForEvent step", () => {
+    const invalidWaitForEventFlowJson = `{
+      "id": "invalid-wait-for-event-flow",
+      "name": "Invalid Wait For Event Flow",
+      "version": "1.0.0",
+      "globalStateSchema": {},
+      "steps": [
+        { "id": "start", "name": "Start", "type": "begin" },
+        { "id": "wait1", "name": "Wait For Event", "type": "waitForEvent",
+          "eventInput": {
+            "value": { "orderId": 123 },
+            "eventInputSchema": { "type": "object", "properties": { "orderId": { "type": "string" } }, "required": ["orderId"] }
+          },
+          "eventOutput": {
+            "value": { "status": "completed" },
+            "eventOutputSchema": { "type": "object", "properties": { "status": { "type": "string" } }, "required": ["status"] }
+          }
+        },
+        { "id": "end", "name": "End", "type": "end" }
+      ],
+      "connections": [
+        { "id": "c1", "sourceStepId": "start", "targetStepId": "wait1" },
+        { "id": "c2", "sourceStepId": "wait1", "targetStepId": "end" }
+      ]
+    }`;
+    const flow = parseFromJson(invalidWaitForEventFlowJson);
+    const errors = validate(flow);
+    expect(errors.length).toBe(1);
+    expect(errors[0]?.code).toBe("STEP_EVENT_INPUT_VALIDATION_ERROR");
+    expect(errors[0]?.message).toContain("expected string, received number");
+  });
+
+  test("should detect invalid eventOutput value in waitForEvent step", () => {
+    const invalidWaitForEventFlowJson = `{
+      "id": "invalid-wait-for-event-flow",
+      "name": "Invalid Wait For Event Flow",
+      "version": "1.0.0",
+      "globalStateSchema": {},
+      "steps": [
+        { "id": "start", "name": "Start", "type": "begin" },
+        { "id": "wait1", "name": "Wait For Event", "type": "waitForEvent",
+          "eventInput": {
+            "value": { "orderId": "123" },
+            "eventInputSchema": { "type": "object", "properties": { "orderId": { "type": "string" } }, "required": ["orderId"] }
+          },
+          "eventOutput": {
+            "value": { "status": 123 },
+            "eventOutputSchema": { "type": "object", "properties": { "status": { "type": "string" } }, "required": ["status"] }
+          }
+        },
+        { "id": "end", "name": "End", "type": "end" }
+      ],
+      "connections": [
+        { "id": "c1", "sourceStepId": "start", "targetStepId": "wait1" },
+        { "id": "c2", "sourceStepId": "wait1", "targetStepId": "end" }
+      ]
+    }`;
+    const flow = parseFromJson(invalidWaitForEventFlowJson);
+    const errors = validate(flow);
+    expect(errors.length).toBe(1);
+    expect(errors[0]?.code).toBe("STEP_EVENT_OUTPUT_VALIDATION_ERROR");
+    expect(errors[0]?.message).toContain("expected string, received number");
+  });
 });
