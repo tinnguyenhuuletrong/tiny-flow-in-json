@@ -89,7 +89,7 @@ export function LeftPanel() {
                       )}
                     >
                       <span>{step.name}</span>
-                      {step.paramsZodSchema && (
+                      {step.type === "task" && step.paramsZodSchema && (
                         <Button
                           variant="ghost"
                           size="icon"

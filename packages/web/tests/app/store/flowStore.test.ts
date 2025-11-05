@@ -23,7 +23,7 @@ const rawFlowJson = {
   version: "1.0.0",
   globalStateSchema: { type: "object", properties: {} },
   steps: [
-    { id: "step1", type: "begin", name: "Start", params: {} },
+    { id: "step1", type: "begin", name: "Start" },
     { id: "step2", type: "task", name: "Task 1", params: {} },
   ],
   connections: [{ id: "conn1", sourceStepId: "step1", targetStepId: "step2" }],
@@ -74,12 +74,14 @@ describe("useFlowStore", () => {
     const newParams = { newParam: "newValue" };
     const newRevision = useFlowStore
       .getState()
-      .updateStepParams("step1", newParams);
+      .updateStepParams("step2", newParams);
 
     const { flow, revision } = useFlowStore.getState();
-    const updatedStep = flow?.steps.find((s) => s.id === "step1");
+    const updatedStep = flow?.steps.find((s) => s.id === "step2");
 
-    expect(updatedStep?.params).toEqual(newParams);
+    expect(updatedStep?.type === "task" && updatedStep?.params).toEqual(
+      newParams
+    );
     expect(revision).toBe(initialRevision + 1);
     expect(newRevision).toBe(initialRevision + 1);
   });

@@ -68,15 +68,6 @@ export const StepBeginSchema = z
     id: z.string().describe("A unique identifier for the step."),
     name: z.string().describe("A human-readable name for the step."),
     type: z.literal("begin").describe("The type of the step."),
-    paramsSchema: JsonSchema.optional().describe(
-      "A JSON schema that defines the parameters for the step. This field should not be used for 'begin' steps."
-    ),
-    params: z
-      .record(z.string(), z.any())
-      .optional()
-      .describe(
-        "The parameters for the step. This field should not be used for 'begin' steps."
-      ),
     metadata: z
       .record(z.string(), z.any())
       .optional()
@@ -93,15 +84,6 @@ export const StepEndSchema = z
     id: z.string().describe("A unique identifier for the step."),
     name: z.string().describe("A human-readable name for the step."),
     type: z.literal("end").describe("The type of the step."),
-    paramsSchema: JsonSchema.optional().describe(
-      "A JSON schema that defines the parameters for the step. This field should not be used for 'end' steps."
-    ),
-    params: z
-      .record(z.string(), z.any())
-      .optional()
-      .describe(
-        "The parameters for the step. This field should not be used for 'end' steps."
-      ),
     metadata: z
       .record(z.string(), z.any())
       .optional()
@@ -119,15 +101,6 @@ export const StepDecisionSchema = z
     id: z.string().describe("A unique identifier for the step."),
     name: z.string().describe("A human-readable name for the step."),
     type: z.literal("decision").describe("The type of the step."),
-    paramsSchema: JsonSchema.optional().describe(
-      "A JSON schema that defines the parameters for the step. This field should not be used for 'decision' steps."
-    ),
-    params: z
-      .record(z.string(), z.any())
-      .optional()
-      .describe(
-        "The parameters for the step. This field should not be used for 'decision' steps."
-      ),
     metadata: z
       .record(z.string(), z.any())
       .optional()
@@ -139,11 +112,12 @@ export const StepDecisionSchema = z
     "Schema for a decision step in the workflow. This type of step is used to control the flow by branching to different steps based on conditions defined in the outgoing connections."
   );
 
-export type Step =
-  | z.infer<typeof StepTaskSchema>
-  | z.infer<typeof StepDecisionSchema>
-  | z.infer<typeof StepBeginSchema>
-  | z.infer<typeof StepEndSchema>;
+export type Step = StepTask | StepDecision | StepBegin | StepEnd;
+
+export type StepTask = z.infer<typeof StepTaskSchema>;
+export type StepDecision = z.infer<typeof StepDecisionSchema>;
+export type StepBegin = z.infer<typeof StepBeginSchema>;
+export type StepEnd = z.infer<typeof StepEndSchema>;
 
 // Schema for a connection (edge) between two steps.
 export const ConnectionSchema = z.object({
@@ -214,9 +188,13 @@ export const KEY_ORDERS = asAllUniqueKeys<Flow>()([
 ] as const);
 
 // In-memory types after parsing and transformation
-export type ParsedStep = Omit<Step, "paramsSchema"> & {
-  readonly paramsZodSchema?: z.ZodType;
-};
+export type ParsedStep =
+  | (Omit<StepTask, "paramsSchema"> & {
+      readonly paramsZodSchema?: z.ZodType;
+    })
+  | StepDecision
+  | StepBegin
+  | StepEnd;
 
 export type ParsedFlow = Omit<Flow, "globalStateSchema" | "steps"> & {
   readonly globalStateZodSchema: z.ZodType;

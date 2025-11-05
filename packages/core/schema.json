@@ -105,22 +105,6 @@
                 "type": "string",
                 "const": "decision"
               },
-              "paramsSchema": {
-                "description": "A JSON schema that defines the parameters for the step. This field should not be used for 'decision' steps.",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/__schema0"
-                  }
-                ]
-              },
-              "params": {
-                "description": "The parameters for the step. This field should not be used for 'decision' steps.",
-                "type": "object",
-                "propertyNames": {
-                  "type": "string"
-                },
-                "additionalProperties": {}
-              },
               "metadata": {
                 "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
                 "type": "object",
@@ -153,22 +137,6 @@
                 "type": "string",
                 "const": "begin"
               },
-              "paramsSchema": {
-                "description": "A JSON schema that defines the parameters for the step. This field should not be used for 'begin' steps.",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/__schema0"
-                  }
-                ]
-              },
-              "params": {
-                "description": "The parameters for the step. This field should not be used for 'begin' steps.",
-                "type": "object",
-                "propertyNames": {
-                  "type": "string"
-                },
-                "additionalProperties": {}
-              },
               "metadata": {
                 "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
                 "type": "object",
@@ -200,22 +168,6 @@
                 "description": "The type of the step.",
                 "type": "string",
                 "const": "end"
-              },
-              "paramsSchema": {
-                "description": "A JSON schema that defines the parameters for the step. This field should not be used for 'end' steps.",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/__schema0"
-                  }
-                ]
-              },
-              "params": {
-                "description": "The parameters for the step. This field should not be used for 'end' steps.",
-                "type": "object",
-                "propertyNames": {
-                  "type": "string"
-                },
-                "additionalProperties": {}
               },
               "metadata": {
                 "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",

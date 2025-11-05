@@ -6,6 +6,8 @@ import { useFlowStore } from "@/app/store/flowStore";
 
 export function TaskNode({ data }: NodeProps<ParsedStep>) {
   const { setEditingStepId } = useFlowStore();
+  if (data.type !== "task") return null;
+
   return (
     <div
       data-testid={`node-${data.id}`}

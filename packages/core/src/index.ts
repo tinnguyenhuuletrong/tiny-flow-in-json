@@ -6,6 +6,7 @@ import {
   type ParsedStep,
   KEY_ORDERS,
   type Connection,
+  type StepTask,
 } from "./types"; // Updated import
 import { jsonSchemaToZod } from "@tiny-json-workflow/json-schema-adapter";
 import { prettifyError, toJSONSchema } from "zod";
@@ -31,14 +32,17 @@ export function parseFromJson(jsonString: string): ParsedFlow {
 
   // Transform paramsSchema for each step from JSON Schema to Zod Schema
   const parsedSteps: ParsedStep[] = flow.steps.map((step) => {
-    const { paramsSchema, ...others } = step;
-    let paramsZodSchema;
-    if (paramsSchema) {
-      paramsZodSchema = jsonSchemaToZod(paramsSchema);
-      originalJsonSchema.set(step.id, paramsSchema);
+    if (step.type === "task") {
+      const { paramsSchema, ...others } = step;
+      let paramsZodSchema;
+      if (paramsSchema) {
+        paramsZodSchema = jsonSchemaToZod(paramsSchema);
+        originalJsonSchema.set(step.id, paramsSchema);
+      }
+      const parsedStep: ParsedStep = { ...others, paramsZodSchema };
+      return parsedStep;
     }
-    const parsedStep: ParsedStep = { ...others, paramsZodSchema };
-    return parsedStep;
+    return { ...step };
   });
 
   return {
@@ -65,12 +69,15 @@ export function saveToJson(flow: ParsedFlow): string {
 
   // Convert paramsSchema for each step from Zod Schema back to JSON Schema
   const rawSteps = flow.steps.map((step) => {
-    const { paramsZodSchema, ...others } = step;
-    const rawStep: Step = { ...others };
-    if (step.paramsZodSchema) {
-      rawStep.paramsSchema = flow._internal.originalJsonSchema.get(step.id);
+    if (step.type === "task") {
+      const { paramsZodSchema, ...others } = step;
+      const rawStep: StepTask = { ...others };
+      if (step.paramsZodSchema) {
+        rawStep.paramsSchema = flow._internal.originalJsonSchema.get(step.id);
+      }
+      return rawStep;
     }
-    return rawStep;
+    return { ...step };
   });
 
   const rawFlow: Flow = {
@@ -140,7 +147,7 @@ export function validate(flow: ParsedFlow): FlowError[] {
 
   // Validate step parameters
   for (const step of flow.steps) {
-    if (step.params && step.paramsZodSchema) {
+    if (step.type === "task" && step.params && step.paramsZodSchema) {
       const stepParamsValidation = step.paramsZodSchema.safeParse(step.params);
       if (!stepParamsValidation.success) {
         errors.push({

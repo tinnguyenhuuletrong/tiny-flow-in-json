@@ -21,10 +21,12 @@ export function StepEditModal() {
     : undefined;
 
   useEffect(() => {
-    if (editingStep?.params) {
-      setFormData(editingStep.params);
-    } else {
-      setFormData({});
+    if (editingStep?.type === "task") {
+      if (editingStep?.params) {
+        setFormData(editingStep.params);
+      } else {
+        setFormData({});
+      }
     }
   }, [editingStep, revision]);
 
@@ -45,7 +47,7 @@ export function StepEditModal() {
           <DialogTitle>Edit: {editingStep?.name}</DialogTitle>
         </DialogHeader>
         <div className="py-4">
-          {editingStep?.paramsZodSchema ? (
+          {editingStep?.type === "task" && editingStep?.paramsZodSchema ? (
             <JsonAutoForm
               schema={editingStep.paramsZodSchema as any}
               data={formData}
