@@ -1,6 +1,5 @@
 import { expect, test, describe } from "bun:test";
 import { parseFromJson, validate } from "../src";
-import { z } from "zod";
 
 describe("FlowJSON Validation", () => {
   const validFlowJson = `{
