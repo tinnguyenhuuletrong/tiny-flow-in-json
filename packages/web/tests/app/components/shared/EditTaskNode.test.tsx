@@ -1,7 +1,12 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "../../../test-utils";
 import { describe, expect, it, mock, vi, beforeEach } from "bun:test";
-import { StepEditModal } from "@/app/components/shared/StepEditModal";
-import { type Flow, parseFromJson } from "@tiny-json-workflow/core";
+import { EditTaskNode } from "@/app/components/shared/EditTaskNode";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import {
+  type Flow,
+  parseFromJson,
+  type ParsedStep,
+} from "@tiny-json-workflow/core";
 import type { FlowState } from "@/app/store/flowStore";
 
 const mockUseStore = vi.fn<(...args: any[]) => Partial<FlowState>>();
@@ -44,48 +49,33 @@ const mockFlow = parseFromJson(
   } satisfies Flow)
 );
 
-describe("StepEditModal", () => {
+const stepWithParams = mockFlow.steps.find(
+  (s) => s.id === "step-1"
+) as ParsedStep;
+const stepWithoutParams = mockFlow.steps.find(
+  (s) => s.id === "step-2"
+) as ParsedStep;
+
+describe("EditTaskNode", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  it("should not be visible when editingStepId is null", () => {
     mockUseStore.mockReturnValue({
-      flow: mockFlow,
-      editingStepId: null,
-      setEditingStepId: mockSetEditingStepId,
-      updateStepParams: mockUpdateStepParams,
-      revision: 0,
-    });
-
-    render(<StepEditModal />);
-    expect(screen.queryByRole("dialog")).toBeNull();
-  });
-
-  it("should be visible with the correct title when editingStepId is set", () => {
-    mockUseStore.mockReturnValue({
-      flow: mockFlow,
       editingStepId: "step-1",
       setEditingStepId: mockSetEditingStepId,
       updateStepParams: mockUpdateStepParams,
       revision: 0,
     });
-
-    render(<StepEditModal />);
-    expect(screen.getByRole("dialog")).toBeDefined();
-    expect(screen.getByText("Edit: Step with Params")).toBeDefined();
   });
 
   it("should render JsonAutoForm for a step with paramsZodSchema", () => {
-    mockUseStore.mockReturnValue({
-      flow: mockFlow,
-      editingStepId: "step-1",
-      setEditingStepId: mockSetEditingStepId,
-      updateStepParams: mockUpdateStepParams,
-      revision: 0,
-    });
-
-    render(<StepEditModal />);
+    render(
+      <Dialog open={true}>
+        <DialogContent>
+          <DialogTitle />
+          <EditTaskNode editingStep={stepWithParams} />
+        </DialogContent>
+      </Dialog>
+    );
     expect(screen.getByLabelText(/message/i)).toBeDefined();
     expect((screen.getByLabelText(/message/i) as HTMLInputElement).value).toBe(
       "Hello"
@@ -93,44 +83,28 @@ describe("StepEditModal", () => {
   });
 
   it("should show a message for a step without paramsZodSchema", () => {
-    mockUseStore.mockReturnValue({
-      flow: mockFlow,
-      editingStepId: "step-2",
-      setEditingStepId: mockSetEditingStepId,
-      updateStepParams: mockUpdateStepParams,
-      revision: 0,
-    });
-
-    render(<StepEditModal />);
+    render(
+      <Dialog open={true}>
+        <DialogContent>
+          <DialogTitle />
+          <EditTaskNode editingStep={stepWithoutParams} />
+        </DialogContent>
+      </Dialog>
+    );
     expect(
       screen.getByText("This step has no parameters to configure.")
     ).toBeDefined();
   });
 
-  it("should call setEditingStepId with null when Cancel button is clicked", () => {
-    mockUseStore.mockReturnValue({
-      flow: mockFlow,
-      editingStepId: "step-1",
-      setEditingStepId: mockSetEditingStepId,
-      updateStepParams: mockUpdateStepParams,
-      revision: 0,
-    });
-
-    render(<StepEditModal />);
-    fireEvent.click(screen.getByText("Cancel"));
-    expect(mockSetEditingStepId).toHaveBeenCalledWith(null);
-  });
-
   it("should call updateStepParams and setEditingStepId with null when Save button is clicked", async () => {
-    mockUseStore.mockReturnValue({
-      flow: mockFlow,
-      editingStepId: "step-1",
-      setEditingStepId: mockSetEditingStepId,
-      updateStepParams: mockUpdateStepParams,
-      revision: 0,
-    });
-
-    render(<StepEditModal />);
+    render(
+      <Dialog open={true}>
+        <DialogContent>
+          <DialogTitle />
+          <EditTaskNode editingStep={stepWithParams} />
+        </DialogContent>
+      </Dialog>
+    );
     const input = screen.getByLabelText(/message/i);
     fireEvent.change(input, { target: { value: "New Message" } });
 

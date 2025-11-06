@@ -257,18 +257,31 @@ export const KEY_ORDERS = asAllUniqueKeys<Flow>()([
 ] as const);
 
 // In-memory types after parsing and transformation
+export type ParsedStepTask = Omit<StepTask, "paramsSchema"> & {
+  readonly paramsZodSchema?: z.ZodType;
+};
+
+export type ParsedStepWaitForEvent = Omit<
+  StepWaitForEvent,
+  "eventInput" | "eventOutput"
+> & {
+  readonly eventInput?: { value: any; eventInputZodSchema?: z.ZodType };
+  readonly eventOutput?: { value: any; eventOutputZodSchema?: z.ZodType };
+};
+
+export type ParsedStepDecision = StepDecision;
+export type ParsedStepBegin = StepBegin;
+export type ParsedStepEnd = StepEnd;
+export type ParsedStepResumeAfter = StepResumeAfter;
+
+// In-memory types after parsing and transformation
 export type ParsedStep =
-  | (Omit<StepTask, "paramsSchema"> & {
-      readonly paramsZodSchema?: z.ZodType;
-    })
-  | (Omit<StepWaitForEvent, "eventInput" | "eventOutput"> & {
-      readonly eventInput?: { value: any; eventInputZodSchema?: z.ZodType };
-      readonly eventOutput?: { value: any; eventOutputZodSchema?: z.ZodType };
-    })
-  | StepDecision
-  | StepBegin
-  | StepEnd
-  | StepResumeAfter;
+  | ParsedStepTask
+  | ParsedStepWaitForEvent
+  | ParsedStepDecision
+  | ParsedStepBegin
+  | ParsedStepEnd
+  | ParsedStepResumeAfter;
 
 export type ParsedFlow = Omit<Flow, "globalStateSchema" | "steps"> & {
   readonly globalStateZodSchema: z.ZodType;

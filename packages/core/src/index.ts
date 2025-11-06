@@ -2,10 +2,8 @@ import {
   FlowSchema,
   KEY_ORDERS,
   type Flow,
-  type Step,
   type ParsedFlow,
   type ParsedStep,
-  type Connection,
   type StepTask,
   type StepWaitForEvent,
 } from "./types"; // Updated import
@@ -268,11 +266,5 @@ export function validate(flow: ParsedFlow): FlowError[] {
   return errors;
 }
 
-export {
-  FlowSchema,
-  type Flow,
-  type Step,
-  type ParsedFlow,
-  type ParsedStep,
-  type Connection,
-};
+export { FlowSchema };
+export type * from "./types";
