@@ -1,0 +1,160 @@
+{
+  "$schema": "../../../core/schema.json",
+  "id": "trial-conversion-flow-v1",
+  "name": "Trial Conversion Flow",
+  "version": "1.0.0",
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "string"
+      },
+      "planType": {
+        "type": "string",
+        "enum": ["free", "paid"],
+        "default": "free"
+      }
+    },
+    "required": ["userId"]
+  },
+  "steps": [
+    {
+      "id": "start",
+      "name": "User Registration",
+      "type": "begin"
+    },
+    {
+      "id": "activate_trial",
+      "name": "Activate 7-day Trial",
+      "type": "task"
+    },
+    {
+      "id": "initiate_watch",
+      "name": "Initiate Subscription Watch",
+      "type": "task"
+    },
+    {
+      "id": "wait_for_plan_activation",
+      "name": "Wait for Plan Activation",
+      "type": "waitForEvent",
+      "eventInput": {
+        "eventInputSchema": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string"
+            }
+          },
+          "required": ["userId"]
+        }
+      },
+      "eventOutput": {
+        "eventOutputSchema": {
+          "type": "object",
+          "properties": {
+            "planType": {
+              "type": "string",
+              "enum": ["paid"]
+            }
+          },
+          "required": ["planType"]
+        }
+      }
+    },
+    {
+      "id": "delay_3_days",
+      "name": "Wait for 3 Days",
+      "type": "resumeAfter",
+      "duration": "3 days"
+    },
+    {
+      "id": "send_1st_reminder",
+      "name": "Send 1st Reminder",
+      "type": "task"
+    },
+    {
+      "id": "delay_2_days",
+      "name": "Wait for 2 Days",
+      "type": "resumeAfter",
+      "duration": "2 days"
+    },
+    {
+      "id": "send_2nd_reminder",
+      "name": "Send 2nd Reminder",
+      "type": "task"
+    },
+    {
+      "id": "delay_1_day",
+      "name": "Wait for 1 Day",
+      "type": "resumeAfter",
+      "duration": "1 day"
+    },
+    {
+      "id": "deactive_trial",
+      "name": "Deactivate Trial",
+      "type": "task"
+    },
+    {
+      "id": "end",
+      "name": "End",
+      "type": "end"
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "start",
+      "targetStepId": "activate_trial"
+    },
+    {
+      "id": "c2",
+      "sourceStepId": "activate_trial",
+      "targetStepId": "initiate_watch"
+    },
+    {
+      "id": "c3",
+      "sourceStepId": "initiate_watch",
+      "targetStepId": "wait_for_plan_activation"
+    },
+    {
+      "id": "c4",
+      "sourceStepId": "initiate_watch",
+      "targetStepId": "delay_3_days"
+    },
+    {
+      "id": "c5",
+      "sourceStepId": "wait_for_plan_activation",
+      "targetStepId": "end"
+    },
+    {
+      "id": "c6",
+      "sourceStepId": "delay_3_days",
+      "targetStepId": "send_1st_reminder"
+    },
+    {
+      "id": "c7",
+      "sourceStepId": "send_1st_reminder",
+      "targetStepId": "delay_2_days"
+    },
+    {
+      "id": "c8",
+      "sourceStepId": "delay_2_days",
+      "targetStepId": "send_2nd_reminder"
+    },
+    {
+      "id": "c9",
+      "sourceStepId": "send_2nd_reminder",
+      "targetStepId": "delay_1_day"
+    },
+    {
+      "id": "c10",
+      "sourceStepId": "delay_1_day",
+      "targetStepId": "deactive_trial"
+    },
+    {
+      "id": "c11",
+      "sourceStepId": "deactive_trial",
+      "targetStepId": "end"
+    }
+  ]
+}

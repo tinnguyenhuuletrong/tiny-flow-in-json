@@ -144,7 +144,7 @@ export const StepWaitForEventSchema = z
     type: z.literal("waitForEvent").describe("The type of the step."),
     eventInput: z
       .object({
-        value: z.any().describe("The value of the event input."),
+        value: z.any().optional().describe("The value of the event input."),
         eventInputSchema: JsonSchema.describe(
           "A JSON schema for the expected event payload."
         ),
@@ -153,7 +153,7 @@ export const StepWaitForEventSchema = z
       .describe("Defines the expected input for the event."),
     eventOutput: z
       .object({
-        value: z.any().describe("The value of the event output."),
+        value: z.any().optional().describe("The value of the event output."),
         eventOutputSchema: JsonSchema.describe(
           "A JSON schema for the data that will be passed to the next step."
         ),

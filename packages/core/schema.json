@@ -183,6 +183,116 @@
               "name",
               "type"
             ]
+          },
+          {
+            "description": "Schema for a 'resumeAfter' step in the workflow. This step pauses the workflow and resumes it after a specified duration.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "A unique identifier for the step.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A human-readable name for the step.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the step.",
+                "type": "string",
+                "const": "resumeAfter"
+              },
+              "duration": {
+                "description": "A human-readable date-time string (e.g., '2.5 hours', '1 day').",
+                "type": "string",
+                "pattern": "^(\\d+(\\.\\d+)?\\s+(second|minute|hour|day|week|month|year)s?)?$"
+              },
+              "metadata": {
+                "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type",
+              "duration"
+            ]
+          },
+          {
+            "description": "Schema for a 'waitForEvent' step in the workflow. This step pauses the workflow until a specific event is received.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "A unique identifier for the step.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A human-readable name for the step.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the step.",
+                "type": "string",
+                "const": "waitForEvent"
+              },
+              "eventInput": {
+                "description": "Defines the expected input for the event.",
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "description": "The value of the event input."
+                  },
+                  "eventInputSchema": {
+                    "description": "A JSON schema for the expected event payload.",
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/__schema0"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "eventInputSchema"
+                ]
+              },
+              "eventOutput": {
+                "description": "Defines the output of the event.",
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "description": "The value of the event output."
+                  },
+                  "eventOutputSchema": {
+                    "description": "A JSON schema for the data that will be passed to the next step.",
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/__schema0"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "eventOutputSchema"
+                ]
+              },
+              "metadata": {
+                "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type"
+            ]
           }
         ]
       }
