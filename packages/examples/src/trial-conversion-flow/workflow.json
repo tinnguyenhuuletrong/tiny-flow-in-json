@@ -21,22 +21,38 @@
     {
       "id": "start",
       "name": "User Registration",
-      "type": "begin"
+      "type": "begin",
+      "metadata": {
+        "x": 230.35077914078602,
+        "y": 53
+      }
     },
     {
       "id": "activate_trial",
       "name": "Activate 7-day Trial",
-      "type": "task"
+      "type": "task",
+      "metadata": {
+        "x": 412,
+        "y": 37
+      }
     },
     {
       "id": "initiate_watch",
       "name": "Initiate Subscription Watch",
-      "type": "task"
+      "type": "task",
+      "metadata": {
+        "x": 801,
+        "y": 37
+      }
     },
     {
       "id": "wait_for_plan_activation",
       "name": "Wait for Plan Activation",
       "type": "waitForEvent",
+      "metadata": {
+        "x": 1214,
+        "y": 300
+      },
       "eventInput": {
         "eventInputSchema": {
           "type": "object",
@@ -65,39 +81,67 @@
       "id": "delay_3_days",
       "name": "Wait for 3 Days",
       "type": "resumeAfter",
-      "duration": "3 days"
+      "duration": "3 days",
+      "metadata": {
+        "x": 1212,
+        "y": -45
+      }
     },
     {
       "id": "send_1st_reminder",
       "name": "Send 1st Reminder",
-      "type": "task"
+      "type": "task",
+      "metadata": {
+        "x": 1611,
+        "y": -46
+      }
     },
     {
       "id": "delay_2_days",
       "name": "Wait for 2 Days",
       "type": "resumeAfter",
-      "duration": "2 days"
+      "duration": "2 days",
+      "metadata": {
+        "x": 2011,
+        "y": -46
+      }
     },
     {
       "id": "send_2nd_reminder",
       "name": "Send 2nd Reminder",
-      "type": "task"
+      "type": "task",
+      "metadata": {
+        "x": 2414,
+        "y": -46
+      }
     },
     {
       "id": "delay_1_day",
       "name": "Wait for 1 Day",
       "type": "resumeAfter",
-      "duration": "1 day"
+      "duration": "1 day",
+      "metadata": {
+        "x": 2812,
+        "y": -46
+      }
     },
     {
       "id": "deactive_trial",
       "name": "Deactivate Trial",
-      "type": "task"
+      "type": "task",
+      "metadata": {
+        "x": 3214,
+        "y": -47.17486907643669
+      }
     },
     {
       "id": "end",
       "name": "End",
-      "type": "end"
+      "type": "end",
+      "metadata": {
+        "x": 3533,
+        "y": 316.1256546178166
+      }
     }
   ],
   "connections": [
@@ -156,5 +200,12 @@
       "sourceStepId": "deactive_trial",
       "targetStepId": "end"
     }
-  ]
+  ],
+  "metadata": {
+    "reactflowViewport": {
+      "x": -35.48501321271374,
+      "y": 424.6406697544654,
+      "zoom": 0.5577798073527949
+    }
+  }
 }

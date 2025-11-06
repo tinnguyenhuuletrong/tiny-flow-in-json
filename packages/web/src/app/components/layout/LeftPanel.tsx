@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronsLeft, ChevronsRight, Edit } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLayoutStore } from "@/app/store/layoutStore";
+import { useMemo } from "react";
 
 export function LeftPanel() {
   const {
@@ -18,8 +19,14 @@ export function LeftPanel() {
     selectedStepId,
     setSelectedStepId,
     setEditingStepId,
+    updateStepEventValue,
   } = useFlowStore();
   const { isLeftPanelCollapsed, toggleLeftPanel } = useLayoutStore();
+
+  const selectedStep = useMemo(() => {
+    if (!flow || !selectedStepId) return null;
+    return flow.steps.find((s) => s.id === selectedStepId);
+  }, [flow, selectedStepId]);
 
   if (!flow) return null;
 
@@ -89,7 +96,10 @@ export function LeftPanel() {
                       )}
                     >
                       <span>{step.name}</span>
-                      {step.type === "task" && step.paramsZodSchema && (
+                      {(step.type === "task" && step.paramsZodSchema) ||
+                      (step.type === "waitForEvent" &&
+                        (step.eventInput?.eventInputZodSchema ||
+                          step.eventOutput?.eventOutputZodSchema)) ? (
                         <Button
                           variant="ghost"
                           size="icon"
@@ -100,12 +110,55 @@ export function LeftPanel() {
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
-                      )}
+                      ) : null}
                     </li>
                   ))}
                 </ul>
               </AccordionContent>
             </AccordionItem>
+            {selectedStep?.type === "waitForEvent" && (
+              <AccordionItem value="event-payloads">
+                <AccordionTrigger>Event Payloads</AccordionTrigger>
+                <AccordionContent>
+                  {selectedStep.eventInput?.eventInputZodSchema && (
+                    <div className="p-2 bg-gray-100 rounded-md mt-2">
+                      <h4 className="font-medium mb-2">Event Input</h4>
+                      <JsonAutoForm
+                        schema={
+                          selectedStep.eventInput.eventInputZodSchema as any
+                        }
+                        data={selectedStep.eventInput?.value ?? {}}
+                        onDataChange={(value) => {
+                          updateStepEventValue(
+                            selectedStepId!,
+                            "eventInput",
+                            value
+                          );
+                        }}
+                      />
+                    </div>
+                  )}
+                  {selectedStep?.eventOutput?.eventOutputZodSchema && (
+                    <div className="p-2 bg-gray-100 rounded-md mt-2">
+                      <h4 className="font-medium mb-2">Event Output</h4>
+                      <JsonAutoForm
+                        schema={
+                          selectedStep?.eventOutput?.eventOutputZodSchema as any
+                        }
+                        data={selectedStep.eventOutput?.value ?? {}}
+                        onDataChange={(value) => {
+                          updateStepEventValue(
+                            selectedStepId!,
+                            "eventOutput",
+                            value
+                          );
+                        }}
+                      />
+                    </div>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+            )}
           </Accordion>
         </div>
       )}

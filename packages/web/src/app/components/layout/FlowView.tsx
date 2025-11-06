@@ -18,6 +18,8 @@ import { BeginNode } from "../custom-nodes/BeginNode";
 import { EndNode } from "../custom-nodes/EndNode";
 import { DecisionNode } from "../custom-nodes/DecisionNode";
 import { TaskNode } from "../custom-nodes/TaskNode";
+import { ResumeAfterNode } from "../custom-nodes/ResumeAfterNode";
+import { WaitForEventNode } from "../custom-nodes/WaitForEventNode";
 
 export function FlowView() {
   const {
@@ -42,6 +44,8 @@ export function FlowView() {
       end: EndNode,
       decision: DecisionNode,
       task: TaskNode,
+      resumeAfter: ResumeAfterNode,
+      waitForEvent: WaitForEventNode,
     }),
     []
   );

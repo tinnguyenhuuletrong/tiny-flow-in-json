@@ -44,6 +44,11 @@ export type FlowState = {
     stepId: string,
     params: Record<string, any>
   ) => FlowRevision;
+  updateStepEventValue: (
+    stepId: string,
+    part: "eventInput" | "eventOutput",
+    value: any
+  ) => FlowRevision;
   reset: () => void;
 };
 
@@ -209,6 +214,30 @@ export const useFlowStore = create<FlowState>()(
                     return {
                       ...step,
                       params: params,
+                    };
+                  }
+                  return step;
+                }),
+              }
+            : undefined,
+        }));
+        return revision + 1;
+      },
+      updateStepEventValue: (stepId, part, value) => {
+        const { revision } = get();
+        set((state) => ({
+          revision: state.revision + 1,
+          flow: state.flow
+            ? {
+                ...state.flow,
+                steps: state.flow.steps.map((step) => {
+                  if (step.id === stepId && step.type === "waitForEvent") {
+                    return {
+                      ...step,
+                      [part]: {
+                        ...(step[part] as any),
+                        value: value,
+                      },
                     };
                   }
                   return step;

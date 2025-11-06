@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "main": "./src/index.ts",
   "scripts": {
-    "test": "bun test"
+    "test": "bun test",
+    "check": "tsc -b"
   },
   "dependencies": {
     "@tiny-json-workflow/core": "workspace:*",

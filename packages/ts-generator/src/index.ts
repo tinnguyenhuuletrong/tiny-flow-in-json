@@ -15,6 +15,7 @@ import {
   TASKS_TEMPLATE,
   WORKFLOW_CLASS_TEMPLATE,
 } from "./constant/DurableStateTemplate";
+import type { StepTask } from "@tiny-json-workflow/core/src/types";
 
 const IMPLEMENTATION_SECTION_START = "// --- IMPLEMENTATION ---";
 
@@ -56,7 +57,9 @@ export async function generate(
   );
 
   const tParamsShapes = flowJson.steps
-    .filter((step) => step.paramsSchema)
+    .filter(
+      (step): step is StepTask => step.type === "task" && !!step.paramsSchema
+    )
     .map((step) =>
       generateTParamsShape(step.paramsSchema!, pascalCase(step.id))
     )

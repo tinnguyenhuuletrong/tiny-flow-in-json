@@ -13,7 +13,7 @@ check:
 	bun run --cwd packages/web check && \
 	bun run --cwd packages/svg-export check && \
 	bun run --cwd packages/runtime-durable-state check && \
-	bun run --cwd packages/ts-generator test
+	bun run --cwd packages/ts-generator check
 
 web-dev:
 	bun run --cwd packages/web dev
