@@ -53,3 +53,35 @@ Enhance `packages/core` by adding two new step types: `resumeAfter` and `waitFor
 4.  **Add tests**:
     -   In `packages/core/tests/validation.test.ts`, add new test cases to validate workflows that use the `resumeAfter` and `waitForEvent` steps.
     -   Ensure that both valid and invalid schemas are tested.
+
+### Phase 2: Update Web UI (`@tiny-json-workflow/web`)
+
+This phase focuses on making the web-based playground aware of the new `resumeAfter` and `waitForEvent` step types, with a focus on good developer experience for inspecting and editing event payloads.
+
+1.  **Create `ResumeAfterNode.tsx` Component:**
+    -   Create a new file at `packages/web/src/app/components/custom-nodes/ResumeAfterNode.tsx`.
+    -   This component will render the `resumeAfter` step, displaying the step name and the `duration`. It will include a timer icon from `lucide-react` for better visual identification.
+
+2.  **Create `WaitForEventNode.tsx` Component:**
+    -   Create a new file at `packages/web/src/app/components/custom-nodes/WaitForEventNode.tsx`.
+    -   This component will render the `waitForEvent` step, displaying the step name and an event-related icon.
+    -   It will include an "Edit" button, similar to `TaskNode`, which becomes visible if the step has an `eventInputSchema` or `eventOutputSchema`. Clicking this button will set the `editingStepId` in the `flowStore`.
+
+3.  **Update `FlowView.tsx`:**
+    -   Import the new `ResumeAfterNode` and `WaitForEventNode` components.
+    -   Add the new step types to the `nodeTypes` mapping to instruct React Flow on how to render them.
+
+4.  **Enhance Sidebar (`LeftPanel.tsx`):**
+    -   Modify the component to render details for a selected `waitForEvent` step.
+    -   When a `waitForEvent` step is selected, display a new accordion item titled "Event Payloads".
+    -   Inside, if `eventInputZodSchema` exists, show a sub-section for "Event Input" containing a `JsonAutoForm` to view/edit the `eventInput.value`.
+    -   Similarly, if `eventOutputZodSchema` exists, show a sub-section for "Event Output" with a `JsonAutoForm` for `eventOutput.value`.
+
+5.  **Enhance Step Editing Modal (`StepEditModal.tsx`):**
+    -   Modify the modal to handle the `waitForEvent` step type.
+    -   When the `editingStep` is a `waitForEvent` step, the modal should display tabs for "Event Input" and "Event Output".
+    -   Each tab will contain the corresponding `JsonAutoForm` for editing the event's `value`.
+
+6.  **Update State Management (`flowStore.ts`):**
+    -   Add a new action, `updateStepEventValue(stepId: string, part: 'eventInput' | 'eventOutput', value: any)`, to the store.
+    -   This action will be responsible for updating the `eventInput.value` or `eventOutput.value` for the specified `waitForEvent` step and incrementing the store's revision.
