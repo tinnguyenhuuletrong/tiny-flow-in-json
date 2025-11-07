@@ -28,9 +28,20 @@ A `FlowJSON` object has three main components:
     *   `metadata`: An object for storing any additional information.
 *   **`Step` Object:** A single node in the workflow.
     *   `id`, `name`: A unique identifier and a human-readable name for the step.
-    *   `type`: The type of the step. It can be `begin`, `end`, `task`, or `decision`.
-    *   `paramsSchema`, `params`: Defines the structure and values of the step's parameters.
+    *   `type`: The type of the step, which determines its behavior.
     *   `metadata`: An object for storing any additional information about the step.
+
+    Different step types have their own specific properties:
+    *   **`begin`**: The starting point of the workflow.
+    *   **`end`**: A terminal point of the workflow.
+    *   **`task`**: Represents a unit of work to be performed.
+        *   `paramsSchema`, `params`: Defines the structure and values of the step's parameters.
+    *   **`decision`**: Controls the flow by branching to different steps based on conditions in outgoing connections.
+    *   **`resumeAfter`**: Pauses the workflow and resumes it after a specified duration.
+        *   `duration`: A human-readable date-time string (e.g., "2 hours", "1 day").
+    *   **`waitForEvent`**: Pauses the workflow until a specific event is received.
+        *   `eventInput`: Defines the expected event payload, providing context for the event handler (e.g., `userId`, `email`, content of an email).
+        *   `eventOutput`: Defines the data that will be passed to the next step after the event is handled (e.g., Stripe payment ID, user's approval/rejection).
 *   **`Connection` Object:** An edge between two steps.
     *   `id`, `sourceStepId`, `targetStepId`: Defines the connection between two steps.
     *   `condition`: A JavaScript expression that must evaluate to `true` for this connection to be taken. This allows for branching logic.
@@ -146,3 +157,4 @@ We have created a few examples to showcase the capabilities of `tiny-json-workfl
 *   [E-commerce Order Fulfillment](packages/examples/src/e-commerce-order-fulfillment/README.md)
 *   [Dynamic Multi-Step Form](packages/examples/src/dynamic-multi-step-form/README.md)
 *   [Fork-Join Flow (Simulated)](packages/examples/src/fork-join-flow/README.md)
+*   [Trial Conversion Flow](packages/examples/src/trial-conversion-flow/README.md)
