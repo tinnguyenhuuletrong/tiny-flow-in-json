@@ -1,5 +1,7 @@
 # Trial Conversion Flow
 
+![alt text](.render.svg)
+
 This example demonstrates a workflow for managing a 7-day trial period for a user, aiming to convert them to a paid subscriber. It showcases `waitForEvent` and `resumeAfter` by simulating a race condition between a user paying and the trial period reminders being sent.
 
 ## Simulating Parallel Execution

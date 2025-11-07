@@ -41,10 +41,39 @@ describe("flowToSvg", () => {
     expect(svg).toContain("<circle");
 
     // Check for task node (rect)
-    expect(svg).toContain("<rect");
+    expect(svg).toContain('<rect');
   });
 
-  it("should generate correct SVG elements for connections", () => {
+  it('should generate correct SVG elements for new step types', () => {
+    const flow: ParsedFlow = {
+      id: 'test-flow',
+      name: 'Test Flow',
+      version: '1.0.0',
+      steps: [
+        { id: 'wait', name: 'Wait', type: 'waitForEvent' },
+        { id: 'resume', name: 'Resume', type: 'resumeAfter', duration: '5s' },
+      ],
+      connections: [],
+      globalStateZodSchema: {} as any,
+      _internal: {
+        originalJsonSchema: new Map(),
+      },
+    };
+
+    const svg = flowToSvg(flow);
+
+    // Check for waitForEvent node (rect)
+    expect(svg).toContain('data-testid="waitForEvent-node"');
+    expect(svg).toContain('>Wait</text>');
+
+    // Check for resumeAfter node (rect)
+    expect(svg).toContain('data-testid="resumeAfter-node"');
+    expect(svg).toContain('>Resume</text>');
+    expect(svg).toContain('>5s</text>');
+  });
+
+  it('should generate correct SVG elements for connections', () => {
+
     const flow: ParsedFlow = {
       id: "test-flow",
       name: "Test Flow",

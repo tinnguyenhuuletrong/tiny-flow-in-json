@@ -10,7 +10,10 @@ const NODE_RADIUS = 20;
 const HORIZONTAL_SPACING = 100;
 const FONT_SIZE = 14;
 const AVG_CHAR_WIDTH = 8; // This is an approximation
-const PADDING = 40;
+const PADDING = 50;
+
+const CLOCK_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-timer-icon lucide-timer"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>`;
+const MAIL_QUESTION_MARK_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail-icon lucide-mail"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>`;
 
 const escapeXml = (unsafe: string): string => {
   return unsafe.replace(/[<>&"']/g, (c) => {
@@ -32,7 +35,12 @@ const escapeXml = (unsafe: string): string => {
 };
 
 const calculateNodeWidth = (step: ParsedStep): number => {
-  if (step.type === "task" || step.type === "decision") {
+  if (
+    step.type === "task" ||
+    step.type === "decision" ||
+    step.type === "resumeAfter" ||
+    step.type === "waitForEvent"
+  ) {
     if (step.name) {
       const labelWidth = step.name.length * AVG_CHAR_WIDTH;
       return labelWidth + PADDING;
@@ -47,6 +55,7 @@ const calculateNodeWidth = (step: ParsedStep): number => {
 
 const renderStep = (step: ParsedStep, x: number, y: number, width: number) => {
   let nodeShape;
+
   switch (step.type) {
     case "begin":
       nodeShape = `<circle cx="${x + NODE_RADIUS}" cy="${
@@ -60,24 +69,65 @@ const renderStep = (step: ParsedStep, x: number, y: number, width: number) => {
       break;
     case "task":
     case "decision":
+    case "resumeAfter":
+    case "waitForEvent":
       nodeShape = `<rect x="${x}" y="${y}" width="${width}" height="${NODE_HEIGHT}" rx="10" ry="10" fill="#fff" stroke="#000" stroke-width="2" data-testid="${step.type}-node" />`;
       break;
   }
 
-  // no label for begin and end node
   if (step.type === "begin" || step.type === "end" || !step.name) {
     return `<g>${nodeShape}</g>`;
   }
 
-  const nodeText = `<text x="${x + width / 2}" y="${
-    y + NODE_HEIGHT / 2
-  }" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="${FONT_SIZE}">${escapeXml(
-    step.name
-  )}</text>`;
+  let nameText = "";
+  let icon = "";
+  let textOffsetX = 0; // Offset for text if icon is present
 
-  return `<g>${nodeShape}${nodeText}</g>`;
+  if (step.type === "resumeAfter") {
+    icon = `<g transform="translate(${x + 15}, ${
+      y + 8
+    }) scale(1.0)">${CLOCK_ICON_SVG}</g>`;
+
+    textOffsetX = 10; // Adjust text position for icon
+
+    if (step.duration) {
+      nameText = `<text x="${x + width / 2 + textOffsetX}" y="${
+        y + NODE_HEIGHT / 2 - 7
+      }" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="${FONT_SIZE}">${escapeXml(
+        step.name
+      )}</text><text x="${x + width / 2 + textOffsetX}" y="${
+        y + NODE_HEIGHT / 2 + 10
+      }" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#555">${escapeXml(
+        step.duration
+      )}</text>`;
+    } else {
+      nameText = `<text x="${x + width / 2 + textOffsetX}" y="${
+        y + NODE_HEIGHT / 2
+      }" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="${FONT_SIZE}">${escapeXml(
+        step.name
+      )}</text>`;
+    }
+  } else if (step.type === "waitForEvent") {
+    icon = `<g transform="translate(${x + 15}, ${
+      y + 8
+    }) scale(1.0)">${MAIL_QUESTION_MARK_ICON_SVG}</g>`;
+    textOffsetX = 10; // Adjust text position for icon
+    nameText = `<text x="${x + width / 2 + textOffsetX}" y="${
+      y + NODE_HEIGHT / 2
+    }" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="${FONT_SIZE}">${escapeXml(
+      step.name
+    )}</text>`;
+  } else {
+    // For task and decision, no icon, text is centered
+    nameText = `<text x="${x + width / 2}" y="${
+      y + NODE_HEIGHT / 2
+    }" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="${FONT_SIZE}">${escapeXml(
+      step.name
+    )}</text>`;
+  }
+
+  return `<g>${nodeShape}${icon}${nameText}</g>`;
 };
-
 const renderConnection = (
   connection: Connection,
   steps: ParsedStep[],
@@ -121,7 +171,10 @@ const renderConnection = (
 };
 
 export const flowToSvg = (flow: ParsedFlow): string => {
-  const stepLayouts = new Map<string, { x: number; y: number; width: number }>();
+  const stepLayouts = new Map<
+    string,
+    { x: number; y: number; width: number }
+  >();
   let minX = Infinity,
     minY = Infinity,
     maxX = -Infinity,
