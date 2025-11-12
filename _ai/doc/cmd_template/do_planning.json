@@ -1,27 +1,29 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_18.md",
-  "resources": {},
+  "save_to": "create _ai/task_19.md",
+  "resources": {
+    "ref_current_connection": "_ai/doc/ref/ref_current_connection.png"
+  },
   "mcp": {},
   "target": [
     {
-      "goal": "enhance packages/core",
+      "goal": "enhance packages/web",
       "requirements": [
-        "Add 2 new step type",
-        "- resumeAter. Resume the flow after a time",
-        "   - params a duration string. where are humanize date time string",
-        "- waitForEvent. Resume the flow after a time",
-        "   - params contain 2 parts. eventInput, eventOutput. each Input and Output contain a jsonSchema and associated value"
+        "Enhance control for edge handle especially for FlowView - DecisionNode",
+        "current limitations",
+        "- Edge handle for node is fixed - see packages/web/src/app/components/custom-nodes/DecisionNode.tsx",
+        "enhance:",
+        "- We can drag and drop handle along the step shape ( minimum distance between each handle should keep and adjust when drop )"
       ],
       "note": [
-        "read the file packages/core/src/types.ts. Also update description + variable name.",
-        "Should consider DX. avoid confuse between different step type"
+        "The position of each handle x y should store into node metadata",
+        "Clear state on handle indicator when drag , drop handle. handle position should shit on the Node border line"
       ]
     }
   ],
   "steps": {
     "1": "read resources, use context7 mcp when need",
     "2": "read current source code",
-    "3": "create a task_18 to achieve goal"
+    "3": "create a task_19 to achieve goal"
   }
 }
