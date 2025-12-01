@@ -1,71 +1,104 @@
-# Task 19: Enhance Edge Handle Control for DecisionNode
+# Task 19: Enhance DecisionNode with UI-based Handle Configuration
 
 ## Goal
 
-Enhance the `DecisionNode` in the FlowView to allow dragging and dropping of edge handles along the node's border. The handle positions should be persisted in the node's metadata.
-
-## Current Limitations
-
-- Edge handles on the `DecisionNode` are fixed at evenly distributed positions.
-- There is no mechanism to interactively change the position of a handle.
+To enhance the `DecisionNode` in `packages/web` to allow users to dynamically configure its connection handles (edges) through the UI. This includes specifying the side (Top, Bottom, Left, Right) and order of each handle.
 
 ## Requirements
 
-1.  **Draggable Handles**: Users should be able to drag and drop the source handles of a `DecisionNode`.
-2.  **Constrained to Border**: The dragging should be constrained to the perimeter of the node.
-3.  **Persistence**: The position of each handle should be stored in the node's metadata.
-4.  **Minimum Distance**: A minimum distance between handles should be maintained. When a handle is dropped, its position should be adjusted to respect this minimum distance from other handles.
-5.  **Visual Feedback**: The handle being dragged should have a distinct visual state.
+-   **Dynamic Handle Configuration:** Users must be able to add, remove, and modify the properties of handles on a `DecisionNode`.
+-   **Side and Order:** For each handle, users must be able to define its side (`position`) and its order on that side.
+-   **UI for Editing:** An intuitive UI should be presented to the user, preferably when the `DecisionNode` is selected.
+-   **Real-time Preview:** Changes made in the editor should be reflected immediately in a preview.
+-   **Persistence:** The handle configuration must be stored in the `metadata` (the `data` property) of the `DecisionNode`.
+-   **Save/Cancel:** The user must be able to explicitly save or cancel their changes.
 
-## Implementation Plan
+## Metadata Structure
 
-### Part 1: Store and State Management
+To align with the project's conventions while providing a clear structure, the handle configuration will be stored directly in the step's `metadata` object.
 
-1.  **Extend `FlowState` in `flowStore.ts`**:
-    -   Add a new function to the `FlowState` type:
-        ```typescript
-        updateNodeHandlePosition: (nodeId: string, handleId: string, position: { x: number, y: number }) => FlowRevision;
-        ```
-2.  **Implement `updateNodeHandlePosition` in `useFlowStore`**:
-    -   This function will find the specified step (`nodeId`).
-    -   It will update the `metadata` of that step to store the new handle position. The positions could be stored in an object like `handlePositions: { [handleId]: { x, y } }`.
-    -   It should handle cases where `handlePositions` doesn't exist yet.
-    -   Increment the `revision` number and set the new state.
+A `decision` step in the `workflow.json` will be structured as follows:
 
-### Part 2: Update `DecisionNode.tsx`
+```json
+{
+  "id": "my-decision-step",
+  "name": "My Decision",
+  "type": "decision",
+  "metadata": {
+    "x": 812,
+    "y": 37,
+    "handles": [
+      { "id": "in1", "type": "target", "position": "Top" },
+      { "id": "out-yes", "type": "source", "position": "Bottom" },
+      { "id": "out-no", "type": "source", "position": "Right" }
+    ]
+  }
+}
+```
 
-1.  **Read Handle Positions**:
-    -   In `DecisionNode.tsx`, read the handle positions from `data.metadata.handlePositions`.
-    -   If positions are present, use them to style the `Handle` components.
-    -   If not present, fall back to the current default behavior of distributing them evenly.
+-   The `DecisionNode.tsx` component in the web application will read and write to `props.data.handles`.
+-   This structure is consistent with the existing use of the `metadata` field for storing both UI coordinates (`x`, `y`) and other custom properties.
 
-2.  **Make Handles Draggable**:
-    -   We will use native HTML drag and drop to avoid adding new dependencies.
-    -   Wrap each source `Handle` in a draggable `div`.
-    -   Add `onDragStart`, `onDrag`, and `onDragEnd` event handlers to this wrapper.
+## Proposed UX (Revised)
 
-3.  **Implement Drag Logic**:
-    -   **`onDragStart`**:
-        -   Set the drag data (e.g., `handleId`).
-        -   Maybe add a class to the handle for visual feedback.
-    -   **`onDrag`**:
-        -   This event is not as straightforward for getting continuous position updates with the native DnD API. A workaround is to use `onDragOver` on the node itself.
-    -   **`onDragEnd`**:
-        -   Calculate the final position of the handle relative to the node.
-        -   The position should be clamped to the node's border. Create a helper function `getClosestPointOnBorder(x, y, nodeWidth, nodeHeight)` for this.
-        -   Implement the logic to ensure minimum distance between handles. This might involve adjusting the final position.
-        -   Call the `updateNodeHandlePosition` function from the `flowStore` to persist the new position.
+The editor will be a **Properties Panel** that appears on the right side of the screen when a `DecisionNode` is selected. This panel will allow users to re-assign and re-order existing handles.
 
-### Part 3: Refinement and Testing
+```
++--------------------------------+
+|       PROPERTIES PANEL         |
+|--------------------------------|
+| Node: [Selected Node Name]     |
+|--------------------------------|
+| Handles Configuration          |
+| (Drag to reorder or move)      |
+|                                |
+| === TOP ====================== |
+| | [DRAG] Handle-ID-1 (Source)  | |
+| | [DRAG] Handle-ID-2 (Target)  | |
+| +----------------------------+ |
+|                                |
+| === BOTTOM =================== |
+| | [DRAG] Handle-ID-3 (Source)  | |
+| +----------------------------+ |
+|                                |
+| (Left and Right zones follow)  |
+|                                |
+| [Save] [Cancel]                |
++--------------------------------+
+```
 
-1.  **Visuals**:
-    -   Ensure the visual feedback during dragging is clear.
-    -   The node should re-render correctly when the handle positions are updated in the store.
-2.  **Testing**:
-    -   If possible, add a component test for `DecisionNode` to verify that handles are rendered at the correct positions based on `data`.
-    -   Manually test the drag-and-drop functionality thoroughly.
+-   The panel is divided into four sections for "Top", "Bottom", "Left", and "Right", each acting as a drop zone.
+-   Users can drag handles to reorder them within a zone or move them to a different zone.
+-   The ability to add or delete handles is removed from the scope of this task.
 
-## File to be modified:
+## Dependencies
 
--   `packages/web/src/app/store/flowStore.ts`
--   `packages/web/src/app/components/custom-nodes/DecisionNode.tsx`
+The following packages will be added to `packages/web`:
+-   `@dnd-kit/core`
+-   `@dnd-kit/sortable`
+
+## Implementation Plan (Revised)
+
+1.  **Install Dependencies:** Add `@dnd-kit/core` and `@dnd-kit/sortable` to the `dependencies` in `packages/web/package.json`.
+
+2.  **Create a `PropertiesPanel` Component:**
+    -   Develop a new, general-purpose `PropertiesPanel` component that appears as a sidebar.
+    -   Its visibility will be controlled by the application's global state (e.g., Zustand store), depending on whether a node is selected.
+
+3.  **Create the `HandleEditor` Component:**
+    -   Build the `HandleEditor` to be displayed inside the `PropertiesPanel`.
+    -   It will receive the `handles` array from the selected node.
+    -   It will use `dnd-kit` to implement the four drag-and-drop zones.
+
+4.  **Implement Drag-and-Drop Logic:**
+    -   Configure `DndContext`, `SortableContext`, and the necessary sensors.
+    -   Implement the `onDragEnd` handler to update the local state of the `handles` array when a user finishes dragging an item. This includes changing the `position` (side) and order.
+
+5.  **Integrate with Application State:**
+    -   Connect the `PropertiesPanel` to the main application state management (Zustand).
+    -   The `[Save]` button in the `HandleEditor` will trigger an action to update the global state, persisting the changes to the correct node in the React Flow instance.
+    -   The `[Cancel]` button will reset the editor's state and/or close the panel.
+
+6.  **Testing:**
+    -   Add tests for the `HandleEditor` to verify the drag-and-drop logic.
+    -   Update tests for the main application to ensure the `PropertiesPanel` appears and disappears correctly and that node data is updated on save.

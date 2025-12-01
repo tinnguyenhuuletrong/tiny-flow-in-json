@@ -13,11 +13,12 @@
         "current limitations",
         "- Edge handle for node is fixed - see packages/web/src/app/components/custom-nodes/DecisionNode.tsx",
         "enhance:",
-        "- We can drag and drop handle along the step shape ( minimum distance between each handle should keep and adjust when drop )"
+        "- Let allow user edit the side ( Top, Down, Left, Right) and orders",
+        "- Should store into metadata of DecisionNode"
       ],
       "note": [
-        "The position of each handle x y should store into node metadata",
-        "Clear state on handle indicator when drag , drop handle. handle position should shit on the Node border line"
+        "Let brainstorm the UX. It Should clear state. Current select Handle, current information and edit information, Allow preview right after select, Save / cancel",
+        "Let generate ascii ui for preview first"
       ]
     }
   ],
