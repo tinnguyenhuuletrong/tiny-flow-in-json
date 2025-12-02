@@ -26,100 +26,6 @@ import { Button } from "@/components/ui/button";
 
 type HandlesBySide = Record<Handle["position"], Handle[]>;
 
-const getHandlesBySide = (handles: Handle[]): HandlesBySide => {
-  const newHandlesBySide: HandlesBySide = {
-    Top: [],
-    Bottom: [],
-    Left: [],
-    Right: [],
-  };
-  handles.forEach((handle) => {
-    newHandlesBySide[handle.position].push(handle);
-  });
-  return newHandlesBySide;
-};
-
-function DroppableZone({
-  id,
-  children,
-}: {
-  id: string;
-  children: React.ReactNode;
-}) {
-  const { setNodeRef } = useDroppable({ id });
-
-  return (
-    <div
-      ref={setNodeRef}
-      className="min-h-[40px] border border-dashed rounded-md p-2"
-    >
-      {children}
-    </div>
-  );
-}
-
-function SortableItem({
-  id,
-  children,
-}: {
-  id: string;
-  children: React.ReactNode;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      className="flex items-center bg-gray-100 dark:bg-gray-800 p-2 my-1 rounded-md"
-    >
-      <div {...listeners} className="cursor-grab">
-        <GripVertical size={16} />
-      </div>
-      <div className="ml-2">{children}</div>
-    </div>
-  );
-}
-
-const HandleSideList = ({
-  side,
-  handles,
-}: {
-  side: Handle["position"];
-  handles: Handle[];
-}) => (
-  <div>
-    <h3 className="font-bold my-2">{side}</h3>
-    <DroppableZone id={side}>
-      <SortableContext
-        id={side}
-        items={handles.map((h) => h.id)}
-        strategy={verticalListSortingStrategy}
-      >
-        {handles.map((handle) => (
-          <SortableItem key={handle.id} id={handle.id}>
-            {handle.id} ({handle.type})
-          </SortableItem>
-        ))}
-      </SortableContext>
-    </DroppableZone>
-  </div>
-);
-
 export function HandleEditor({
   handles: initialHandles,
   nodeId,
@@ -289,3 +195,97 @@ export function HandleEditor({
     </DndContext>
   );
 }
+
+const getHandlesBySide = (handles: Handle[]): HandlesBySide => {
+  const newHandlesBySide: HandlesBySide = {
+    Top: [],
+    Bottom: [],
+    Left: [],
+    Right: [],
+  };
+  handles.forEach((handle) => {
+    newHandlesBySide[handle.position].push(handle);
+  });
+  return newHandlesBySide;
+};
+
+function DroppableZone({
+  id,
+  children,
+}: {
+  id: string;
+  children: React.ReactNode;
+}) {
+  const { setNodeRef } = useDroppable({ id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className="min-h-[40px] border border-dashed rounded-md p-2"
+    >
+      {children}
+    </div>
+  );
+}
+
+function SortableItem({
+  id,
+  children,
+}: {
+  id: string;
+  children: React.ReactNode;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className="flex items-center bg-gray-100 dark:bg-gray-800 p-2 my-1 rounded-md"
+    >
+      <div {...listeners} className="cursor-grab">
+        <GripVertical size={16} />
+      </div>
+      <div className="ml-2">{children}</div>
+    </div>
+  );
+}
+
+const HandleSideList = ({
+  side,
+  handles,
+}: {
+  side: Handle["position"];
+  handles: Handle[];
+}) => (
+  <div>
+    <h3 className="font-bold my-2">{side}</h3>
+    <DroppableZone id={side}>
+      <SortableContext
+        id={side}
+        items={handles.map((h) => h.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        {handles.map((handle) => (
+          <SortableItem key={handle.id} id={handle.id}>
+            {handle.id} ({handle.type})
+          </SortableItem>
+        ))}
+      </SortableContext>
+    </DroppableZone>
+  </div>
+);
