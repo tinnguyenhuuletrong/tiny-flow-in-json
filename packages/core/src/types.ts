@@ -291,3 +291,10 @@ export type ParsedFlow = Omit<Flow, "globalStateSchema" | "steps"> & {
     originalJsonSchema: Map<string, string>;
   };
 };
+
+export interface Handle {
+  id: string;
+  type: "source" | "target";
+  position: "Top" | "Bottom" | "Left" | "Right";
+}
+

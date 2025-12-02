@@ -7,10 +7,17 @@ import EmptyState from "./app/components/layout/EmptyState";
 import { UrlFlowLoader } from "./app/components/logic/UrlFlowLoader";
 import { useLayoutStore } from "./app/store/layoutStore";
 import { MainDualView } from "./app/components/layout/MainDualView";
+import { useEffect } from "react";
+import { PropertiesPanel } from "./app/components/layout/PropertiesPanel";
 
 function App() {
-  const { flow } = useFlowStore();
-  const { layoutMode } = useLayoutStore();
+  const { flow, selectedStepId } = useFlowStore();
+  const { layoutMode, isPropertiesPanelOpen, setPropertiesPanelOpen } =
+    useLayoutStore();
+
+  useEffect(() => {
+    setPropertiesPanelOpen(!!selectedStepId);
+  }, [selectedStepId, setPropertiesPanelOpen]);
 
   const renderMainContent = () => {
     if (!flow) {
@@ -54,7 +61,10 @@ function App() {
       <div className="flex flex-col h-screen">
         <Header />
         <Toolbar />
-        <div className="flex flex-1 overflow-hidden">{renderMainContent()}</div>
+        <div className="flex flex-1 overflow-hidden">
+          {renderMainContent()}
+          {isPropertiesPanelOpen && <PropertiesPanel />}
+        </div>
       </div>
     </>
   );

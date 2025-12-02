@@ -138,6 +138,7 @@ export function FlowView() {
       nodeTypes={nodeTypes}
       onNodeDragStop={onNodeDragStop}
       defaultViewport={initViewPort}
+      onPaneClick={() => setSelectedStepId(null)}
     >
       <Controls onFitView={onFitView} />
       <Background />
