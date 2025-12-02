@@ -266,5 +266,6 @@ export function validate(flow: ParsedFlow): FlowError[] {
   return errors;
 }
 
+export { computeDefaultHandler } from "./utils/helper";
 export { FlowSchema };
 export type * from "./types";

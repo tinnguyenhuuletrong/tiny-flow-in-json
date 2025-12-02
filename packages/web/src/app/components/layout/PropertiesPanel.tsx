@@ -3,9 +3,8 @@ import { useFlowStore } from "@/app/store/flowStore";
 import { HandleEditor } from "../properties-panel/HandleEditor";
 import { useEffect, useState } from "react";
 import {
-  type ParsedFlow,
   type ParsedStep,
-  type Handle,
+  computeDefaultHandler,
 } from "@tiny-json-workflow/core";
 
 export function PropertiesPanel() {
@@ -49,30 +48,4 @@ export function PropertiesPanel() {
       </CardContent>
     </Card>
   );
-}
-
-function computeDefaultHandler(flow: ParsedFlow, stepId: string): Handle[] {
-  const stepObj = flow.steps.find((itm) => itm.id === stepId);
-  if (!stepObj) return [];
-
-  const allConnectionTo = flow.connections
-    .filter((itm) => itm.targetStepId === stepId)
-    .map((itm) => {
-      return {
-        id: itm.id,
-        type: "target",
-        position: "Left",
-      } satisfies Handle;
-    });
-  const allConnectionFrom = flow.connections
-    .filter((itm) => itm.sourceStepId === stepId)
-    .map((itm) => {
-      return {
-        id: itm.id,
-        type: "source",
-        position: "Right",
-      } satisfies Handle;
-    });
-
-  return [...allConnectionTo, ...allConnectionFrom];
 }

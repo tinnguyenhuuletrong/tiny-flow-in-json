@@ -1,19 +1,17 @@
 import { Handle, Position, type NodeProps } from "reactflow";
-import { type ParsedStep, type Handle as EditorHandle } from "@tiny-json-workflow/core";
+import {
+  type ParsedStep,
+  type Handle as EditorHandle,
+  computeDefaultHandler,
+} from "@tiny-json-workflow/core";
+import { useFlowStore } from "@/app/store/flowStore";
 
 export function DecisionNode({ data }: NodeProps<ParsedStep>) {
-  // If metadata.handles is defined, use it. Otherwise, create a default for backward compatibility.
+  const { flow } = useFlowStore();
   let handles: EditorHandle[] = data.metadata?.handles as EditorHandle[];
 
-  if (!handles || handles.length === 0) {
-    handles = [];
-    // Default target handle
-    handles.push({ id: "a", type: "target", position: "Left" });
-    // Default source handles from sourceHandles metadata
-    const sourceHandles = data.metadata?.sourceHandles || [];
-    sourceHandles.forEach((handleId: string) => {
-      handles.push({ id: handleId, type: "source", position: "Right" });
-    });
+  if ((!handles || handles.length === 0) && flow) {
+    handles = computeDefaultHandler(flow, data.id);
   }
 
   const handlesByPosition = {

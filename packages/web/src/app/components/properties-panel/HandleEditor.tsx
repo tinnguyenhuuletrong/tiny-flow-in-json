@@ -26,7 +26,19 @@ import { Button } from "@/components/ui/button";
 
 type HandlesBySide = Record<Handle["position"], Handle[]>;
 
-// This new component ensures that a zone is always droppable, even when empty.
+const getHandlesBySide = (handles: Handle[]): HandlesBySide => {
+  const newHandlesBySide: HandlesBySide = {
+    Top: [],
+    Bottom: [],
+    Left: [],
+    Right: [],
+  };
+  handles.forEach((handle) => {
+    newHandlesBySide[handle.position].push(handle);
+  });
+  return newHandlesBySide;
+};
+
 function DroppableZone({
   id,
   children,
@@ -83,6 +95,31 @@ function SortableItem({
   );
 }
 
+const HandleSideList = ({
+  side,
+  handles,
+}: {
+  side: Handle["position"];
+  handles: Handle[];
+}) => (
+  <div>
+    <h3 className="font-bold my-2">{side}</h3>
+    <DroppableZone id={side}>
+      <SortableContext
+        id={side}
+        items={handles.map((h) => h.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        {handles.map((handle) => (
+          <SortableItem key={handle.id} id={handle.id}>
+            {handle.id} ({handle.type})
+          </SortableItem>
+        ))}
+      </SortableContext>
+    </DroppableZone>
+  </div>
+);
+
 export function HandleEditor({
   handles: initialHandles,
   nodeId,
@@ -90,35 +127,14 @@ export function HandleEditor({
   handles: Handle[];
   nodeId: string;
 }) {
-  const [handlesBySide, setHandlesBySide] = useState<HandlesBySide>({
-    Top: [],
-    Bottom: [],
-    Left: [],
-    Right: [],
-  });
+  const [handlesBySide, setHandlesBySide] = useState<HandlesBySide>(() =>
+    getHandlesBySide(initialHandles)
+  );
   const [initialHandlesBySide, setInitialHandlesBySide] =
-    useState<HandlesBySide>({
-      Top: [],
-      Bottom: [],
-      Left: [],
-      Right: [],
-    });
+    useState<HandlesBySide>(() => getHandlesBySide(initialHandles));
   const [activeHandle, setActiveHandle] = useState<Handle | null>(null);
 
   const { flow, setFlow } = useFlowStore();
-
-  const getHandlesBySide = (handles: Handle[]): HandlesBySide => {
-    const newHandlesBySide: HandlesBySide = {
-      Top: [],
-      Bottom: [],
-      Left: [],
-      Right: [],
-    };
-    handles.forEach((handle) => {
-      newHandlesBySide[handle.position].push(handle);
-    });
-    return newHandlesBySide;
-  };
 
   useEffect(() => {
     const initialState = getHandlesBySide(initialHandles);
@@ -133,7 +149,7 @@ export function HandleEditor({
     })
   );
 
-  const findContainer = (id: string) => {
+  const findContainer = (id: string): Handle["position"] | undefined => {
     if (id in handlesBySide) {
       return id as Handle["position"];
     }
@@ -142,6 +158,7 @@ export function HandleEditor({
         return side;
       }
     }
+    return undefined;
   };
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -162,13 +179,10 @@ export function HandleEditor({
     const activeId = active.id.toString();
     const overId = over.id.toString();
     const activeContainer = findContainer(activeId);
-
-    let overContainer: Handle["position"] | undefined;
-    if (overId in handlesBySide) {
-      overContainer = overId as Handle["position"];
-    } else {
-      overContainer = findContainer(overId);
-    }
+    const overContainer =
+      (over.id in handlesBySide
+        ? (over.id as Handle["position"])
+        : findContainer(overId)) || undefined;
 
     if (!activeContainer || !overContainer || activeId === overId) {
       return;
@@ -191,29 +205,29 @@ export function HandleEditor({
             overIndex
           ),
         };
-      } else {
-        const activeIndex = prev[activeContainer].findIndex(
-          (h) => h.id === activeId
-        );
-        let overIndex = prev[overContainer].findIndex((h) => h.id === overId);
-        if (overIndex < 0) {
-          overIndex = prev[overContainer].length;
-        }
-
-        const newActiveItems = [...prev[activeContainer]];
-        const [movedItem] = newActiveItems.splice(activeIndex, 1);
-        const newOverItems = [...prev[overContainer]];
-        newOverItems.splice(overIndex, 0, {
-          ...movedItem,
-          position: overContainer,
-        });
-
-        return {
-          ...prev,
-          [activeContainer]: newActiveItems,
-          [overContainer]: newOverItems,
-        };
       }
+
+      const activeIndex = prev[activeContainer].findIndex(
+        (h) => h.id === activeId
+      );
+      let overIndex = prev[overContainer].findIndex((h) => h.id === overId);
+      if (overIndex < 0) {
+        overIndex = prev[overContainer].length;
+      }
+
+      const newActiveItems = [...prev[activeContainer]];
+      const [movedItem] = newActiveItems.splice(activeIndex, 1);
+      const newOverItems = [...prev[overContainer]];
+      newOverItems.splice(overIndex, 0, {
+        ...movedItem,
+        position: overContainer,
+      });
+
+      return {
+        ...prev,
+        [activeContainer]: newActiveItems,
+        [overContainer]: newOverItems,
+      };
     });
   };
 
@@ -251,27 +265,13 @@ export function HandleEditor({
       onDragCancel={() => setActiveHandle(null)}
     >
       <div>
-        {Object.keys(handlesBySide).map((side) => {
-          const sideHandles = handlesBySide[side as Handle["position"]];
-          return (
-            <div key={side}>
-              <h3 className="font-bold my-2">{side}</h3>
-              <DroppableZone id={side}>
-                <SortableContext
-                  id={side}
-                  items={sideHandles.map((h) => h.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {sideHandles.map((handle) => (
-                    <SortableItem key={handle.id} id={handle.id}>
-                      {handle.id} ({handle.type})
-                    </SortableItem>
-                  ))}
-                </SortableContext>
-              </DroppableZone>
-            </div>
-          );
-        })}
+        {(Object.keys(handlesBySide) as (keyof HandlesBySide)[]).map((side) => (
+          <HandleSideList
+            key={side}
+            side={side}
+            handles={handlesBySide[side]}
+          />
+        ))}
       </div>
       <DragOverlay>
         {activeHandle ? (

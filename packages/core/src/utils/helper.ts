@@ -1,3 +1,5 @@
+import type { Handle, ParsedFlow } from "../types";
+
 /**
  * Stringifies a JSON object with keys ordered according to a specified array.
  *
@@ -27,4 +29,30 @@ export function orderedJsonStringify(
   }
 
   return JSON.stringify(sortedObj, null, space);
+}
+
+export function computeDefaultHandler(flow: ParsedFlow, stepId: string): Handle[] {
+  const stepObj = flow.steps.find((itm) => itm.id === stepId);
+  if (!stepObj) return [];
+
+  const allConnectionTo = flow.connections
+    .filter((itm) => itm.targetStepId === stepId)
+    .map((itm) => {
+      return {
+        id: itm.id,
+        type: "target",
+        position: "Left",
+      } satisfies Handle;
+    });
+  const allConnectionFrom = flow.connections
+    .filter((itm) => itm.sourceStepId === stepId)
+    .map((itm) => {
+      return {
+        id: itm.id,
+        type: "source",
+        position: "Right",
+      } satisfies Handle;
+    });
+
+  return [...allConnectionTo, ...allConnectionFrom];
 }
