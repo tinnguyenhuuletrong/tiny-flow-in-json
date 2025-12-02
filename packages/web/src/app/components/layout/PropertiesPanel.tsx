@@ -2,7 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFlowStore } from "@/app/store/flowStore";
 import { HandleEditor } from "../properties-panel/HandleEditor";
 import { useEffect, useState } from "react";
-import { type ParsedStep } from "@tiny-json-workflow/core";
+import {
+  type ParsedFlow,
+  type ParsedStep,
+  type Handle,
+} from "@tiny-json-workflow/core";
 
 export function PropertiesPanel() {
   const { flow, selectedStepId } = useFlowStore();
@@ -19,6 +23,9 @@ export function PropertiesPanel() {
   if (!selectedNode) {
     return null;
   }
+  if (!flow) {
+    return null;
+  }
 
   const isDecisionNode = selectedNode.type === "decision";
 
@@ -30,7 +37,10 @@ export function PropertiesPanel() {
       <CardContent>
         {isDecisionNode ? (
           <HandleEditor
-            handles={selectedNode?.metadata?.handles ?? []}
+            handles={
+              selectedNode?.metadata?.handles ??
+              computeDefaultHandler(flow, selectedNode.id)
+            }
             nodeId={selectedNode.id}
           />
         ) : (
@@ -39,4 +49,30 @@ export function PropertiesPanel() {
       </CardContent>
     </Card>
   );
+}
+
+function computeDefaultHandler(flow: ParsedFlow, stepId: string): Handle[] {
+  const stepObj = flow.steps.find((itm) => itm.id === stepId);
+  if (!stepObj) return [];
+
+  const allConnectionTo = flow.connections
+    .filter((itm) => itm.targetStepId === stepId)
+    .map((itm) => {
+      return {
+        id: itm.id,
+        type: "target",
+        position: "Left",
+      } satisfies Handle;
+    });
+  const allConnectionFrom = flow.connections
+    .filter((itm) => itm.sourceStepId === stepId)
+    .map((itm) => {
+      return {
+        id: itm.id,
+        type: "source",
+        position: "Right",
+      } satisfies Handle;
+    });
+
+  return [...allConnectionTo, ...allConnectionFrom];
 }

@@ -1,11 +1,14 @@
 import {
   DndContext,
   type DragEndEvent,
+  type DragStartEvent,
   closestCorners,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
+  DragOverlay,
+  useDroppable,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -22,6 +25,26 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 type HandlesBySide = Record<Handle["position"], Handle[]>;
+
+// This new component ensures that a zone is always droppable, even when empty.
+function DroppableZone({
+  id,
+  children,
+}: {
+  id: string;
+  children: React.ReactNode;
+}) {
+  const { setNodeRef } = useDroppable({ id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className="min-h-[40px] border border-dashed rounded-md p-2"
+    >
+      {children}
+    </div>
+  );
+}
 
 function SortableItem({
   id,
@@ -73,6 +96,14 @@ export function HandleEditor({
     Left: [],
     Right: [],
   });
+  const [initialHandlesBySide, setInitialHandlesBySide] =
+    useState<HandlesBySide>({
+      Top: [],
+      Bottom: [],
+      Left: [],
+      Right: [],
+    });
+  const [activeHandle, setActiveHandle] = useState<Handle | null>(null);
 
   const { flow, setFlow } = useFlowStore();
 
@@ -90,7 +121,9 @@ export function HandleEditor({
   };
 
   useEffect(() => {
-    setHandlesBySide(getHandlesBySide(initialHandles));
+    const initialState = getHandlesBySide(initialHandles);
+    setInitialHandlesBySide(initialState);
+    setHandlesBySide(initialState);
   }, [initialHandles]);
 
   const sensors = useSensors(
@@ -111,41 +144,76 @@ export function HandleEditor({
     }
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    const handle = Object.values(handlesBySide)
+      .flat()
+      .find((h) => h.id === active.id);
+    if (handle) {
+      setActiveHandle(handle);
+    }
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveHandle(null);
     const { active, over } = event;
     if (!over) return;
 
     const activeId = active.id.toString();
     const overId = over.id.toString();
-
     const activeContainer = findContainer(activeId);
-    const overContainer = findContainer(overId);
+
+    let overContainer: Handle["position"] | undefined;
+    if (overId in handlesBySide) {
+      overContainer = overId as Handle["position"];
+    } else {
+      overContainer = findContainer(overId);
+    }
 
     if (!activeContainer || !overContainer || activeId === overId) {
       return;
     }
 
     setHandlesBySide((prev) => {
-      const newHandlesBySide = { ...prev };
-      const activeItems = newHandlesBySide[activeContainer];
-      const overItems = newHandlesBySide[overContainer];
-
-      const activeIndex = activeItems.findIndex((h) => h.id === activeId);
-      const overIndex = overItems.findIndex((h) => h.id === overId);
-
       if (activeContainer === overContainer) {
-        newHandlesBySide[activeContainer] = arrayMove(
-          activeItems,
-          activeIndex,
-          overIndex
+        const activeIndex = prev[activeContainer].findIndex(
+          (h) => h.id === activeId
         );
+        const overIndex = prev[overContainer].findIndex((h) => h.id === overId);
+        if (overIndex < 0) {
+          return prev;
+        }
+        return {
+          ...prev,
+          [activeContainer]: arrayMove(
+            prev[activeContainer],
+            activeIndex,
+            overIndex
+          ),
+        };
       } else {
-        const [movedItem] = activeItems.splice(activeIndex, 1);
-        movedItem.position = overContainer;
-        overItems.splice(overIndex, 0, movedItem);
-      }
+        const activeIndex = prev[activeContainer].findIndex(
+          (h) => h.id === activeId
+        );
+        let overIndex = prev[overContainer].findIndex((h) => h.id === overId);
+        if (overIndex < 0) {
+          overIndex = prev[overContainer].length;
+        }
 
-      return newHandlesBySide;
+        const newActiveItems = [...prev[activeContainer]];
+        const [movedItem] = newActiveItems.splice(activeIndex, 1);
+        const newOverItems = [...prev[overContainer]];
+        newOverItems.splice(overIndex, 0, {
+          ...movedItem,
+          position: overContainer,
+        });
+
+        return {
+          ...prev,
+          [activeContainer]: newActiveItems,
+          [overContainer]: newOverItems,
+        };
+      }
     });
   };
 
@@ -171,14 +239,16 @@ export function HandleEditor({
   };
 
   const onCancel = () => {
-    setHandlesBySide(getHandlesBySide(initialHandles));
+    setHandlesBySide(initialHandlesBySide);
   };
 
   return (
     <DndContext
-      onDragEnd={handleDragEnd}
-      collisionDetection={closestCorners}
       sensors={sensors}
+      collisionDetection={closestCorners}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={() => setActiveHandle(null)}
     >
       <div>
         {Object.keys(handlesBySide).map((side) => {
@@ -186,29 +256,35 @@ export function HandleEditor({
           return (
             <div key={side}>
               <h3 className="font-bold my-2">{side}</h3>
-              <SortableContext
-                id={side}
-                items={sideHandles.map((h) => h.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="min-h-[40px] border border-dashed rounded-md p-2">
+              <DroppableZone id={side}>
+                <SortableContext
+                  id={side}
+                  items={sideHandles.map((h) => h.id)}
+                  strategy={verticalListSortingStrategy}
+                >
                   {sideHandles.map((handle) => (
                     <SortableItem key={handle.id} id={handle.id}>
                       {handle.id} ({handle.type})
                     </SortableItem>
                   ))}
-                </div>
-              </SortableContext>
+                </SortableContext>
+              </DroppableZone>
             </div>
           );
         })}
-
-        <div className="flex justify-end gap-2 mt-4">
-          <Button variant="ghost" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button onClick={onSave}>Save</Button>
-        </div>
+      </div>
+      <DragOverlay>
+        {activeHandle ? (
+          <SortableItem id={activeHandle.id}>
+            {activeHandle.id} ({activeHandle.type})
+          </SortableItem>
+        ) : null}
+      </DragOverlay>
+      <div className="flex justify-end gap-2 mt-4">
+        <Button variant="ghost" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button onClick={onSave}>Save</Button>
       </div>
     </DndContext>
   );
