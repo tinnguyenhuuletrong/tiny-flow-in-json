@@ -3,14 +3,17 @@ import { type ParsedStep } from "@tiny-json-workflow/core";
 import { Button } from "@/components/ui/button";
 import { Edit, MailQuestionIcon } from "lucide-react";
 import { useFlowStore } from "@/app/store/flowStore";
+import { cn } from "@/lib/utils";
 
 export function WaitForEventNode({ data }: NodeProps<ParsedStep>) {
-  const { setEditingStepId } = useFlowStore();
+  const { setEditingStepId, draggingHandleId } = useFlowStore();
   if (data.type !== "waitForEvent") return null;
 
   const hasSchema =
     data.eventInput?.eventInputZodSchema ||
     data.eventOutput?.eventOutputZodSchema;
+
+  const sourceHandleId = data.metadata?.sourceHandles?.[0];
 
   return (
     <div
@@ -40,7 +43,12 @@ export function WaitForEventNode({ data }: NodeProps<ParsedStep>) {
       <Handle
         type="source"
         position={Position.Right}
+        id={sourceHandleId}
         data-testid="source-handle"
+        className={cn(
+          draggingHandleId === sourceHandleId &&
+            "ring-4 ring-offset-2 ring-orange-500"
+        )}
       />
     </div>
   );

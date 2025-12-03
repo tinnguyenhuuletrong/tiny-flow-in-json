@@ -18,10 +18,11 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical } from "lucide-react";
+import { ArrowRightFromLine, GripVertical } from "lucide-react";
 import { type Handle } from "@tiny-json-workflow/core";
 import { useFlowStore } from "@/app/store/flowStore";
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 type HandlesBySide = Record<Handle["position"], Handle[]>;
 
@@ -38,7 +39,7 @@ export function HandleEditor({
 
   const [activeHandle, setActiveHandle] = useState<Handle | null>(null);
 
-  const { flow, setFlow } = useFlowStore();
+  const { flow, setFlow, setDraggingHandleId } = useFlowStore();
 
   useEffect(() => {
     const initialState = getHandlesBySide(initialHandles);
@@ -92,11 +93,14 @@ export function HandleEditor({
       .find((h) => h.id === active.id);
     if (handle) {
       setActiveHandle(handle);
+      setDraggingHandleId(handle.id);
     }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveHandle(null);
+    setDraggingHandleId(null);
+
     const { active, over } = event;
     if (!over) return;
 
@@ -164,20 +168,27 @@ export function HandleEditor({
       collisionDetection={closestCorners}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragCancel={() => setActiveHandle(null)}
+      onDragCancel={() => {
+        setActiveHandle(null);
+        setDraggingHandleId(null);
+      }}
     >
-      <div>
-        {(Object.keys(handlesBySide) as (keyof HandlesBySide)[]).map((side) => (
-          <HandleSideList
-            key={side}
-            side={side}
-            handles={handlesBySide[side]}
-          />
-        ))}
+      <div className="grid grid-cols-3 gap-2">
+        <div />
+        <HandleSideList side="Top" handles={handlesBySide.Top} />
+        <div />
+
+        <HandleSideList side="Left" handles={handlesBySide.Left} />
+        <div className="border border-dashed rounded-md" />
+        <HandleSideList side="Right" handles={handlesBySide.Right} />
+
+        <div />
+        <HandleSideList side="Bottom" handles={handlesBySide.Bottom} />
+        <div />
       </div>
       <DragOverlay>
         {activeHandle ? (
-          <SortableItem id={activeHandle.id}>
+          <SortableItem handle={activeHandle}>
             {activeHandle.id} ({activeHandle.type})
           </SortableItem>
         ) : null}
@@ -211,7 +222,7 @@ function DroppableZone({
   return (
     <div
       ref={setNodeRef}
-      className="min-h-[40px] border border-dashed rounded-md p-2"
+      className="min-h-[60px] border border-dashed rounded-md p-1"
     >
       {children}
     </div>
@@ -219,10 +230,10 @@ function DroppableZone({
 }
 
 function SortableItem({
-  id,
+  handle,
   children,
 }: {
-  id: string;
+  handle: Handle;
   children: React.ReactNode;
 }) {
   const {
@@ -232,7 +243,7 @@ function SortableItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ id: handle.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -240,17 +251,27 @@ function SortableItem({
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const isSource = handle.type === "source";
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className="flex items-center bg-gray-100 dark:bg-gray-800 p-2 my-1 rounded-md"
+      className={cn(
+        "flex items-center p-2 my-1 rounded-md text-xs",
+        isSource ? "bg-blue-100" : "bg-green-100"
+      )}
     >
       <div {...listeners} className="cursor-grab">
         <GripVertical size={16} />
       </div>
-      <div className="ml-2">{children}</div>
+      <div className="ml-2 flex-1">{children}</div>
+      {isSource ? (
+        <ArrowRightFromLine size={14} />
+      ) : (
+        <ArrowRightFromLine size={14} />
+      )}
     </div>
   );
 }
@@ -262,8 +283,8 @@ const HandleSideList = ({
   side: Handle["position"];
   handles: Handle[];
 }) => (
-  <div>
-    <h3 className="font-bold my-2">{side}</h3>
+  <div className="w-full">
+    <h3 className="font-bold text-center text-xs mb-1">{side}</h3>
     <DroppableZone id={side}>
       <SortableContext
         id={side}
@@ -271,8 +292,8 @@ const HandleSideList = ({
         strategy={verticalListSortingStrategy}
       >
         {handles.map((handle) => (
-          <SortableItem key={handle.id} id={handle.id}>
-            {handle.id} ({handle.type})
+          <SortableItem key={handle.id} handle={handle}>
+            {handle.id}
           </SortableItem>
         ))}
       </SortableContext>

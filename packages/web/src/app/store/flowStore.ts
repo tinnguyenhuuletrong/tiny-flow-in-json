@@ -27,6 +27,7 @@ export type FlowState = {
   flow: ParsedFlow | undefined;
   selectedStepId: string | null;
   editingStepId: string | null;
+  draggingHandleId: string | null;
 
   // revision inc everytime partial update made
   // use for optimistic component internal state control espcially in JSON Editor view (uncontrolled component)
@@ -40,6 +41,7 @@ export type FlowState = {
   updateFlowState: (newState: Record<string, any>) => FlowRevision;
   setSelectedStepId: (stepId: string | null) => FlowRevision;
   setEditingStepId: (stepId: string | null) => FlowRevision;
+  setDraggingHandleId: (id: string | null) => void;
   updateStepParams: (
     stepId: string,
     params: Record<string, any>
@@ -128,12 +130,16 @@ export const useFlowStore = create<FlowState>()(
       revision: 0,
       selectedStepId: null,
       editingStepId: null,
+      draggingHandleId: null,
 
       getFlowMetadata: () => get().flow?.metadata as FlowMetadataState,
       setFlow: (flow) => {
         const revision = get().revision;
         set({ flow: flow, revision: revision + 1 });
         return revision + 1;
+      },
+      setDraggingHandleId: (id: string | null) => {
+        set({ draggingHandleId: id });
       },
       doAutoLayout: async () => {
         const { flow, revision } = get();

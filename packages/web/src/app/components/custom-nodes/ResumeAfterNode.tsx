@@ -1,9 +1,14 @@
 import { Handle, Position, type NodeProps } from "reactflow";
 import { type ParsedStep } from "@tiny-json-workflow/core";
 import { TimerIcon } from "lucide-react";
+import { useFlowStore } from "@/app/store/flowStore";
+import { cn } from "@/lib/utils";
 
 export function ResumeAfterNode({ data }: NodeProps<ParsedStep>) {
+  const { draggingHandleId } = useFlowStore();
   if (data.type !== "resumeAfter") return null;
+
+  const sourceHandleId = data.metadata?.sourceHandles?.[0];
 
   return (
     <div
@@ -23,7 +28,12 @@ export function ResumeAfterNode({ data }: NodeProps<ParsedStep>) {
       <Handle
         type="source"
         position={Position.Right}
+        id={sourceHandleId}
         data-testid="source-handle"
+        className={cn(
+          draggingHandleId === sourceHandleId &&
+            "ring-4 ring-offset-2 ring-orange-500"
+        )}
       />
     </div>
   );

@@ -2,14 +2,18 @@ import { render, screen } from "../../../test-utils";
 import { describe, expect, it } from "bun:test";
 import { DecisionNode } from "@/app/components/custom-nodes/DecisionNode";
 import { Position } from "reactflow";
-import { type Step } from "@tiny-json-workflow/core";
+import { type ParsedStep } from "@tiny-json-workflow/core";
 
-const mockStep: Step = {
+const mockStep: ParsedStep = {
   id: "step-1",
   name: "Test Decision",
   type: "decision",
   metadata: {
-    sourceHandles: ["a", "b"],
+    handles: [
+      { id: "h-target", type: "target", position: "Left" },
+      { id: "h-source-1", type: "source", position: "Right" },
+      { id: "h-source-2", type: "source", position: "Right" },
+    ],
   },
 };
 
@@ -31,7 +35,7 @@ describe("DecisionNode", () => {
 
     expect(screen.getByText("Test Decision")).toBeDefined();
 
-    const targetHandle = screen.getByTestId("target-handle");
+    const targetHandle = screen.getByTestId("target-handle-h-target");
     expect(targetHandle).toBeDefined();
     expect(targetHandle.getAttribute("data-handlepos")).toBe(Position.Left);
 

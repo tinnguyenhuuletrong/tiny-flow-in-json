@@ -18,17 +18,17 @@ export function JsonEditorView() {
   const monacoRef = useRef<typeof import("monaco-editor") | null>(null);
   const { flow, setFlow, revision, selectedStepId } = useFlowStore();
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  const [currentRevision, setCurrentRevision] = useState(revision);
+  const currentRevisionRef = useRef(revision);
 
   // watch for external update -> refresh
   // optimistic state control for uncontrolled component
   useEffect(() => {
     if (!flow) return;
-    if (currentRevision !== revision) {
+    if (currentRevisionRef.current !== revision) {
       editorRef.current?.setValue(saveToJson(flow));
-      console.log("external reloaded for", currentRevision);
+      console.log("external reloaded for", revision);
     }
-  }, [currentRevision, revision, editorRef]);
+  }, [currentRevisionRef, revision, editorRef]);
 
   useEffect(() => {
     if (!selectedStepId || !editorRef.current) {
@@ -86,7 +86,7 @@ export function JsonEditorView() {
 
       // update flow + also update head Revision
       const headRevision = setFlow(parsedFlow);
-      setCurrentRevision(headRevision);
+      currentRevisionRef.current = headRevision;
 
       setValidationErrors([]);
     } catch (error: any) {

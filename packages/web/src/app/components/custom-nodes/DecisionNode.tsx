@@ -5,10 +5,11 @@ import {
   computeDefaultHandler,
 } from "@tiny-json-workflow/core";
 import { useFlowStore } from "@/app/store/flowStore";
+import { cn } from "@/lib/utils";
 
 export function DecisionNode({ data }: NodeProps<ParsedStep>) {
-  const { flow } = useFlowStore();
-  let handles: EditorHandle[] = data.metadata?.handles as EditorHandle[];
+  const { flow, draggingHandleId } = useFlowStore();
+  let handles: EditorHandle[] = (data.metadata?.handles as EditorHandle[]) ?? [];
 
   if ((!handles || handles.length === 0) && flow) {
     handles = computeDefaultHandler(flow, data.id);
@@ -44,6 +45,10 @@ export function DecisionNode({ data }: NodeProps<ParsedStep>) {
               id={handle.id}
               style={style}
               data-testid={`${handle.type}-handle-${handle.id}`}
+              className={cn(
+                draggingHandleId === handle.id &&
+                  "ring-4 ring-offset-2 ring-orange-500"
+              )}
             />
           );
         });

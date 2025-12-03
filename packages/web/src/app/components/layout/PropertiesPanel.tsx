@@ -26,7 +26,10 @@ export function PropertiesPanel() {
     return null;
   }
 
-  const isDecisionNode = selectedNode.type === "decision";
+  const handles =
+    selectedNode?.metadata?.handles ??
+    computeDefaultHandler(flow, selectedNode.id);
+  const hasHandles = handles.length > 0;
 
   return (
     <Card className="w-80 h-full rounded-none border-t-0 border-r-0 border-b-0">
@@ -34,14 +37,8 @@ export function PropertiesPanel() {
         <CardTitle>{selectedNode.id}</CardTitle>
       </CardHeader>
       <CardContent>
-        {isDecisionNode ? (
-          <HandleEditor
-            handles={
-              selectedNode?.metadata?.handles ??
-              computeDefaultHandler(flow, selectedNode.id)
-            }
-            nodeId={selectedNode.id}
-          />
+        {hasHandles ? (
+          <HandleEditor handles={handles} nodeId={selectedNode.id} />
         ) : (
           <p>This node type does not have configurable handles.</p>
         )}
