@@ -22,7 +22,6 @@ import { GripVertical } from "lucide-react";
 import { type Handle } from "@tiny-json-workflow/core";
 import { useFlowStore } from "@/app/store/flowStore";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 
 type HandlesBySide = Record<Handle["position"], Handle[]>;
 
@@ -36,15 +35,13 @@ export function HandleEditor({
   const [handlesBySide, setHandlesBySide] = useState<HandlesBySide>(() =>
     getHandlesBySide(initialHandles)
   );
-  const [initialHandlesBySide, setInitialHandlesBySide] =
-    useState<HandlesBySide>(() => getHandlesBySide(initialHandles));
+
   const [activeHandle, setActiveHandle] = useState<Handle | null>(null);
 
   const { flow, setFlow } = useFlowStore();
 
   useEffect(() => {
     const initialState = getHandlesBySide(initialHandles);
-    setInitialHandlesBySide(initialState);
     setHandlesBySide(initialState);
   }, [initialHandles]);
 
@@ -65,6 +62,27 @@ export function HandleEditor({
       }
     }
     return undefined;
+  };
+
+  const onSave = (handlesBySide: HandlesBySide) => {
+    if (!flow) return;
+    const newHandles = Object.values(handlesBySide).flat();
+    const newFlow = {
+      ...flow,
+      steps: flow.steps.map((step) => {
+        if (step.id === nodeId) {
+          return {
+            ...step,
+            metadata: {
+              ...step.metadata,
+              handles: newHandles,
+            },
+          };
+        }
+        return step;
+      }),
+    };
+    setFlow(newFlow);
   };
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -129,37 +147,15 @@ export function HandleEditor({
         position: overContainer,
       });
 
-      return {
+      const newData = {
         ...prev,
         [activeContainer]: newActiveItems,
         [overContainer]: newOverItems,
       };
+      onSave(newData);
+
+      return newData;
     });
-  };
-
-  const onSave = () => {
-    if (!flow) return;
-    const newHandles = Object.values(handlesBySide).flat();
-    const newFlow = {
-      ...flow,
-      steps: flow.steps.map((step) => {
-        if (step.id === nodeId) {
-          return {
-            ...step,
-            metadata: {
-              ...step.metadata,
-              handles: newHandles,
-            },
-          };
-        }
-        return step;
-      }),
-    };
-    setFlow(newFlow);
-  };
-
-  const onCancel = () => {
-    setHandlesBySide(initialHandlesBySide);
   };
 
   return (
@@ -186,12 +182,6 @@ export function HandleEditor({
           </SortableItem>
         ) : null}
       </DragOverlay>
-      <div className="flex justify-end gap-2 mt-4">
-        <Button variant="ghost" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button onClick={onSave}>Save</Button>
-      </div>
     </DndContext>
   );
 }
