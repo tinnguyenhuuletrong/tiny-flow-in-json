@@ -69,7 +69,7 @@ export function LeftPanel() {
             <AccordionItem value="global-state">
               <AccordionTrigger>Global State</AccordionTrigger>
               <AccordionContent>
-                <div className="p-2 bg-gray-100 rounded-md mt-2">
+                <div className="p-2 bg-gray-50 rounded-md">
                   {flow.globalStateZodSchema ? (
                     <JsonAutoForm
                       schema={flow.globalStateZodSchema as any}
@@ -97,46 +97,53 @@ export function LeftPanel() {
             <AccordionItem value="steps">
               <AccordionTrigger>Steps</AccordionTrigger>
               <AccordionContent>
-                <ul>
-                  {flow.steps.map((step) => (
-                    <li
-                      key={step.id}
-                      onClick={() => setSelectedStepId(step.id)}
-                      className={cn(
-                        "flex justify-between items-center mb-2 p-2 border rounded-md cursor-pointer hover:bg-gray-100",
-                        selectedStepId === step.id && "bg-blue-100"
-                      )}
-                    >
-                      <span>{step.name}</span>
-                      {(step.type === "task" && step.paramsZodSchema) ||
-                      (step.type === "waitForEvent" &&
-                        (step.eventInput?.eventInputZodSchema ||
-                          step.eventOutput?.eventOutputZodSchema)) ? (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingStepId(step.id);
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
+                <div className="p-2 bg-gray-50 rounded-md">
+                  <ul>
+                    {flow.steps.map((step) => (
+                      <li
+                        key={step.id}
+                        onClick={() => setSelectedStepId(step.id)}
+                        className={cn(
+                          "flex justify-between items-center p-2 rounded-md cursor-pointer hover:bg-gray-100",
+                          selectedStepId === step.id && "bg-blue-100"
+                        )}
+                      >
+                        <span>{step.name}</span>
+                        {(step.type === "task" && step.paramsZodSchema) ||
+                        (step.type === "waitForEvent" &&
+                          (step.eventInput?.eventInputZodSchema ||
+                            step.eventOutput?.eventOutputZodSchema)) ? (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingStepId(step.id);
+                            }}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </AccordionContent>
             </AccordionItem>
             {selectedStep && (
               <AccordionItem value="node-connections">
                 <AccordionTrigger>Connections</AccordionTrigger>
                 <AccordionContent>
-                  {hasHandles ? (
-                    <HandleEditor handles={handles} nodeId={selectedStep.id} />
-                  ) : (
-                    <p>This node type does not have configurable handles.</p>
-                  )}
+                  <div className="p-2 bg-gray-50 rounded-md">
+                    {hasHandles ? (
+                      <HandleEditor
+                        handles={handles}
+                        nodeId={selectedStep.id}
+                      />
+                    ) : (
+                      <p>This node type does not have configurable handles.</p>
+                    )}
+                  </div>
                 </AccordionContent>
               </AccordionItem>
             )}
@@ -145,42 +152,45 @@ export function LeftPanel() {
               <AccordionItem value="event-payloads">
                 <AccordionTrigger>Event Payloads</AccordionTrigger>
                 <AccordionContent>
-                  {selectedStep.eventInput?.eventInputZodSchema && (
-                    <div className="p-2 bg-gray-100 rounded-md mt-2">
-                      <h4 className="font-medium mb-2">Event Input</h4>
-                      <JsonAutoForm
-                        schema={
-                          selectedStep.eventInput.eventInputZodSchema as any
-                        }
-                        data={selectedStep.eventInput?.value ?? {}}
-                        onDataChange={(value) => {
-                          updateStepEventValue(
-                            selectedStepId!,
-                            "eventInput",
-                            value
-                          );
-                        }}
-                      />
-                    </div>
-                  )}
-                  {selectedStep?.eventOutput?.eventOutputZodSchema && (
-                    <div className="p-2 bg-gray-100 rounded-md mt-2">
-                      <h4 className="font-medium mb-2">Event Output</h4>
-                      <JsonAutoForm
-                        schema={
-                          selectedStep?.eventOutput?.eventOutputZodSchema as any
-                        }
-                        data={selectedStep.eventOutput?.value ?? {}}
-                        onDataChange={(value) => {
-                          updateStepEventValue(
-                            selectedStepId!,
-                            "eventOutput",
-                            value
-                          );
-                        }}
-                      />
-                    </div>
-                  )}
+                  <div className="p-2 bg-gray-50 rounded-md">
+                    {selectedStep.eventInput?.eventInputZodSchema && (
+                      <div>
+                        <h4 className="font-medium mb-2">Event Input</h4>
+                        <JsonAutoForm
+                          schema={
+                            selectedStep.eventInput.eventInputZodSchema as any
+                          }
+                          data={selectedStep.eventInput?.value ?? {}}
+                          onDataChange={(value) => {
+                            updateStepEventValue(
+                              selectedStepId!,
+                              "eventInput",
+                              value
+                            );
+                          }}
+                        />
+                      </div>
+                    )}
+                    {selectedStep?.eventOutput?.eventOutputZodSchema && (
+                      <div>
+                        <h4 className="font-medium mb-2">Event Output</h4>
+                        <JsonAutoForm
+                          schema={
+                            selectedStep?.eventOutput
+                              ?.eventOutputZodSchema as any
+                          }
+                          data={selectedStep.eventOutput?.value ?? {}}
+                          onDataChange={(value) => {
+                            updateStepEventValue(
+                              selectedStepId!,
+                              "eventOutput",
+                              value
+                            );
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </AccordionContent>
               </AccordionItem>
             )}
