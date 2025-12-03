@@ -8,12 +8,10 @@ import { UrlFlowLoader } from "./app/components/logic/UrlFlowLoader";
 import { useLayoutStore } from "./app/store/layoutStore";
 import { MainDualView } from "./app/components/layout/MainDualView";
 import { useEffect } from "react";
-import { PropertiesPanel } from "./app/components/layout/PropertiesPanel";
 
 function App() {
   const { flow, selectedStepId } = useFlowStore();
-  const { layoutMode, isPropertiesPanelOpen, setPropertiesPanelOpen } =
-    useLayoutStore();
+  const { layoutMode, setPropertiesPanelOpen } = useLayoutStore();
 
   useEffect(() => {
     setPropertiesPanelOpen(!!selectedStepId);
@@ -63,7 +61,6 @@ function App() {
         <Toolbar />
         <div className="flex flex-1 overflow-hidden">
           {renderMainContent()}
-          {isPropertiesPanelOpen && <PropertiesPanel />}
         </div>
       </div>
     </>

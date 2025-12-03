@@ -266,11 +266,17 @@ function SortableItem({
       <div {...listeners} className="cursor-grab">
         <GripVertical size={16} />
       </div>
-      <div className="ml-2 flex-1">{children}</div>
+
       {isSource ? (
-        <ArrowRightFromLine size={14} />
+        <>
+          <div className="ml-2 flex-1">{children}</div>
+          <ArrowRightFromLine size={14} />
+        </>
       ) : (
-        <ArrowRightFromLine size={14} />
+        <>
+          <ArrowRightFromLine size={14} />
+          <div className="ml-2 flex-1">{children}</div>
+        </>
       )}
     </div>
   );

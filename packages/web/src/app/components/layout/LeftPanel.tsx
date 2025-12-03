@@ -11,6 +11,8 @@ import { ChevronsLeft, ChevronsRight, Edit } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLayoutStore } from "@/app/store/layoutStore";
 import { useMemo } from "react";
+import { computeDefaultHandler } from "@tiny-json-workflow/core";
+import { HandleEditor } from "../properties-panel/HandleEditor";
 
 export function LeftPanel() {
   const {
@@ -29,6 +31,16 @@ export function LeftPanel() {
   }, [flow, selectedStepId]);
 
   if (!flow) return null;
+
+  const handles = useMemo(
+    () =>
+      selectedStep
+        ? selectedStep?.metadata?.handles ??
+          computeDefaultHandler(flow, selectedStep.id)
+        : [],
+    [flow, selectedStep]
+  );
+  const hasHandles = handles.length > 0;
 
   return (
     <div
@@ -116,6 +128,19 @@ export function LeftPanel() {
                 </ul>
               </AccordionContent>
             </AccordionItem>
+            {selectedStep && (
+              <AccordionItem value="node-connections">
+                <AccordionTrigger>Connections</AccordionTrigger>
+                <AccordionContent>
+                  {hasHandles ? (
+                    <HandleEditor handles={handles} nodeId={selectedStep.id} />
+                  ) : (
+                    <p>This node type does not have configurable handles.</p>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+            )}
+
             {selectedStep?.type === "waitForEvent" && (
               <AccordionItem value="event-payloads">
                 <AccordionTrigger>Event Payloads</AccordionTrigger>
