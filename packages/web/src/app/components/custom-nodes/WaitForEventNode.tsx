@@ -1,19 +1,23 @@
-import { Handle, Position, type NodeProps } from "reactflow";
-import { type ParsedStep } from "@tiny-json-workflow/core";
+import { type NodeProps } from "reactflow";
+import { type ParsedStep, type Handle as EditorHandle, computeDefaultHandler } from "@tiny-json-workflow/core";
 import { Button } from "@/components/ui/button";
 import { Edit, MailQuestionIcon } from "lucide-react";
 import { useFlowStore } from "@/app/store/flowStore";
-import { cn } from "@/lib/utils";
+import { NodeHandles } from "@/app/components/shared/NodeHandles";
 
 export function WaitForEventNode({ data }: NodeProps<ParsedStep>) {
-  const { setEditingStepId, draggingHandleId } = useFlowStore();
+  const { setEditingStepId, flow } = useFlowStore();
   if (data.type !== "waitForEvent") return null;
 
   const hasSchema =
     data.eventInput?.eventInputZodSchema ||
     data.eventOutput?.eventOutputZodSchema;
 
-  const sourceHandleId = data.metadata?.sourceHandles?.[0];
+  let handles: EditorHandle[] = (data.metadata?.handles as EditorHandle[]) ?? [];
+
+  if ((!handles || handles.length === 0) && flow) {
+    handles = computeDefaultHandler(flow, data.id);
+  }
 
   return (
     <div
@@ -35,21 +39,7 @@ export function WaitForEventNode({ data }: NodeProps<ParsedStep>) {
           <Edit className="h-4 w-4" />
         </Button>
       )}
-      <Handle
-        type="target"
-        position={Position.Left}
-        data-testid="target-handle"
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={sourceHandleId}
-        data-testid="source-handle"
-        className={cn(
-          draggingHandleId === sourceHandleId &&
-            "ring-4 ring-offset-2 ring-orange-500"
-        )}
-      />
+      <NodeHandles handles={handles} nodeId={data.id} />
     </div>
   );
 }

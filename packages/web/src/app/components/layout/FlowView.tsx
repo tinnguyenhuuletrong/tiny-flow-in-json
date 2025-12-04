@@ -13,13 +13,14 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 
 import { useFlowStore } from "@/app/store/flowStore";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, type ComponentType } from "react";
 import { BeginNode } from "../custom-nodes/BeginNode";
 import { EndNode } from "../custom-nodes/EndNode";
 import { DecisionNode } from "../custom-nodes/DecisionNode";
 import { TaskNode } from "../custom-nodes/TaskNode";
 import { ResumeAfterNode } from "../custom-nodes/ResumeAfterNode";
 import { WaitForEventNode } from "../custom-nodes/WaitForEventNode";
+import type { Step } from "@tiny-json-workflow/core";
 
 export function FlowView() {
   const {
@@ -39,14 +40,15 @@ export function FlowView() {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const nodeTypes = useMemo(
-    () => ({
-      begin: BeginNode,
-      end: EndNode,
-      decision: DecisionNode,
-      task: TaskNode,
-      resumeAfter: ResumeAfterNode,
-      waitForEvent: WaitForEventNode,
-    }),
+    () =>
+      ({
+        begin: BeginNode,
+        end: EndNode,
+        decision: DecisionNode,
+        task: TaskNode,
+        resumeAfter: ResumeAfterNode,
+        waitForEvent: WaitForEventNode,
+      } satisfies Record<Step["type"], ComponentType<any> | null>),
     []
   );
 

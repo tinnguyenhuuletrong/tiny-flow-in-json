@@ -1,30 +1,26 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_19.md",
+  "save_to": "create _ai/task_21.md",
   "resources": {
-    "ref_current_connection": "_ai/doc/ref/ref_current_connection.png"
+    "web": "packages/web"
   },
   "mcp": {},
   "target": [
     {
       "goal": "enhance packages/web",
       "requirements": [
-        "Enhance control for edge handle especially for FlowView - DecisionNode",
-        "current limitations",
-        "- Edge handle for node is fixed - see packages/web/src/app/components/custom-nodes/DecisionNode.tsx",
-        "enhance:",
-        "- Let allow user edit the side ( Top, Down, Left, Right) and orders",
-        "- Should store into metadata of DecisionNode"
+        "Currently only DecisionNode support connection layout metadata?.handles",
+        "Let try to convert it into a common component and reuse in all others node type ( no need for Begin and End )",
+        "Review the HandleEditor make sure it work well for all others node type"
       ],
       "note": [
-        "Let brainstorm the UX. It Should clear state. Current select Handle, current information and edit information, Allow preview right after select, Save / cancel",
-        "Let generate ascii ui for preview first"
+        "Nice to have to scan src, list all metadata for node( aka step ) and create typeDef for this "
       ]
     }
   ],
   "steps": {
     "1": "read resources, use context7 mcp when need",
     "2": "read current source code",
-    "3": "create a task_19 to achieve goal"
+    "3": "create a task_21 to achieve goal. Task should specific and detail. So Junior AI Agent can work correctly"
   }
 }

@@ -13,6 +13,7 @@ import { useLayoutStore } from "@/app/store/layoutStore";
 import { useMemo } from "react";
 import { computeDefaultHandler } from "@tiny-json-workflow/core";
 import { HandleEditor } from "../properties-panel/HandleEditor";
+import { SUPPORT_CONNECTION_EDIT } from "@/data/constant";
 
 export function LeftPanel() {
   const {
@@ -32,14 +33,15 @@ export function LeftPanel() {
 
   if (!flow) return null;
 
-  const handles = useMemo(
-    () =>
-      selectedStep
-        ? selectedStep?.metadata?.handles ??
-          computeDefaultHandler(flow, selectedStep.id)
-        : [],
-    [flow, selectedStep]
-  );
+  const handles = useMemo(() => {
+    if (selectedStep && SUPPORT_CONNECTION_EDIT.includes(selectedStep.type)) {
+      return (
+        selectedStep?.metadata?.handles ??
+        computeDefaultHandler(flow, selectedStep.id)
+      );
+    }
+    return [];
+  }, [flow, selectedStep]);
   const hasHandles = handles.length > 0;
 
   return (
