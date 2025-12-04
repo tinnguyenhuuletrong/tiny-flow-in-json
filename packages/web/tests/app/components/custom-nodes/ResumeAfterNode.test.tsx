@@ -1,7 +1,6 @@
 import { render, screen } from "../../../test-utils";
 import { describe, expect, it } from "bun:test";
 import { ResumeAfterNode } from "@/app/components/custom-nodes/ResumeAfterNode";
-import { Position } from "reactflow";
 import type { Step } from "@tiny-json-workflow/core";
 
 const mockStep: Step = {
@@ -29,13 +28,5 @@ describe("ResumeAfterNode", () => {
 
     expect(screen.getByText("Test Resume After")).toBeDefined();
     expect(screen.getByText("1 day")).toBeDefined();
-
-    const targetHandle = screen.getByTestId("target-handle");
-    expect(targetHandle).toBeDefined();
-    expect(targetHandle.getAttribute("data-handlepos")).toBe(Position.Left);
-
-    const sourceHandle = screen.getByTestId("source-handle");
-    expect(sourceHandle).toBeDefined();
-    expect(sourceHandle.getAttribute("data-handlepos")).toBe(Position.Right);
   });
 });

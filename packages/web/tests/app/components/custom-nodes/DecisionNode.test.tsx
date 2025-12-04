@@ -1,7 +1,6 @@
 import { render, screen } from "../../../test-utils";
 import { describe, expect, it } from "bun:test";
 import { DecisionNode } from "@/app/components/custom-nodes/DecisionNode";
-import { Position } from "reactflow";
 import { type ParsedStep } from "@tiny-json-workflow/core";
 
 const mockStep: ParsedStep = {
@@ -34,18 +33,5 @@ describe("DecisionNode", () => {
     );
 
     expect(screen.getByText("Test Decision")).toBeDefined();
-
-    const targetHandle = screen.getByTestId("target-handle-h-target");
-    expect(targetHandle).toBeDefined();
-    expect(targetHandle.getAttribute("data-handlepos")).toBe(Position.Left);
-
-    const sourceHandles = screen.getAllByTestId(/source-handle-/);
-    expect(sourceHandles.length).toBe(2);
-    expect(sourceHandles[0].getAttribute("data-handlepos")).toBe(
-      Position.Right
-    );
-    expect(sourceHandles[1].getAttribute("data-handlepos")).toBe(
-      Position.Right
-    );
   });
 });

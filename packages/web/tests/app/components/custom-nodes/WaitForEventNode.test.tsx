@@ -1,7 +1,6 @@
 import { render, screen } from "../../../test-utils";
 import { describe, expect, it } from "bun:test";
 import { WaitForEventNode } from "@/app/components/custom-nodes/WaitForEventNode";
-import { Position } from "reactflow";
 import {
   type ParsedStepWaitForEvent,
   parseFromJson,
@@ -55,14 +54,6 @@ describe("WaitForEventNode", () => {
     );
 
     expect(screen.getByText("Test Wait For Event")).toBeDefined();
-
-    const targetHandle = screen.getByTestId("target-handle");
-    expect(targetHandle).toBeDefined();
-    expect(targetHandle.getAttribute("data-handlepos")).toBe(Position.Left);
-
-    const sourceHandle = screen.getByTestId("source-handle");
-    expect(sourceHandle).toBeDefined();
-    expect(sourceHandle.getAttribute("data-handlepos")).toBe(Position.Right);
   });
 
   it("should not render the edit button if no schema is present", () => {

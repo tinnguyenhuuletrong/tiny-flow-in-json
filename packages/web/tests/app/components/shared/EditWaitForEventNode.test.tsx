@@ -8,6 +8,7 @@ import {
   type ParsedStep,
 } from "@tiny-json-workflow/core";
 import type { FlowState } from "@/app/store/flowStore";
+import { Description } from "@radix-ui/react-dialog";
 
 const mockUseStore = vi.fn<(...args: any[]) => Partial<FlowState>>();
 
@@ -81,6 +82,7 @@ describe("EditWaitForEventNode", () => {
     render(
       <Dialog open={true}>
         <DialogContent>
+          <Description />
           <DialogTitle />
           <EditWaitForEventNode editingStep={stepWithSchema} />
         </DialogContent>
