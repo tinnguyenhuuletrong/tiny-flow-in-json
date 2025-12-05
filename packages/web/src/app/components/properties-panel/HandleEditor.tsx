@@ -68,6 +68,7 @@ export function HandleEditor({
   const onSave = (handlesBySide: HandlesBySide) => {
     if (!flow) return;
     const newHandles = Object.values(handlesBySide).flat();
+
     const newFlow = {
       ...flow,
       steps: flow.steps.map((step) => {
@@ -117,6 +118,7 @@ export function HandleEditor({
     }
 
     setHandlesBySide((prev) => {
+      // Re-oreder item same container
       if (activeContainer === overContainer) {
         const activeIndex = prev[activeContainer].findIndex(
           (h) => h.id === activeId
@@ -125,7 +127,8 @@ export function HandleEditor({
         if (overIndex < 0) {
           return prev;
         }
-        return {
+
+        const newData = {
           ...prev,
           [activeContainer]: arrayMove(
             prev[activeContainer],
@@ -133,8 +136,15 @@ export function HandleEditor({
             overIndex
           ),
         };
+
+        setTimeout(() => {
+          onSave(newData);
+        }, 10);
+
+        return newData;
       }
 
+      // Move item from one container to another one
       const activeIndex = prev[activeContainer].findIndex(
         (h) => h.id === activeId
       );
@@ -156,7 +166,10 @@ export function HandleEditor({
         [activeContainer]: newActiveItems,
         [overContainer]: newOverItems,
       };
-      onSave(newData);
+
+      setTimeout(() => {
+        onSave(newData);
+      }, 10);
 
       return newData;
     });
