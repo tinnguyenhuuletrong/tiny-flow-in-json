@@ -1,26 +1,27 @@
 {
   "task": "brainstorm then create a planning for next task",
-  "save_to": "create _ai/task_21.md",
+  "save_to": "create _ai/task_22.md",
   "resources": {
-    "web": "packages/web"
+    "web": "packages/web",
+    "current_display": "_ai/doc/ref/image.png"
   },
   "mcp": {},
   "target": [
     {
       "goal": "enhance packages/web",
       "requirements": [
-        "Currently only DecisionNode support connection layout metadata?.handles",
-        "Let try to convert it into a common component and reuse in all others node type ( no need for Begin and End )",
-        "Review the HandleEditor make sure it work well for all others node type"
+        "Check current_display. The Connections display on left panel seem not a idealy UX. Investigate can we move it into an overlay display ?.",
+        "User click on selected node -> a wheel panel display -> click on connection edit icon -> The overlay display below so user can drag, drop and see affect",
+        "User click on close to close wheel"
       ],
       "note": [
-        "Nice to have to scan src, list all metadata for node( aka step ) and create typeDef for this "
+        "Let start with ascii design"
       ]
     }
   ],
   "steps": {
     "1": "read resources, use context7 mcp when need",
     "2": "read current source code",
-    "3": "create a task_21 to achieve goal. Task should specific and detail. So Junior AI Agent can work correctly"
+    "3": "create a task_21 to achieve goal. Task must detail, targeting for a a junior Developer powerd by gemini-flash-2.0 model can work without problem"
   }
 }
