@@ -87,7 +87,24 @@
       "type": "task",
       "metadata": {
         "x": 1213.4470174054081,
-        "y": 21.082808540511337
+        "y": 21.082808540511337,
+        "handles": [
+          {
+            "id": "c5-join-B",
+            "type": "target",
+            "position": "Left"
+          },
+          {
+            "id": "c4-join-A",
+            "type": "target",
+            "position": "Left"
+          },
+          {
+            "id": "c6",
+            "type": "source",
+            "position": "Right"
+          }
+        ]
       }
     },
     {

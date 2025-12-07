@@ -100,8 +100,8 @@
       "name": "Route to Billing Team",
       "type": "task",
       "metadata": {
-        "x": 805.1720708116429,
-        "y": 55.95265543660577
+        "x": 803.8456719733003,
+        "y": 59.93185195163363
       }
     },
     {
@@ -109,8 +109,8 @@
       "name": "Assign to General Support Queue",
       "type": "task",
       "metadata": {
-        "x": 806.3100590097022,
-        "y": -59.693256477750396
+        "x": 803.657261333017,
+        "y": -71.63084602283399
       }
     },
     {
@@ -128,7 +128,29 @@
       "type": "task",
       "metadata": {
         "x": 1209.2082609334052,
-        "y": 221.82660717856965
+        "y": 221.82660717856965,
+        "handles": [
+          {
+            "id": "c8",
+            "type": "target",
+            "position": "Top"
+          },
+          {
+            "id": "c6",
+            "type": "target",
+            "position": "Bottom"
+          },
+          {
+            "id": "c7",
+            "type": "target",
+            "position": "Left"
+          },
+          {
+            "id": "c10",
+            "type": "source",
+            "position": "Right"
+          }
+        ]
       }
     },
     {

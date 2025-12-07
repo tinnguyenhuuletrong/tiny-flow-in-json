@@ -87,6 +87,7 @@ export function FlowView() {
         id: connection.id,
         source: connection.sourceStepId,
         target: connection.targetStepId,
+        targetHandle: connection.id,
         label: connection.condition,
         sourceHandle: connection.id,
         type: "smoothstep",
