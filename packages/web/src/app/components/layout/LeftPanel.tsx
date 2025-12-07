@@ -65,7 +65,7 @@ export function LeftPanel() {
         <div className="p-4 overflow-y-auto">
           <Accordion
             type="multiple"
-            defaultValue={["steps"]}
+            defaultValue={["steps", "node-connections"]}
             className="w-full"
           >
             <AccordionItem value="global-state">
@@ -132,23 +132,31 @@ export function LeftPanel() {
                 </div>
               </AccordionContent>
             </AccordionItem>
-            {selectedStep && (
+            {
               <AccordionItem value="node-connections">
                 <AccordionTrigger>Connections</AccordionTrigger>
                 <AccordionContent>
-                  <div className="p-2 bg-gray-50 rounded-md">
-                    {hasHandles ? (
-                      <HandleEditor
-                        handles={handles}
-                        nodeId={selectedStep.id}
-                      />
-                    ) : (
-                      <p>This node type does not have configurable handles.</p>
-                    )}
-                  </div>
+                  {selectedStep ? (
+                    <div className="p-2 bg-gray-50 rounded-md">
+                      {hasHandles ? (
+                        <HandleEditor
+                          handles={handles}
+                          nodeId={selectedStep.id}
+                        />
+                      ) : (
+                        <p className="text-sm text-gray-500">
+                          This step type does not have configurable handles.
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="p-2 bg-gray-50 rounded-md">
+                      <p className="text-sm text-gray-500">Select a step.</p>
+                    </div>
+                  )}
                 </AccordionContent>
               </AccordionItem>
-            )}
+            }
 
             {selectedStep?.type === "waitForEvent" && (
               <AccordionItem value="event-payloads">

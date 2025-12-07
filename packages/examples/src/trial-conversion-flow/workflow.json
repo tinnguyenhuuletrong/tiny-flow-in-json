@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../core/schema.json",
+  "$schema": "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
   "id": "trial-conversion-flow-v1",
   "name": "Trial Conversion Flow",
   "version": "1.0.0",
@@ -11,11 +11,16 @@
       },
       "planType": {
         "type": "string",
-        "enum": ["free", "paid"],
+        "enum": [
+          "free",
+          "paid"
+        ],
         "default": "free"
       }
     },
-    "required": ["userId"]
+    "required": [
+      "userId"
+    ]
   },
   "steps": [
     {
@@ -42,7 +47,24 @@
       "type": "task",
       "metadata": {
         "x": 801,
-        "y": 37
+        "y": 37,
+        "handles": [
+          {
+            "id": "c2",
+            "type": "target",
+            "position": "Left"
+          },
+          {
+            "id": "c4",
+            "type": "source",
+            "position": "Right"
+          },
+          {
+            "id": "c3",
+            "type": "source",
+            "position": "Right"
+          }
+        ]
       }
     },
     {
@@ -61,7 +83,9 @@
               "type": "string"
             }
           },
-          "required": ["userId"]
+          "required": [
+            "userId"
+          ]
         }
       },
       "eventOutput": {
@@ -70,10 +94,14 @@
           "properties": {
             "planType": {
               "type": "string",
-              "enum": ["paid"]
+              "enum": [
+                "paid"
+              ]
             }
           },
-          "required": ["planType"]
+          "required": [
+            "planType"
+          ]
         }
       }
     },

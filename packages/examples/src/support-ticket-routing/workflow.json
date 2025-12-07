@@ -47,7 +47,7 @@
       "type": "begin",
       "metadata": {
         "x": 12,
-        "y": 57
+        "y": 88.92015011080514
       }
     },
     {
@@ -56,7 +56,34 @@
       "type": "decision",
       "metadata": {
         "x": 412,
-        "y": 57
+        "y": 57,
+        "handles": [
+          {
+            "id": "c4-default",
+            "type": "source",
+            "position": "Top"
+          },
+          {
+            "id": "c5-vip",
+            "type": "source",
+            "position": "Bottom"
+          },
+          {
+            "id": "c1",
+            "type": "target",
+            "position": "Left"
+          },
+          {
+            "id": "c3-billing",
+            "type": "source",
+            "position": "Right"
+          },
+          {
+            "id": "c2-urgent",
+            "type": "source",
+            "position": "Right"
+          }
+        ]
       }
     },
     {
@@ -64,8 +91,8 @@
       "name": "Escalate to L2 Tech Support",
       "type": "task",
       "metadata": {
-        "x": 812,
-        "y": 612
+        "x": 809.724023603881,
+        "y": 609.7240236038809
       }
     },
     {
@@ -73,8 +100,8 @@
       "name": "Route to Billing Team",
       "type": "task",
       "metadata": {
-        "x": 812,
-        "y": 312
+        "x": 805.1720708116429,
+        "y": 55.95265543660577
       }
     },
     {
@@ -82,8 +109,8 @@
       "name": "Assign to General Support Queue",
       "type": "task",
       "metadata": {
-        "x": 812,
-        "y": 12
+        "x": 806.3100590097022,
+        "y": -59.693256477750396
       }
     },
     {
@@ -100,8 +127,8 @@
       "name": "Send Confirmation to Customer",
       "type": "task",
       "metadata": {
-        "x": 1212,
-        "y": 312
+        "x": 1209.2082609334052,
+        "y": 221.82660717856965
       }
     },
     {

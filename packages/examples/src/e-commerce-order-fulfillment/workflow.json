@@ -16,7 +16,11 @@
         "type": "boolean"
       }
     },
-    "required": ["orderId", "itemId", "inStock"]
+    "required": [
+      "orderId",
+      "itemId",
+      "inStock"
+    ]
   },
   "steps": [
     {
@@ -43,7 +47,24 @@
       "type": "decision",
       "metadata": {
         "x": 573,
-        "y": 5
+        "y": 5,
+        "handles": [
+          {
+            "id": "c2",
+            "type": "target",
+            "position": "Left"
+          },
+          {
+            "id": "c6",
+            "type": "source",
+            "position": "Right"
+          },
+          {
+            "id": "c3",
+            "type": "source",
+            "position": "Right"
+          }
+        ]
       }
     },
     {

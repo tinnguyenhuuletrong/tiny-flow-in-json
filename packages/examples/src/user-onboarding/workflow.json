@@ -56,7 +56,24 @@
       "type": "decision",
       "metadata": {
         "x": 812,
-        "y": 37
+        "y": 37,
+        "handles": [
+          {
+            "id": "c4",
+            "type": "source",
+            "position": "Bottom"
+          },
+          {
+            "id": "c2",
+            "type": "target",
+            "position": "Left"
+          },
+          {
+            "id": "c3",
+            "type": "source",
+            "position": "Right"
+          }
+        ]
       }
     },
     {

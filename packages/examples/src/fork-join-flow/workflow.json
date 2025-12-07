@@ -22,7 +22,10 @@
         "type": "string"
       }
     },
-    "required": ["userId", "updatedFields"]
+    "required": [
+      "userId",
+      "updatedFields"
+    ]
   },
   "steps": [
     {
@@ -30,8 +33,8 @@
       "name": "Begin Profile Update",
       "type": "begin",
       "metadata": {
-        "x": 12,
-        "y": 37
+        "x": 13.112926185982246,
+        "y": 53.693892789733326
       }
     },
     {
@@ -40,7 +43,24 @@
       "type": "task",
       "metadata": {
         "x": 412,
-        "y": 37
+        "y": 37,
+        "handles": [
+          {
+            "id": "c1",
+            "type": "target",
+            "position": "Left"
+          },
+          {
+            "id": "c3-path-B",
+            "type": "source",
+            "position": "Right"
+          },
+          {
+            "id": "c2-path-A",
+            "type": "source",
+            "position": "Right"
+          }
+        ]
       }
     },
     {
@@ -57,8 +77,8 @@
       "name": "Send 'Profile Updated' Email",
       "type": "task",
       "metadata": {
-        "x": 812,
-        "y": 12
+        "x": 810.5529825945921,
+        "y": -50.22174843254655
       }
     },
     {
@@ -66,8 +86,8 @@
       "name": "Synchronize and Finalize",
       "type": "task",
       "metadata": {
-        "x": 1212,
-        "y": 37
+        "x": 1213.4470174054081,
+        "y": 21.082808540511337
       }
     },
     {
