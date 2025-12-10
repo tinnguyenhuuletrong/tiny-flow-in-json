@@ -1,4 +1,3 @@
-import { setTimeout as waitMs } from "node:timers/promises";
 import type { DurableState } from "../DurableState";
 import type { SnapshotType } from "../type";
 import { MicroTaskRunner } from "./MicroTaskRunner";
@@ -7,6 +6,14 @@ import type {
   WorkflowRuntime,
   WorkflowRunResult,
 } from "./WorkflowRuntime";
+
+const waitMs = (delayMs: number) => {
+  return new Promise((resolve, _) => {
+    setTimeout(() => {
+      resolve(delayMs);
+    }, delayMs);
+  });
+};
 
 export class MemoryLock {
   readonly promise: Promise<void>;

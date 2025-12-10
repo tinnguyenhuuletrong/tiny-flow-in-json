@@ -47,7 +47,7 @@
     },
     "packages/runtime-durable-state": {
       "name": "@tiny-json-workflow/runtime-durable-state",
-      "version": "0.1.0",
+      "version": "0.1.1",
     },
     "packages/svg-export": {
       "name": "@tiny-json-workflow/svg-export",

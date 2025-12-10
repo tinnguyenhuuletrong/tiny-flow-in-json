@@ -1,6 +1,6 @@
 {
   "name": "@tiny-json-workflow/runtime-durable-state",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -19,7 +19,7 @@
   "scripts": {
     "test": "bun test",
     "check": "tsc -b",
-    "build": "bun run ../../tools/buildNpm.ts",
+    "build": "bun run ../../tools/buildNpm.ts && tsc -D",
     "prepublishOnly": "bun run build"
   },
   "devDependencies": {},
