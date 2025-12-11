@@ -179,11 +179,12 @@ import {
 
 // 1. Enums and Types for Steps and State
 export enum EStep {
+  StartFlow = "StartFlow"
   SendWelcome = "SendWelcome",
   SendReminder = "SendReminder",
 }
 export type TStateShape = {
-  /* 
+  /*
     infer from json
     added properties outside json flow put into key
     _extra : {....}
@@ -199,14 +200,15 @@ export type Tasks = {
 // 3. The DurableState class defining the control flow
 export class UserOnboardingFlow extends DurableState<EStep, TStateShape, any> {
   constructor(private tasks: Tasks) {
+    // default step ( aka begin step)
     super(EStep.StartFlow);
-    // This necessary boilerplate registers each step method with the runtime.
-    Object.values(EStep).map((step) =>
-      this.stepHandler.set(step, this[step].bind(this))
-    );
+
+    // Make sure register all EStep(s) and coresponding handler
+    this.stepHandler.set(EStep.SendWelcome, this.SendWelcome.bind(this));
+    // ....
   }
 
-  // 4. Step methods that call tasks via withAction
+  // 4. Step methods
   private async *SendWelcome(): StepIt<EStep, EStep.CheckProfile> {
     const res = await this.withAction<TStateShape>("SendWelcome", async () => {
       // Delegates to the injected task implementation
@@ -556,114 +558,182 @@ export {};
 ### Example: examples/flows/simple.ts
 
 ```ts
-import { DurableState, type StepIt } from "tiny-workflow-core/src";
+import {
+  DurableState,
+  type StepIt,
+  SimpleContext,
+  WorkflowRuntime,
+} from "@tiny-json-workflow/runtime-durable-state";
 
-enum EStep {
-  step_begin = "step_begin",
-  step_compute = "step_compute",
-  step_end = "step_end",
+// -----------------
+// --- GENERATED ---
+// -----------------
+
+export enum EStep {
+  StartFlow = "start-flow",
+  SendWelcome = "send-welcome",
+  CheckProfile = "check-profile",
+  SendReminder = "send-reminder",
+  EndFlow = "end-flow",
 }
-type TStateShape = Partial<{
-  startHit: boolean;
-  computed: number;
-  endHit: boolean;
-}>;
 
-// additional audit log message
-type EAuditLog = "start_hit" | "end_hit" | "computed_hit";
+export type TStateShape = {
+  userId: string;
+  profileIsComplete?: boolean;
+};
 
-class SampleState extends DurableState<EStep, TStateShape, EAuditLog> {
-  constructor() {
-    super(EStep.step_begin, {
-      withAuditLog: true,
-      debug: true,
+export type Tasks = {
+  SendWelcome: (
+    state: TStateShape,
+    params: { template?: string }
+  ) => Promise<TStateShape>;
+  SendReminder: (state: TStateShape) => Promise<TStateShape>;
+};
+
+export class UserOnboardingFlow extends DurableState<EStep, TStateShape, any> {
+  constructor(private tasks: Tasks) {
+    super(EStep.StartFlow);
+    this.stepHandler.set(EStep.StartFlow, this.StartFlow.bind(this));
+    this.stepHandler.set(EStep.SendWelcome, this.SendWelcome.bind(this));
+    this.stepHandler.set(EStep.CheckProfile, this.CheckProfile.bind(this));
+    this.stepHandler.set(EStep.SendReminder, this.SendReminder.bind(this));
+    this.stepHandler.set(EStep.EndFlow, this.EndFlow.bind(this));
+  }
+
+  private async *StartFlow(): StepIt<EStep, EStep.SendWelcome> {
+    console.log("[Workflow] Starting Onboarding Flow");
+    return { nextStep: EStep.SendWelcome };
+  }
+
+  private async *SendWelcome(): StepIt<EStep, EStep.CheckProfile> {
+    const params = { template: "welcome-email-v2" };
+    const res = await this.withAction<TStateShape>("SendWelcome", async () => {
+      return this.tasks.SendWelcome(this.state, params);
     });
+    if (res.it) yield res.it;
+    if (res.value) this.state = res.value;
+    return { nextStep: EStep.CheckProfile };
+  }
 
-    // collect and resgister all step handler
-    Object.values(EStep).map((step) =>
-      this.stepHandler.set(step, this[step].bind(this))
+  private async *CheckProfile(): StepIt<
+    EStep,
+    EStep.EndFlow | EStep.SendReminder
+  > {
+    console.log(
+      `[Workflow] Checking profile for user ${this.state.userId}. Profile Complete: ${this.state.profileIsComplete}`
     );
+    if (this.state.profileIsComplete === true) {
+      return { nextStep: EStep.EndFlow };
+    } else {
+      return { nextStep: EStep.SendReminder };
+    }
   }
 
-  private async *step_begin(): StepIt<EStep, EStep.step_compute> {
-    this.state.startHit = true;
-    this.addLog({
-      type: "start_hit",
-      values: {},
+  private async *SendReminder(): StepIt<EStep, EStep.EndFlow> {
+    const res = await this.withAction<TStateShape>("SendReminder", async () => {
+      return this.tasks.SendReminder(this.state);
     });
-    return { nextStep: EStep.step_compute };
+    if (res.it) yield res.it;
+    if (res.value) this.state = res.value;
+    return { nextStep: EStep.EndFlow };
   }
 
-  private async *step_compute(): StepIt<EStep, EStep.step_end> {
-    // with cached action with cache key 'cache_computed'
-    // it prevent the action evalulate when step resume
-    const { it, value } = await this.withAction("cache_computed", async () => {
-      console.log("\t ... do heavy computed ... ");
-      return Math.PI;
-    });
-    if (it) yield it;
-
-    this.addLog({
-      type: "computed_hit",
-      values: {
-        actionValue: value,
-      },
-    });
-    this.state.computed = value;
-
-    return { nextStep: EStep.step_end };
-  }
-  private async *step_end(): StepIt<EStep, null> {
-    this.state.endHit = true;
-    this.addLog({
-      type: "end_hit",
-      values: {},
-    });
+  private async *EndFlow(): StepIt<EStep, null> {
+    console.log("[Workflow] Ending Onboarding Flow");
     return { nextStep: null };
   }
 }
 
-async function main() {
-  let ins = new SampleState();
+// --- IMPLEMENTATION ---
 
-  console.log("begin");
-  // 1st run
-  {
-    const tmp = ins.exec();
-    await tmp.next();
-    console.log(
-      " ",
-      "currentStep=",
-      ins.currentStep,
-      ",currentState=",
-      ins.currentState
-    );
-
-    // terminate run
-    await tmp.return(null);
-  }
-
-  console.log("---------- SAVE/LOAD ---------");
-  // save to json
-  const savedWorkflowData = ins.toJSON();
-  // load from json
-  ins = SampleState.fromJSON(SampleState, savedWorkflowData);
-
-  {
-    for await (const it of ins.exec()) {
-    }
-    console.log(
-      " ",
-      "currentStep=",
-      ins.currentStep,
-      ",currentState=",
-      ins.currentState
-    );
-  }
-
-  console.log("end");
-  console.log("finalWorkflowData:", ins.toJSON());
+async function SendWelcome(
+  state: TStateShape,
+  params: { template?: string }
+): Promise<TStateShape> {
+  console.log(
+    `[Task] Sending welcome email with template: ${params.template} to user ${state.userId}...`
+  );
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  return { ...state };
 }
+
+async function SendReminder(state: TStateShape): Promise<TStateShape> {
+  console.log(`[Task] Sending profile reminder to user ${state.userId}...`);
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  return { ...state };
+}
+
+export function createWorkflow() {
+  return new UserOnboardingFlow({
+    SendWelcome,
+    SendReminder,
+  });
+}
+
+// --- Main Execution Logic ---
+
+async function main() {
+  const ctx = new SimpleContext();
+  const runtime = new WorkflowRuntime({
+    ctx,
+    genRunId: async () => `user-onboarding-${Date.now()}`,
+    InstanceClass: UserOnboardingFlow,
+  });
+
+  // Scenario 1: Profile is complete
+  const onboardingFlowComplete = createWorkflow();
+  onboardingFlowComplete.setState({
+    userId: "001",
+    profileIsComplete: true,
+  });
+
+  console.log("--- Starting Workflow (Profile Complete) ---");
+  let resultComplete = await runtime.run(onboardingFlowComplete);
+
+  switch (resultComplete.status) {
+    case "need_resume":
+      console.log(`Workflow paused. Resume info:`, resultComplete.resumeEntry);
+      break;
+    case "error":
+      console.error("Workflow failed:", resultComplete.error);
+      break;
+    case "finished":
+      console.log("Workflow finished successfully.");
+      break;
+  }
+  await ctx.runner.idle();
+  let runDataComplete = await ctx.load(resultComplete.runId);
+  console.log("Final state (Profile Complete):", runDataComplete?.state);
+
+  // Scenario 2: Profile is incomplete
+  const onboardingFlowIncomplete = createWorkflow();
+  onboardingFlowIncomplete.setState({
+    userId: "002",
+    profileIsComplete: false,
+  });
+
+  console.log("\n--- Starting Workflow (Profile Incomplete) ---");
+  let resultIncomplete = await runtime.run(onboardingFlowIncomplete);
+
+  switch (resultIncomplete.status) {
+    case "need_resume":
+      console.log(
+        `Workflow paused. Resume info:`,
+        resultIncomplete.resumeEntry
+      );
+      break;
+    case "error":
+      console.error("Workflow failed:", resultIncomplete.error);
+      break;
+    case "finished":
+      console.log("Workflow finished successfully.");
+      break;
+  }
+  await ctx.runner.idle();
+  let runDataIncomplete = await ctx.load(resultIncomplete.runId);
+  console.log("Final state (Profile Incomplete):", runDataIncomplete?.state);
+}
+
 main();
 ```
 
