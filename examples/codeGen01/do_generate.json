@@ -1,0 +1,27 @@
+{
+  "task": "generate typescript runable code for a tiny workflow json in input",
+  "output": "create ./play.ts",
+  "input": "./input/simpleOnboarding.json",
+  "resources": {},
+  "note": [
+    "simple code. avoid too much comments",
+    "try to avoid (this as any) cast if possible. Let tsc check and report error",
+    "Generate following format mention in `The Generated Workflow File Structure` "
+  ],
+  "plans": [
+    "Parse Workflow Definition: Extract steps, connections, global state schema, and initial global state from input",
+    "Generate Enums and Types: Create EStep enum and TStateShape interface from the parsed data",
+    "Define Task Signatures: Create a Tasks type that defines the signatures for the business logic functions for each task step.",
+    "Implement Workflow Class: Create a class extending DurableState that handles step transitions and calls task",
+    "Implement Task Stubs: Provide basic implementations for the task functions.",
+    "Create Factory Function: A function to instantiate the workflow class with its tasks.",
+    "Generate Main Execution Logic: Create a main function to run the workflow using SimpleContext and WorkflowRuntime.",
+    "Try to validate typescript error with `bunx tsc {output} -b`",
+    "Try to run it with `bun run {output}`"
+  ],
+  "steps": {
+    "1": "read resources. understand the json schema, llms guide",
+    "2": "read {input}",
+    "3": "generate a runable bun typescript code at {output}"
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "$schema": "https://tinnguyenhuuletrong.github.io/tiny-flow-in-json/schema/latest/flow.json",
+  "id": "onboarding-flow-v1",
+  "name": "User Onboarding Flow",
+  "version": "1.0.0",
+  "globalState": {
+    "userId": "001",
+    "profileIsComplete": true
+  },
+  "globalStateSchema": {
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "string"
+      },
+      "profileIsComplete": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "userId"
+    ]
+  },
+  "steps": [
+    {
+      "id": "start-flow",
+      "name": "Begin Onboarding",
+      "type": "begin",
+      "metadata": {
+        "x": 12,
+        "y": 37
+      }
+    },
+    {
+      "id": "send-welcome",
+      "name": "Send Welcome Email",
+      "type": "task",
+      "metadata": {
+        "owner": "engagement-team",
+        "x": 412,
+        "y": 37
+      },
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "template": {
+            "type": "string",
+            "default": "welcome-email-v2"
+          }
+        }
+      }
+    },
+    {
+      "id": "check-profile",
+      "name": "Is Profile Complete?",
+      "type": "decision",
+      "metadata": {
+        "x": 812,
+        "y": 37,
+        "handles": [
+          {
+            "id": "c4",
+            "type": "source",
+            "position": "Bottom"
+          },
+          {
+            "id": "c2",
+            "type": "target",
+            "position": "Left"
+          },
+          {
+            "id": "c3",
+            "type": "source",
+            "position": "Right"
+          }
+        ]
+      }
+    },
+    {
+      "id": "send-reminder",
+      "name": "Send Profile Reminder",
+      "type": "task",
+      "metadata": {
+        "x": 1202.766789125643,
+        "y": 139.94592211609114
+      }
+    },
+    {
+      "id": "end-flow",
+      "name": "End Onboarding",
+      "type": "end",
+      "metadata": {
+        "x": 1612,
+        "y": 37
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "sourceStepId": "start-flow",
+      "targetStepId": "send-welcome"
+    },
+    {
+      "id": "c2",
+      "sourceStepId": "send-welcome",
+      "targetStepId": "check-profile"
+    },
+    {
+      "id": "c3",
+      "sourceStepId": "check-profile",
+      "targetStepId": "end-flow",
+      "condition": "state.profileIsComplete == true"
+    },
+    {
+      "id": "c4",
+      "sourceStepId": "check-profile",
+      "targetStepId": "send-reminder",
+      "condition": "state.profileIsComplete == false"
+    },
+    {
+      "id": "c5",
+      "sourceStepId": "send-reminder",
+      "targetStepId": "end-flow"
+    }
+  ],
+  "metadata": {
+    "reactflowViewport": {
+      "x": 79.32352941176475,
+      "y": 350.19625761766866,
+      "zoom": 1.1397058823529411
+    }
+  }
+}

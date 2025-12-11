@@ -1,0 +1,404 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "The main schema for the entire workflow. It defines the structure of a workflow, including its steps, connections, and global state. A workflow must have exactly one 'begin' step and at most one 'end' step.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "description": "The JSON schema version used for validation.",
+      "type": "string"
+    },
+    "id": {
+      "description": "A unique identifier for the workflow.",
+      "type": "string"
+    },
+    "name": {
+      "description": "A human-readable name for the workflow.",
+      "type": "string"
+    },
+    "version": {
+      "description": "The version of the workflow definition.",
+      "type": "string"
+    },
+    "globalStateSchema": {
+      "description": "A JSON schema that defines the structure of the global state.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/__schema0"
+        }
+      ]
+    },
+    "globalState": {
+      "description": "The initial global state of the workflow.",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "steps": {
+      "description": "An array of steps that make up the workflow.",
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "description": "Schema for a 'task' step in the workflow. This represents a unit of work to be performed.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "A unique identifier for the step.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A human-readable name for the step.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the step.",
+                "type": "string",
+                "const": "task"
+              },
+              "paramsSchema": {
+                "description": "A JSON schema that defines the parameters for the step.",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/__schema0"
+                  }
+                ]
+              },
+              "params": {
+                "description": "The parameters for the step.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              },
+              "metadata": {
+                "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type"
+            ]
+          },
+          {
+            "description": "Schema for a decision step in the workflow. This type of step is used to control the flow by branching to different steps based on conditions defined in the outgoing connections.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "A unique identifier for the step.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A human-readable name for the step.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the step.",
+                "type": "string",
+                "const": "decision"
+              },
+              "metadata": {
+                "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type"
+            ]
+          },
+          {
+            "description": "Schema for a 'begin' step in the workflow. This is the starting point of the workflow.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "A unique identifier for the step.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A human-readable name for the step.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the step.",
+                "type": "string",
+                "const": "begin"
+              },
+              "metadata": {
+                "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type"
+            ]
+          },
+          {
+            "description": "Schema for an 'end' step in the workflow. This is a terminal point of the workflow.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "A unique identifier for the step.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A human-readable name for the step.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the step.",
+                "type": "string",
+                "const": "end"
+              },
+              "metadata": {
+                "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type"
+            ]
+          },
+          {
+            "description": "Schema for a 'resumeAfter' step in the workflow. This step pauses the workflow and resumes it after a specified duration.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "A unique identifier for the step.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A human-readable name for the step.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the step.",
+                "type": "string",
+                "const": "resumeAfter"
+              },
+              "duration": {
+                "description": "A human-readable date-time string (e.g., '2.5 hours', '1 day').",
+                "type": "string",
+                "pattern": "^(\\d+(\\.\\d+)?\\s+(second|minute|hour|day|week|month|year)s?)?$"
+              },
+              "metadata": {
+                "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type",
+              "duration"
+            ]
+          },
+          {
+            "description": "Schema for a 'waitForEvent' step in the workflow. This step pauses the workflow until a specific event is received.",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "A unique identifier for the step.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A human-readable name for the step.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the step.",
+                "type": "string",
+                "const": "waitForEvent"
+              },
+              "eventInput": {
+                "description": "Defines the expected input for the event.",
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "description": "The value of the event input."
+                  },
+                  "eventInputSchema": {
+                    "description": "A JSON schema for the expected event payload.",
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/__schema0"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "eventInputSchema"
+                ]
+              },
+              "eventOutput": {
+                "description": "Defines the output of the event.",
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "description": "The value of the event output."
+                  },
+                  "eventOutputSchema": {
+                    "description": "A JSON schema for the data that will be passed to the next step.",
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/__schema0"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "eventOutputSchema"
+                ]
+              },
+              "metadata": {
+                "description": "An object for storing any additional or custom information for the step. Use this for data not covered by the standard fields.",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type"
+            ]
+          }
+        ]
+      }
+    },
+    "connections": {
+      "description": "An array of connections between the steps.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "A unique identifier for the connection.",
+            "type": "string"
+          },
+          "sourceStepId": {
+            "description": "The ID of the source step.",
+            "type": "string"
+          },
+          "targetStepId": {
+            "description": "The ID of the target step.",
+            "type": "string"
+          },
+          "condition": {
+            "description": "A condition that must be met for this connection to be taken.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sourceStepId",
+          "targetStepId"
+        ]
+      }
+    },
+    "metadata": {
+      "description": "An object for storing any additional or custom information for the workflow. Use this for data not covered by the standard fields.",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "version",
+    "globalStateSchema",
+    "steps",
+    "connections"
+  ],
+  "definitions": {
+    "__schema0": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The data type of the schema.",
+          "type": "string",
+          "enum": [
+            "string",
+            "number",
+            "integer",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "format": {
+          "description": "The format of the data.",
+          "type": "string"
+        },
+        "enum": {
+          "description": "A list of possible values.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "description": "The properties of an object schema.",
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "$ref": "#/definitions/__schema0"
+          }
+        },
+        "items": {
+          "description": "The schema for items in an array.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/__schema0"
+            }
+          ]
+        },
+        "required": {
+          "description": "A list of required properties.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": {}
+    }
+  }
+}
