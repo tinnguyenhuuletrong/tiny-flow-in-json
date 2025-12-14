@@ -244,6 +244,29 @@ export function createWorkflow() {
 }
 ```
 
+### Best Practice: Dependency Injection & Rehydration
+
+When the runtime loads a workflow from the database (resumption), it instantiates your class using `new YourWorkflowClass()`.
+
+- **Problem:** If your constructor requires arguments (like `tasks`) and you don't provide defaults, resumption will fail or `tasks` will be undefined.
+- **Solution:** Provide a default value for your dependencies in the constructor.
+
+```typescript
+// Define default tasks (implementations)
+const defaultTasks: Tasks = {
+  SendWelcome,
+  SendReminder,
+};
+
+export class UserOnboardingFlow extends DurableState<EStep, TStateShape, any> {
+  // Use defaultTasks as the default value
+  constructor(private tasks: Tasks = defaultTasks) {
+    super(EStep.StartFlow);
+    // ...
+  }
+}
+```
+
 This pattern separates the _what_ from the _how_: the `UserOnboardingFlow` class defines the order of operations, while the `SendWelcome` function defines how to perform one of those operations.
 
 ---
@@ -254,9 +277,13 @@ These methods are used inside your `DurableState` class methods.
 
 ### `withAction<T>(key, action)`
 
+> key must be unique
+
 Executes and caches a function, ensuring it runs only once even if the workflow is resumed. In the generated pattern, this is used to call your task implementations. The `action`'s return value should be the new state object, which then updates `this.state`.
 
 ### `waitForMs(key, duration)`
+
+> **Important:** The `key` must be unique within the execution history of the step. If you call `waitForMs` multiple times (e.g., in a loop), you must vary the key (e.g., by appending a counter).
 
 Pauses the workflow for a specified duration (in milliseconds).
 
@@ -267,7 +294,35 @@ if (wait.it) yield wait.it; // This pauses the workflow
 // This code runs only after the delay has passed and the workflow is resumed.
 ```
 
+#### Pattern: Robust Polling Loop
+
+When implementing a "Start and Poll" pattern, use a counter in `this.state` to ensure unique keys for each wait cycle. Returning the current step as `nextStep` allows the logic to re-run cleanly.
+
+```typescript
+// 1. Ensure your state tracks the cycle
+// type TStateShape = { ..., _pollCycle?: number };
+
+// 2. Inside your step method
+if (!isTaskDone) {
+  const cycle = this.state._pollCycle ?? 1;
+  
+  // Use the cycle count to generate a unique key
+  const wait = this.waitForMs(`poll_wait_${cycle}`, 5000); // Wait 5s
+  if (wait.it) yield wait.it;
+
+  // Increment cycle for the next iteration
+  this.state._pollCycle = cycle + 1;
+
+  // Re-enter the same step to check status again
+  return { nextStep: EStep.CurrentStepName };
+}
+
+// Task is done, proceed...
+```
+
 ### `waitForEvent<T>(key, requestPayload)`
+
+> key must be unique
 
 Pauses the workflow to wait for external data, such as user input. The workflow remains paused at this point until `resolveResume(resumeId, payload)` is called externally with the corresponding `resumeId`.
 
