@@ -18,13 +18,15 @@ export enum EStep {
   EndProfileUpdate = "end-update",
 }
 
-export type TaskStatus = "pending" | "running" | "completed";
+// 2. Add 'failed' status and error capture
+export type TaskStatus = "pending" | "running" | "completed" | "failed";
 
 export type TaskInfo = {
   id: string;
   type: "search-index" | "email-notification";
   status: TaskStatus;
   result?: any;
+  error?: any; // To capture error details
 };
 
 export type TStateShape = {
@@ -41,22 +43,19 @@ export type TStateShape = {
   waitCycle?: number;
 };
 
-// 2. A 'Tasks' type defining the business logic functions
-// We split "Tasks" into Start and Poll operations to support the "Start and Poll" pattern
+// 3. A 'Tasks' type defining the business logic functions
 export type Tasks = {
-  InitiateParallelTasks: (state: TStateShape) => Promise<TStateShape>;
+  // Combined Step: Init and Start
+  InitiateAndStartTasks: (state: TStateShape) => Promise<TStateShape>;
 
-  // Task A: Search Index
-  StartUpdateSearchIndex: (state: TStateShape) => Promise<void>;
+  // Polling only
   PollUpdateSearchIndex: (
     state: TStateShape
-  ) => Promise<{ status: TaskStatus; result?: any }>;
+  ) => Promise<{ status: TaskStatus; result?: any; error?: any }>;
 
-  // Task B: Email Notification
-  StartSendEmailNotification: (state: TStateShape) => Promise<void>;
   PollSendEmailNotification: (
     state: TStateShape
-  ) => Promise<{ status: TaskStatus; result?: any }>;
+  ) => Promise<{ status: TaskStatus; result?: any; error?: any }>;
 
   FinalizeUpdate: (state: TStateShape) => Promise<TStateShape>;
 };
@@ -80,7 +79,7 @@ export class UserProfileUpdateFlow extends DurableState<
     );
     this.stepHandler.set(
       EStep.InitiateParallelTasks,
-      this.InitiateParallelTasks.bind(this)
+      this.InitiateAndStartTasks.bind(this)
     );
     this.stepHandler.set(
       EStep.SynchronizeAndFinalize,
@@ -100,14 +99,15 @@ export class UserProfileUpdateFlow extends DurableState<
     return { nextStep: EStep.InitiateParallelTasks };
   }
 
-  private async *InitiateParallelTasks(): StepIt<
+  private async *InitiateAndStartTasks(): StepIt<
     EStep,
     EStep.SynchronizeAndFinalize
   > {
+    // 1. Combine Initialize and Start into 1 step
     const res = await this.withAction<TStateShape>(
       EStep.InitiateParallelTasks,
       async () => {
-        return this.tasks.InitiateParallelTasks(this.state);
+        return this.tasks.InitiateAndStartTasks(this.state);
       }
     );
 
@@ -121,30 +121,15 @@ export class UserProfileUpdateFlow extends DurableState<
     EStep,
     EStep.EndProfileUpdate | EStep.SynchronizeAndFinalize
   > {
-    // This step implements the "Start and Poll" pattern for parallel execution
+    // 2. Monitoring result only
 
     let allDone = true;
     const tasks = this.state.parallelTasks || [];
 
     for (const task of tasks) {
-      if (task.status === "completed") continue;
+      if (task.status === "completed" || task.status === "failed") continue;
 
       allDone = false;
-
-      // START logic
-      if (task.status === "pending") {
-        // We use withAction to ensure we only trigger the external job ONCE
-        await this.withAction(`start_${task.id}`, async () => {
-          if (task.type === "search-index") {
-            await this.tasks.StartUpdateSearchIndex(this.state);
-          } else if (task.type === "email-notification") {
-            await this.tasks.StartSendEmailNotification(this.state);
-          }
-        });
-
-        // Optimistically set to running after successful start (or if we recovered from cache)
-        task.status = "running";
-      }
 
       // POLL logic
       if (task.status === "running") {
@@ -156,10 +141,16 @@ export class UserProfileUpdateFlow extends DurableState<
           pollResult = await this.tasks.PollSendEmailNotification(this.state);
         }
 
-        if (pollResult && pollResult.status === "completed") {
-          task.status = "completed";
-          task.result = pollResult.result;
-          console.log(`[Workflow] Task ${task.type} completed.`);
+        if (pollResult) {
+          if (pollResult.status === "completed") {
+            task.status = "completed";
+            task.result = pollResult.result;
+            console.log(`[Workflow] Task ${task.type} completed.`);
+          } else if (pollResult.status === "failed") {
+             task.status = "failed";
+             task.error = pollResult.error;
+             console.error(`[Workflow] Task ${task.type} failed:`, pollResult.error);
+          }
         }
       }
     }
@@ -169,8 +160,6 @@ export class UserProfileUpdateFlow extends DurableState<
 
     if (!allDone) {
       // If not all tasks are done, wait for a bit and then re-execute this step
-      // 'activeStep' keeps us in the same step (SynchronizeAndFinalize)
-      // yield this.waitForMs(...) returns an iterator that pauses execution
       const waitCycle = this.state.waitCycle ?? 1;
       const wait = this.waitForMs(`poll_wait_${waitCycle}`, 500); // Poll every 500ms
       if (wait.it) yield wait.it;
@@ -181,7 +170,7 @@ export class UserProfileUpdateFlow extends DurableState<
     }
 
     // All done, finalize
-    console.log("[Workflow] All parallel tasks completed. Finalizing...");
+    console.log("[Workflow] All parallel tasks completed (or failed). Finalizing...");
     const resFinal = await this.withAction(
       EStep.SynchronizeAndFinalize,
       async () => {
@@ -212,24 +201,44 @@ export function createWorkflow() {
 const ExternalJobSystem = {
   jobs: new Map<
     string,
-    { status: TaskStatus; result?: any; startTime: number; duration: number }
+    { status: TaskStatus; result?: any; error?: any; startTime: number; duration: number }
   >(),
 
-  startJob(id: string, duration: number) {
+  // 3. Idempotency (avoid duplicate call)
+  startJob(id: string, duration: number, shouldFail: boolean = false) {
+    if (this.jobs.has(id)) {
+        console.log(`   >> [ExternalSystem] Job '${id}' already started. Skipping duplicate start.`);
+        return;
+    }
+
     console.log(
-      `   >> [ExternalSystem] Job '${id}' started (duration: ${duration}ms)`
+      `   >> [ExternalSystem] Job '${id}' started (duration: ${duration}ms)${shouldFail ? ' [WILL FAIL]' : ''}`
     );
-    this.jobs.set(id, { status: "running", startTime: Date.now(), duration });
+    // Store extra metadata to simulate failure later if needed
+    this.jobs.set(id, { 
+        status: "running", 
+        startTime: Date.now(), 
+        duration,
+        // @ts-ignore: storing internal flag
+        _shouldFail: shouldFail 
+    });
   },
 
-  getJobStatus(id: string): { status: TaskStatus; result?: any } {
+  getJobStatus(id: string): { status: TaskStatus; result?: any; error?: any } {
     const job = this.jobs.get(id);
-    if (!job) return { status: "pending" }; // Or error
+    if (!job) return { status: "pending" }; 
 
-    if (job.status === "completed")
-      return { status: "completed", result: job.result };
+    if (job.status === "completed" || job.status === "failed")
+      return { status: job.status, result: job.result, error: job.error };
 
     if (Date.now() - job.startTime >= job.duration) {
+      // @ts-ignore
+      if (job._shouldFail) {
+          job.status = "failed";
+          job.error = "Simulated external system failure";
+          return { status: "failed", error: job.error };
+      }
+
       job.status = "completed";
       job.result = { timestamp: Date.now() };
       return { status: "completed", result: job.result };
@@ -239,39 +248,42 @@ const ExternalJobSystem = {
   },
 };
 
-async function InitiateParallelTasks(state: TStateShape): Promise<TStateShape> {
-  console.log(`[Task] Initializing parallel tasks...`);
+// Combined Init and Start
+async function InitiateAndStartTasks(state: TStateShape): Promise<TStateShape> {
+  console.log(`[Task] Initializing and Starting parallel tasks...`);
+  
+  // Define tasks
+  const tasks: TaskInfo[] = [
+      { id: "job-search-idx", type: "search-index", status: "running" }, // Start as running
+      { id: "job-email-notif", type: "email-notification", status: "running" },
+  ];
+
+  // Trigger External System for each task immediately
+  // Idempotency: If this step is re-executed (e.g. after crash before saving state),
+  // startJob will handle duplicate calls safely.
+  ExternalJobSystem.startJob("job-search-idx", 1500, true); // Simulate failure for search index
+  ExternalJobSystem.startJob("job-email-notif", 800); 
+
   return {
     ...state,
-    parallelTasks: [
-      { id: "job-search-idx", type: "search-index", status: "pending" },
-      { id: "job-email-notif", type: "email-notification", status: "pending" },
-    ],
+    parallelTasks: tasks,
   };
 }
 
-// Task A Implementation
-async function StartUpdateSearchIndex(state: TStateShape): Promise<void> {
-  ExternalJobSystem.startJob("job-search-idx", 1500); // Takes 1.5s
-}
 
 async function PollUpdateSearchIndex(
   state: TStateShape
-): Promise<{ status: TaskStatus; result?: any }> {
+): Promise<{ status: TaskStatus; result?: any; error?: any }> {
   const res = ExternalJobSystem.getJobStatus("job-search-idx");
   if (res.status === "running")
     console.log(`   [Poll] Search Index: running...`);
   return res;
 }
 
-// Task B Implementation
-async function StartSendEmailNotification(state: TStateShape): Promise<void> {
-  ExternalJobSystem.startJob("job-email-notif", 800); // Takes 0.8s
-}
 
 async function PollSendEmailNotification(
   state: TStateShape
-): Promise<{ status: TaskStatus; result?: any }> {
+): Promise<{ status: TaskStatus; result?: any; error?: any }> {
   const res = ExternalJobSystem.getJobStatus("job-email-notif");
   if (res.status === "running")
     console.log(`   [Poll] Email Notification: running...`);
@@ -292,10 +304,8 @@ async function FinalizeUpdate(state: TStateShape): Promise<TStateShape> {
 }
 
 const defaultTasks: Tasks = {
-  InitiateParallelTasks,
-  StartUpdateSearchIndex,
+  InitiateAndStartTasks,
   PollUpdateSearchIndex,
-  StartSendEmailNotification,
   PollSendEmailNotification,
   FinalizeUpdate,
 };
