@@ -2,30 +2,52 @@
 
 ![alt text](.render.svg)
 
-This example demonstrates a more complex workflow for routing customer support tickets to the correct team. It shows how multiple conditions can be used to create a sophisticated routing logic.
+This example demonstrates a conditional routing workflow for customer support tickets. It showcases how to implement decision logic and handle both simple and long-running tasks within a single workflow.
 
-## Workflow Explained
+## The Challenge: Hybrid Workflows
 
-The workflow starts when a new support ticket is created. It then uses a series of decisions to determine the best destination for the ticket.
+Real-world workflows often require a mix of immediate logical decisions (routing) and long-running external processes (escalations that might take hours). Managing the state and reliability of such mixed workflows can be complex.
 
-1.  **Evaluate Ticket:** The workflow first evaluates the ticket's `priority` and `category`.
+## Understanding the Routing Logic
 
-2.  **Routing Logic:**
-    *   If the ticket is `urgent` and `technical`, it is escalated to L2 Tech Support.
-    *   If the ticket is about `billing`, it is routed to the Billing Team.
-    *   If the customer is a `VIP`, the ticket is tagged as such.
-    *   For all other cases, the ticket is assigned to the General Support Queue.
+This workflow simulates a support ticket system where the path is determined by ticket properties. The logic is defined in the JSON and implemented as follows:
 
-3.  **Send Confirmation:** After the ticket has been routed, a confirmation is sent to the customer.
+1.  **Urgent & Technical:** Triggers a long-running L2 escalation process. This simulates handing off work to an external system and waiting for completion.
+2.  **Billing:** Routes directly to the billing department (Immediate action).
+3.  **VIP:** Adds a special VIP tag to the ticket (Immediate action).
+4.  **General:** Assigns to the general support pool (Default path).
 
-4.  **End Routing:** The workflow ends.
+## Code Implementation: Start and Poll Pattern
 
-## Global State
+This implementation uses `tiny-json-workflow` to seamlessly integrate decision-making with robust task execution.
 
-The workflow uses a `ticket` object to store information about the support ticket:
+You can generate this implementation using `tiny-json-workflow` with AI assistance (see `do_generate.json`), which produces a robust, resilient workflow script.
 
-*   `id`: The ticket ID.
-*   `priority`: The priority of the ticket (e.g., `low`, `medium`, `high`, `urgent`).
-*   `category`: The category of the ticket (e.g., `technical`, `billing`, `general`).
-*   `isVip`: A `true` or `false` value indicating if the customer is a VIP.
-*   `assignedAgentId`: The ID of the agent assigned to the ticket.
+### How the Code Works
+
+The logic in `play.ts` demonstrates several key patterns:
+
+1.  **Decision Logic (Routing):**
+    The `EvaluateTicket` step translates the JSON schema's conditional logic into TypeScript code. It inspects the `ticket` state (priority, category, VIP status) to determine the next step efficiently.
+
+2.  **Long-Running Task (Urgent Escalation):**
+    The `EscalateUrgent` step implements the **"Start and Poll"** pattern for tasks that aren't immediate.
+    *   **Start:** It initiates an external "escalation job" via `withAction` (ensuring idempotency) and saves the Job ID.
+    *   **Poll:** It enters a loop, checking the job status periodically.
+    *   **Fresh Checks:** The status check is performed *directly* (without `withAction`) to ensure we always get the latest status from the external system.
+    *   **Wait:** It uses `waitForMs` to suspend execution between checks, freeing up system resources.
+
+3.  **Atomic Actions:**
+    Simple steps like `RouteToBilling` or `AssignGeneral` are wrapped in `withAction`. This ensures **idempotency**: if the workflow crashes and restarts, these actions (like sending an email or updating a database) won't run twice if they already succeeded.
+
+### Key Features
+
+*   **Conditional Routing:** Dynamic path selection based on business data.
+*   **Resiliency:** The polling mechanism allows the workflow to "sleep" for days if necessary while waiting for an external process, safe from system reboots.
+*   **Type Safety:** The generated code uses TypeScript interfaces for the Ticket and State, ensuring compile-time safety for your business logic.
+
+### Running the Example
+
+```bash
+bun run packages/examples/src/support-ticket-routing/play.ts
+```
