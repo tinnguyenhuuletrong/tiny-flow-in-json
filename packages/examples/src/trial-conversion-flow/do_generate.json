@@ -1,0 +1,37 @@
+{
+  "task": "generate typescript runable code for a tiny workflow json in input",
+  "cwd": "packages/examples/src/trial-conversion-flow",
+  "output": "create {cwd}/play.ts",
+  "input": "{cwd}/workflow.json",
+  "resources": {
+    "llms about tiny-workflow": "packages/runtime-durable-state/llms/tiny-flow-llms-full.txt",
+    "json schema": "packages/core/schema.json"
+  },
+  "note": [
+    "simple code. avoid too much comments",
+    "try to avoid (this as any) cast if possible. Let tsc check and report error",
+    "for edge conditional check. must translate to typescript code. avoid eval",
+    "IMPORTANT: Workflow constructor MUST handle 0 arguments for hydration. Use `constructor(private tasks: Tasks = defaultTasks)`.",
+    "IMPORTANT: For polling loops (waitForMs), use a state variable counter to ensure unique keys per iteration.",
+    "IMPORTANT: For wait for event use (waitForEvent).",
+    "IMPORTANT: Path A (Payment Watcher) and Path B (Reminder Schedule). Combine waitForMs and waitForEvent race(s)",
+    "Combine 'Init' and 'Start' logic into a single step to simplify external task management.",
+    "Ensure external task systems support idempotency (check if job already running) and report errors ('failed' status).",
+    "For the main entry point, just call main() at the end of the file. Do not use import.meta.main check."
+  ],
+  "plans": [
+    "Read LLM Guide: Understand `DurableState` patterns, especially 'Generated Code Pattern' and 'Best Practices'.",
+    "Parse Workflow Definition: Extract steps, connections, global state schema.",
+    "Generate Enums and Types: EStep, TStateShape.",
+    "Define Tasks Interface & Default Implementation: Create `Tasks` type and a `defaultTasks` object. Consolidate Start/Init methods.",
+    "Implement Workflow Class: Extend DurableState. Use `withAction`.",
+    "Implement Task Logic: Create simulated external job system with idempotency and error simulation.",
+    "Generate Main Logic: Setup `SimpleContext` and `WorkflowRuntime`. Handle `need_resume` loop until completion.",
+    "Verify: Run `bunx tsc {output} --noEmit` and `bun run {output}`."
+  ],
+  "steps": {
+    "1": "read resources. understand the json schema, llms guide",
+    "2": "read {input}",
+    "3": "generate a runable bun typescript code at {output}"
+  }
+}
