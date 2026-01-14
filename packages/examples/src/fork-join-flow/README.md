@@ -21,3 +21,44 @@ Here's how the simulation works:
 3.  **Join:** A `join-tasks` task is defined to synchronize the parallel branches. The workflow runner is responsible for ensuring that this task is only executed after both `update-search-index` and `send-email-notification` have completed.
 
 This example provides the structure for a fork-join workflow, but the implementation of the parallel execution and synchronization logic is left to the developer of the workflow runner.
+
+---
+
+## Code Implementation: Start and Poll Pattern
+
+While the JSON defines the *intent* of parallel execution, the actual implementation uses the **"Start and Poll"** pattern to handle long-running external tasks reliably.
+
+You can generate this implementation using `tiny-json-workflow` with AI assistance (see `do_generate.json`), which produces a robust, resilient workflow script.
+
+### How the Code Works
+
+The logic in `play.ts` orchestrates the parallel execution statefully:
+
+1.  **Fork & Start (Atomic Step):**
+    The `InitiateAndStartTasks` step triggers multiple external tasks immediately.
+    *   **Idempotency:** The external system call is designed to be idempotent. If the step is re-executed (e.g., due to a crash before saving), it won't duplicate the jobs.
+    *   **State Tracking:** The tasks are marked as `running` in the workflow's persistent state.
+
+2.  **Parallel Execution (External):**
+    The external system (simulated in `play.ts`) runs the tasks. These could be real-world API calls, database jobs, or human approval processes.
+
+3.  **Join via Polling:**
+    The `SynchronizeAndFinalize` step acts as a checkpoint.
+    *   It periodically polls the status of all running tasks.
+    *   It uses `waitForMs` to pause execution without blocking resources, allowing the workflow to "sleep" and resume later.
+    *   **Error Handling:** It captures failures (e.g., `failed` status) and persists error details in the state.
+
+4.  **Finalization:**
+    Only when all tasks are `completed` or `failed` does the workflow proceed to the final step.
+
+### Key Features
+
+*   **Resiliency:** The workflow can be stopped and resumed at any point. Task statuses are saved in the `DurableState`.
+*   **Non-Blocking:** The "polling" mechanism releases the runner worker while waiting, scaling efficiently for long-running tasks.
+*   **Separation of Concerns:** The workflow manages *control flow*, while the external system manages *execution*.
+
+### Running the Example
+
+```bash
+bun run packages/examples/src/fork-join-flow/play.ts
+```
